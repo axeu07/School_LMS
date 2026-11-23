@@ -6,7 +6,11 @@ import { Card } from "@/components/ui/card";
 import { doubtsFor } from "@/services/doubt-model";
 import { useDoubtState } from "@/services/doubt-store";
 import { sectionLabel, subjectName } from "@/services/insights";
-import type { DemoPanel, DemoRole } from "@/types/demo";
+import { learnerFor, testStatus, testsFor } from "@/services/learning-model";
+import { useLearningState, useNow } from "@/services/learning-store";
+import { examsFor } from "@/services/results-model";
+import type { DemoPanel, DemoRole, DemoRow } from "@/types/demo";
+import { formatDate, formatDateTime } from "./format";
 import { useDemo } from "./demo-context";
 import {
   DataTable,
@@ -54,35 +58,91 @@ const panelLinks: Record<DemoRole, Record<string, string>> = {
 const quickActions: Record<DemoRole, string[]> = {
   "super-admin": ["schools", "analytics", "subscriptions", "branding"],
   "school-admin": ["announcements", "students", "timetable", "attendance"],
-  teacher: ["attendance", "assignments", "doubt-board", "ai-tools"],
-  student: ["assignments", "doubt-board", "daily-quiz", "progress"],
-  parent: ["homework", "attendance", "performance", "messages"],
+  teacher: ["attendance", "assessments", "doubt-board", "courses"],
+  student: ["assignments", "quizzes", "daily-quiz", "progress"],
+  parent: ["homework", "attendance", "assessments", "performance"],
+};
+
+const testPanels: Record<string, string> = {
+  assessments: "Online tests",
+  quizzes: "Online tests",
+  exams: "Tests and exams",
 };
 
 export function RoleOverview() {
   const { role, profile, data, records, actor, scopeKey } = useDemo();
   const doubtState = useDoubtState();
+  const learningState = useLearningState();
+  const learning = learningState.schools[actor.school];
+  const now = useNow(60_000);
+  const student = learnerFor(records, actor);
+  const testRows: DemoRow[] = now
+    ? [
+        ...testsFor(learningState, records, actor).flatMap((test) => {
+          const status = testStatus(test, now);
+          if (status === "Closed") return [];
+          const subject = subjectName(
+            records,
+            records.allocations.find((item) => item.id === test.allocation)
+              ?.subject ?? "",
+          );
+          return [
+            {
+              title: test.title,
+              detail:
+                subject +
+                " · " +
+                (status === "Open"
+                  ? "closes " + formatDateTime(test.closes)
+                  : "opens " + formatDateTime(test.opens)),
+              meta: status,
+            },
+          ];
+        }),
+        ...(role === "parent" && student
+          ? examsFor(learning, records, actor, student)
+              .filter((exam) => !exam.published)
+              .map((exam) => ({
+                title: exam.name,
+                detail: "Exam · " + formatDate(exam.date),
+                meta: "Exam",
+              }))
+          : []),
+      ]
+    : [];
+  const stats = data.stats.map((stat) =>
+    stat.label === "Upcoming quizzes" || stat.label === "Upcoming assessments"
+      ? {
+          ...stat,
+          label: "Open and upcoming tests",
+          value: now ? String(testRows.length) : "—",
+          note: "Online tests for your classes",
+        }
+      : stat,
+  );
   const panels: DemoPanel[] = data.panels
     .filter((panel) => panel.id !== "school-context")
     .map((panel) =>
-      panel.id === "doubts"
-        ? {
-            ...panel,
-            title: "Top unanswered doubts",
-            rows: doubtsFor(doubtState, records, actor)
-              .filter((item) => item.status === "Open")
-              .map((item) => ({
-                title: item.text,
-                detail:
-                  subjectName(records, item.subject) +
-                  " · " +
-                  sectionLabel(records, item.section),
-                meta:
-                  item.voteCount +
-                  (item.voteCount === 1 ? " upvote" : " upvotes"),
-              })),
-          }
-        : panel,
+      testPanels[panel.id]
+        ? { ...panel, title: testPanels[panel.id], rows: testRows }
+        : panel.id === "doubts"
+          ? {
+              ...panel,
+              title: "Top unanswered doubts",
+              rows: doubtsFor(doubtState, records, actor)
+                .filter((item) => item.status === "Open")
+                .map((item) => ({
+                  title: item.text,
+                  detail:
+                    subjectName(records, item.subject) +
+                    " · " +
+                    sectionLabel(records, item.section),
+                  meta:
+                    item.voteCount +
+                    (item.voteCount === 1 ? " upvote" : " upvotes"),
+                })),
+            }
+          : panel,
     );
   const link = (id: string) =>
     panelLinks[role][id] ? roleHref(role, panelLinks[role][id]) : undefined;
@@ -99,7 +159,7 @@ export function RoleOverview() {
           No children are linked to this parent in the selected school.
         </EmptyState>
       )}
-      <StatCards stats={data.stats} />
+      <StatCards stats={stats} />
       <div className="dashboard-grid feature-grid">
         <TrendChart key={scopeKey} chart={data.chart} sample />
         {first && <DataTable panel={first} href={link(first.id)} limit={5} />}

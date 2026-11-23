@@ -7,6 +7,11 @@ import { useDemo } from "../demo-context";
 import { EmptyState, Meter, TrendChart } from "../dashboard-widgets";
 import { roleHref } from "../navigation";
 import { SectionCard } from "../page-header";
+import {
+  LearnerTestResults,
+  LearnerTopics,
+  ReportCards,
+} from "./results-pages";
 
 export function ChildrenPage() {
   const { role, records, data, setChild } = useDemo();
@@ -145,6 +150,7 @@ export function LearnerProgress() {
           <strong>{summary.graded.length}</strong>
         </div>
       </div>
+      <ReportCards />
       <SectionCard
         title="Assignment results"
         description="Marks and feedback from teachers, updated as soon as work is graded."
@@ -190,19 +196,10 @@ export function LearnerProgress() {
           </EmptyState>
         )}
       </SectionCard>
-      <div className="dashboard-grid">
+      <LearnerTestResults />
+      <div className="dashboard-grid feature-grid">
+        <LearnerTopics />
         <TrendChart key={scopeKey} chart={data.chart} sample />
-        <SectionCard
-          title="Weak topics"
-          description="Planned: topic-wise scores compared with the class average."
-        >
-          <span className="pill pill-preview">Demo preview</span>
-          <p className="muted-copy">
-            Weak-topic analysis needs online tests with chapter and topic tags.
-            Once those are available, this card will list the lowest-scoring
-            topics with suggested study material and practice questions.
-          </p>
-        </SectionCard>
       </div>
     </>
   );

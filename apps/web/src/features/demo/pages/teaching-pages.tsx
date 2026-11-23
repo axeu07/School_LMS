@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { CalendarClock, MapPin, Megaphone, Search } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { SectionTopics } from "./results-pages";
 import { visibleAnnouncements } from "@/services/academic-model";
 import { activeAllocations, assignmentsFor } from "@/services/assignment-model";
 import { attendanceRoster } from "@/services/attendance-model";
@@ -352,15 +352,7 @@ export function ClassPerformance() {
         </SectionCard>
         <TrendChart key={scopeKey} chart={data.chart} sample />
       </div>
-      <Card className="dash-card preview-notice slim" role="note">
-        <div>
-          <h2>Weak-topic analysis is planned</h2>
-          <p>
-            Topic-wise scores per class and student will appear here once online
-            tests with chapter and topic tags are available.
-          </p>
-        </div>
-      </Card>
+      <SectionTopics />
     </>
   );
 }

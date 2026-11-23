@@ -18,12 +18,17 @@ import { DoubtBoard } from "./pages/doubt-board";
 import { ChildrenPage, LearnerProgress } from "./pages/family-pages";
 import { PlatformAnalytics, SchoolsDirectory } from "./pages/platform-pages";
 import {
+  DailyQuiz,
+  LearnerTests,
+  TeacherAssessments,
+} from "./pages/assessment-pages";
+import { Courses } from "./pages/course-pages";
+import { LeadsPreview, RecruitmentPreview } from "./pages/growth-pages";
+import { ExamsAdmin } from "./pages/results-pages";
+import {
   AiNotesPreview,
   AiTeachingPreview,
-  AssessmentsPreview,
   BrandingPreview,
-  CoursesPreview,
-  DailyQuizPreview,
   HomeworkHelperPreview,
   MarketingPreview,
   MessagesPreview,
@@ -97,10 +102,16 @@ function renderSection(role: DemoRole, slug: string): ReactNode {
     case "student/attendance":
     case "parent/attendance":
       return <Attendance />;
+    case "school-admin/results":
+      return <ExamsAdmin />;
     case "school-admin/performance":
       return <SchoolPerformance />;
     case "school-admin/marketing":
       return <MarketingPreview />;
+    case "school-admin/leads":
+      return <LeadsPreview />;
+    case "school-admin/recruitment":
+      return <RecruitmentPreview />;
     case "school-admin/settings":
       return <SchoolSettings />;
 
@@ -111,15 +122,16 @@ function renderSection(role: DemoRole, slug: string): ReactNode {
       return <TeacherClasses />;
     case "teacher/courses":
     case "student/courses":
-      return <CoursesPreview />;
+      return <Courses />;
     case "teacher/assignments":
     case "student/assignments":
     case "parent/homework":
       return <Assignments />;
     case "teacher/assessments":
+      return <TeacherAssessments />;
     case "student/quizzes":
     case "parent/assessments":
-      return <AssessmentsPreview />;
+      return <LearnerTests />;
     case "teacher/doubt-board":
     case "student/doubt-board":
       return <DoubtBoard />;
@@ -137,7 +149,7 @@ function renderSection(role: DemoRole, slug: string): ReactNode {
     case "student/ai-notes":
       return <AiNotesPreview />;
     case "student/daily-quiz":
-      return <DailyQuizPreview />;
+      return <DailyQuiz />;
     case "student/progress":
     case "parent/performance":
       return <LearnerProgress />;

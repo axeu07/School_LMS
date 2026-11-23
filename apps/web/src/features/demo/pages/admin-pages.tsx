@@ -6,6 +6,8 @@ import type { AcademicTable } from "@/services/academic-model";
 import { resetAcademicState } from "@/services/academic-store";
 import { attendancePercentage } from "@/services/attendance-model";
 import { resetDoubtState } from "@/services/doubt-store";
+import { resetLearningState } from "@/services/learning-store";
+import { SectionTopics } from "./results-pages";
 import {
   formatPercent,
   gradeAverage,
@@ -307,6 +309,7 @@ export function SchoolPerformance() {
           )}
         </SectionCard>
       </div>
+      <SectionTopics />
     </>
   );
 }
@@ -427,7 +430,7 @@ export function SchoolSettings() {
       </SectionCard>
       <SectionCard
         title="Demo data"
-        description="Restore the original records for all three demo schools, including academics, assignments, attendance and doubts."
+        description="Restore the original records for all three demo schools, including academics, assignments, attendance, doubts, courses, tests and exam results."
         className="page-section"
         actions={
           <button
@@ -465,6 +468,7 @@ export function SchoolSettings() {
             onClick={() => {
               resetAcademicState();
               resetDoubtState();
+              resetLearningState();
               setNotice("Demo data reset.");
               dialog.current?.close();
             }}

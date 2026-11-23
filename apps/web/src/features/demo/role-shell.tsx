@@ -3,6 +3,7 @@
 import { useRef, type ReactNode } from "react";
 import { X } from "lucide-react";
 import type { DemoRole } from "@/types/demo";
+import { ChatAssistant } from "./chat-assistant";
 import { DemoProvider, useDemo } from "./demo-context";
 import { DashboardHeader, Sidebar } from "./dashboard-navigation";
 import { EmptyState } from "./dashboard-widgets";
@@ -83,6 +84,7 @@ function Shell({ role, children }: { role: DemoRole; children: ReactNode }) {
         </button>
         <Sidebar role={role} onNavigate={() => menu.current?.close()} />
       </dialog>
+      <ChatAssistant key={scopeKey} />
     </div>
   );
 }

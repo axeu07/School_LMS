@@ -64,8 +64,11 @@ const expected = {
     "Announcements",
     "Assignments",
     "Attendance",
+    "Exams & Results",
     "Performance Analytics",
     "Marketing Insights",
+    "Leads & Deals",
+    "Recruitment",
     "School Settings",
   ],
   teacher: [
@@ -156,14 +159,36 @@ test("sidebar and dashboard links use routes, not scrolling anchors", async () =
   assert.match(sidebar, /aria-current/);
 });
 
-test("preview pages are labelled and never marked live", async () => {
+test("preview pages are labelled, and live pages never render previews", async () => {
   const previews = await source("features/demo/pages/preview-pages.tsx");
-  const count = (previews.match(/<PreviewNotice/g) ?? []).length;
-  assert.ok(count >= 11, "every preview page shows a preview notice");
+  const exported = previews.match(/export function \w+Preview\(/g) ?? [];
+  const notices = previews.match(/<PreviewNotice/g) ?? [];
+  assert.equal(notices.length, exported.length, "each preview shows a notice");
+  // Map every "role/slug" case to the component it renders.
+  const pages = await source("features/demo/section-page.tsx");
+  const rendered = new Map();
+  let pending = [];
+  for (const line of pages.split("\n")) {
+    const caseMatch = line.match(/case "([a-z-]+\/[a-z-]+)":/);
+    if (caseMatch) pending.push(caseMatch[1]);
+    const returnMatch = line.match(/return <(\w+)/);
+    if (returnMatch && pending.length) {
+      for (const key of pending) rendered.set(key, returnMatch[1]);
+      pending = [];
+    }
+  }
   for (const role of roles)
     for (const group of navigation[role])
-      for (const item of group.items)
+      for (const item of group.items) {
         assert.ok(["live", "preview"].includes(item.status));
+        if (!item.slug) continue;
+        const component = rendered.get(role + "/" + item.slug);
+        assert.equal(
+          component.endsWith("Preview"),
+          item.status === "preview",
+          role + "/" + item.slug + " renders " + component,
+        );
+      }
 });
 
 const school = academicSeed.schools.westfield;
@@ -214,8 +239,14 @@ test("doubts stay anonymous to everyone, rank by upvotes and accept teacher repl
   }
   const mine = doubtsFor(state, school, student);
   assert.equal(mine.find((item) => item.id === "new-doubt").own, true);
-  assert.equal(mine.find((item) => item.id === "westfield-doubt-1").voted, true);
-  assert.equal(ranked.some((item) => item.own), false);
+  assert.equal(
+    mine.find((item) => item.id === "westfield-doubt-1").voted,
+    true,
+  );
+  assert.equal(
+    ranked.some((item) => item.own),
+    false,
+  );
   assert.throws(
     () => answerDoubt(state, school, teacher, "new-doubt", "", false),
     /reply/,
