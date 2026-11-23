@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type CSSProperties } from "react";
+import { useState } from "react";
 import { Lightbulb, RotateCcw, Send, Sparkles, Upload } from "lucide-react";
 import { academicRecords } from "@/mocks/academics";
 import { activeAllocations } from "@/services/assignment-model";
@@ -135,75 +135,6 @@ export function SubscriptionsPreview() {
           </table>
         </div>
       </SectionCard>
-    </>
-  );
-}
-
-const brandColors: Record<string, string> = {
-  westfield: "#4937b8",
-  harborview: "#185483",
-  cedar: "#5b398f",
-};
-
-export function BrandingPreview() {
-  const { schools } = useDemo();
-  return (
-    <>
-      <PreviewNotice
-        summary="Each demo school already uses its own accent colour. Uploading logos and editing brand settings is not available yet."
-        planned={[
-          "Upload a logo and choose brand colours per school",
-          "Custom subdomain or school code for each school's login page",
-          "Preview the student and parent app with the school's branding",
-        ]}
-      />
-      <div className="plan-grid">
-        {schools.map((item) => (
-          <SectionCard
-            key={item.id}
-            title={item.name}
-            description={item.location}
-          >
-            <div
-              className="brand-preview"
-              style={{ "--brand": brandColors[item.id] } as CSSProperties}
-            >
-              <span className="brand-preview-bar">
-                <span className="school-badge small">{item.initials}</span>
-                {item.name}
-              </span>
-              <span className="brand-preview-body">
-                <span />
-                <span />
-                <span />
-              </span>
-            </div>
-            <dl className="detail-list">
-              <div>
-                <dt>Accent colour</dt>
-                <dd>
-                  <span
-                    className="swatch"
-                    style={{ background: brandColors[item.id] }}
-                    aria-hidden="true"
-                  />
-                  {brandColors[item.id]}
-                </dd>
-              </div>
-              <div>
-                <dt>Address</dt>
-                <dd>{item.id}.schoollms.example</dd>
-              </div>
-              <div>
-                <dt>School code</dt>
-                <dd>
-                  {item.initials}-{1024 + item.students}
-                </dd>
-              </div>
-            </dl>
-          </SectionCard>
-        ))}
-      </div>
     </>
   );
 }
@@ -578,95 +509,6 @@ export function AiNotesPreview() {
         </SectionCard>
       ) : (
         <EmptyState>No subjects in the active academic year.</EmptyState>
-      )}
-    </>
-  );
-}
-
-/* ---------- Parent ---------- */
-
-export function MessagesPreview() {
-  const { records, data } = useDemo();
-  const [selected, setSelected] = useState(0);
-  const enrollment = records.enrollments.find(
-    (item) => item.student === data.child?.id && item.status === "Enrolled",
-  );
-  const teachers = records.allocations
-    .filter((item) => item.section === enrollment?.section)
-    .map((item) => ({
-      name: records.teachers.find((teacher) => teacher.id === item.teacher)
-        ?.name,
-      subject: subjectName(records, item.subject),
-    }));
-  if (!data.child)
-    return (
-      <EmptyState>
-        No children are linked to this parent in the selected school.
-      </EmptyState>
-    );
-  const thread = teachers[selected];
-  return (
-    <>
-      <PreviewNotice
-        summary="Conversations below are samples with your child's real teachers. Messages can't be sent yet."
-        planned={[
-          "Message the class or subject teacher one to one",
-          "Receive replies and in-app notifications",
-          "Daily digest of homework, attendance and notices",
-        ]}
-      />
-      {teachers.length ? (
-        <div className="messages-layout">
-          <SectionCard title="Teachers" description={data.child.name}>
-            <ul className="thread-list">
-              {teachers.map((item, index) => (
-                <li key={item.subject + index}>
-                  <button
-                    type="button"
-                    aria-pressed={index === selected}
-                    onClick={() => setSelected(index)}
-                  >
-                    <strong>{item.name}</strong>
-                    <span>{item.subject}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </SectionCard>
-          <SectionCard
-            title={thread.name ?? "Teacher"}
-            description={thread.subject + " · sample conversation"}
-          >
-            <ol className="chat">
-              <li className="chat-in">
-                Hello! {data.child.name.split(" ")[0]} did well in class this
-                week. Please encourage some extra reading at home.
-              </li>
-              <li className="chat-out">
-                Thank you — we&apos;ll set aside time each evening. Is there a
-                chapter to focus on?
-              </li>
-              <li className="chat-in">
-                Unit 2 would be a great place to start.
-              </li>
-            </ol>
-            <div className="chat-compose">
-              <input
-                disabled
-                placeholder="Messaging is coming soon"
-                aria-label="Message"
-              />
-              <button type="button" className="button button-primary" disabled>
-                <Send size={15} aria-hidden="true" />
-                Send
-              </button>
-            </div>
-          </SectionCard>
-        </div>
-      ) : (
-        <EmptyState>
-          No teachers are allocated to your child&apos;s section yet.
-        </EmptyState>
       )}
     </>
   );

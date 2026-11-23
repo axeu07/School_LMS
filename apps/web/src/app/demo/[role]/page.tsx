@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: Props) {
   const { role } = await params;
   if (!demoRoles.includes(role as DemoRole)) return {};
   return {
-    title: roleProfiles[role as DemoRole].label + " Dashboard | School LMS",
+    title: roleProfiles[role as DemoRole].label + " Dashboard | ACADMAXIS",
   };
 }
 

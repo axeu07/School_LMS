@@ -5,6 +5,12 @@ import {
   type AcademicState,
 } from "./academic-model";
 
+const substituteTeachers: Record<string, string> = {
+  westfield: "Daniel Okafor",
+  harborview: "Farah Iqbal",
+  cedar: "Marcus Lee",
+};
+
 export const academicSeed: AcademicState = {
   version: 1,
   schools: Object.fromEntries(
@@ -52,6 +58,15 @@ export const academicSeed: AcademicState = {
             id: source.teacher.id,
             name: source.teacher.name,
             email: prefix + ".teacher@example.test",
+            availability: "Monday–Friday, 08:00–15:00",
+            status: "Active",
+          },
+          {
+            // A second faculty member without allocations, available to cover
+            // sessions when a colleague is on approved leave.
+            id: prefix + "-teacher-2",
+            name: substituteTeachers[prefix],
+            email: prefix + ".faculty@example.test",
             availability: "Monday–Friday, 08:00–15:00",
             status: "Active",
           },

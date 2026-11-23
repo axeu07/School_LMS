@@ -17,15 +17,20 @@ export function ProfilePicker() {
     <div className="profile-page">
       <header className="site-nav shell">
         <Brand />
-        <Link className="button button-outline" href="/">
-          Back to home
-        </Link>
+        <div className="card-actions">
+          <Link className="button button-outline" href="/">
+            Back to home
+          </Link>
+          <Link className="button button-primary" href="/login">
+            Sign in
+          </Link>
+        </div>
       </header>
       <main className="shell profile-content">
         <DemoBanner />
         <h1>Choose your demo profile.</h1>
         <p>
-          Step into a fictional workspace and see the LMS from a different
+          Step into a fictional workspace and see ACADMAXIS from a different
           perspective.
         </p>
         <div className="role-grid">

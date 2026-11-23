@@ -14,6 +14,7 @@ import {
   Users,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { CountUp } from "@/components/common/count-up";
 import type { DemoChart, DemoPanel, DemoStat } from "@/types/demo";
 
 const statIcons = {
@@ -47,7 +48,9 @@ export function StatCards({ stats }: { stats: DemoStat[] }) {
             </span>
             <div>
               <div className="stat-label">{stat.label}</div>
-              <strong>{stat.value}</strong>
+              <strong>
+                <CountUp value={stat.value} />
+              </strong>
               <span className="stat-note">{stat.note}</span>
             </div>
           </Card>

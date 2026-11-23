@@ -139,7 +139,7 @@ export const roleProfiles: Record<
   "super-admin": {
     label: "Super Admin",
     short: "Platform",
-    description: "Oversee institutions and subscriptions across the LMS.",
+    description: "Oversee institutions and subscriptions across ACADMAXIS.",
     focus: "Schools, subscriptions and platform activity.",
   },
   "school-admin": {

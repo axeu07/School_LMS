@@ -45,7 +45,7 @@ export default function Home() {
           <a href="#roles">Roles</a>
           <a href="#analytics">Analytics</a>
         </nav>
-        <Link href={demo} className="button button-outline">
+        <Link href="/login" className="button button-outline">
           Login
         </Link>
       </header>
@@ -85,7 +85,7 @@ export default function Home() {
                 <i />
                 <i />
               </span>
-              <span>School LMS / Overview</span>
+              <span>ACADMAXIS / Overview</span>
               <span className="preview-live">Demo preview</span>
             </div>
             <div className="preview-app">
@@ -202,7 +202,7 @@ export default function Home() {
           <div className="closing-cta">
             <div>
               <h2>See it from your side of the classroom.</h2>
-              <p>Choose a role and explore the LMS with sample data.</p>
+              <p>Choose a role and explore ACADMAXIS with sample data.</p>
             </div>
             <Link className="button button-white" href={demo}>
               Explore Demo

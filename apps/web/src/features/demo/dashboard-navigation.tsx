@@ -5,7 +5,9 @@ import {
   ArrowRight,
   Bell,
   ChevronDown,
+  LogIn,
   LogOut,
+  ShieldCheck,
   Menu,
   PanelLeftClose,
   PanelLeftOpen,
@@ -14,13 +16,30 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Brand } from "@/components/common/brand";
+import { SchoolBrand } from "../brand/school-brand";
+import { signOutTo, useWorkspaceSession } from "./session-guard";
 import type { DemoRole, DemoRow } from "@/types/demo";
 import { useDemo } from "./demo-context";
 import { DemoBanner, PersonIcon, SchoolSelector, roleIcons } from "./demo-ui";
 import { EmptyState } from "./dashboard-widgets";
 import { findNavItem, navItems, navigation, roleHref } from "./navigation";
+import { formatDateTime } from "./format";
+import { leaveSlug } from "./leave/leave-widgets";
+import {
+  leaveSchool,
+  markNotificationsRead,
+  notificationsFor,
+} from "@/services/leave-model";
+import { updateLeaveState, useLeaveState } from "@/services/leave-store";
+import { readNotifications } from "@/services/communication-model";
+import { localDateTime } from "@/services/learning-model";
+import {
+  updateCommunicationState,
+  useCommunicationState,
+} from "@/services/communication-store";
+import { notificationsFor as appNotificationsFor } from "@/services/notification-model";
 
 function useActiveSlug(role: DemoRole) {
   const pathname = usePathname();
@@ -42,9 +61,20 @@ export function Sidebar({
   onToggleCollapse?: () => void;
   onNavigate?: () => void;
 }) {
-  const { data, profile } = useDemo();
+  const { data, profile, schoolId } = useDemo();
   const active = useActiveSlug(role);
-  const [closedGroups, setClosedGroups] = useState<Record<string, boolean>>({});
+  // Accordion: only one group is open at a time. By default that is the group
+  // holding the current page; a header click overrides it until the user
+  // navigates again, at which point the new page's group takes over.
+  const activeGroup = navigation[role].find((group) =>
+    group.items.some((entry) => entry.slug === active),
+  )?.label;
+  const [choice, setChoice] = useState<{
+    active: string | undefined;
+    group: string | null;
+  }>();
+  const openGroup =
+    choice && choice.active === active ? choice.group : (activeGroup ?? null);
   const [tooltip, setTooltip] = useState<{ label: string; top: number }>();
   const RoleIcon = roleIcons[role];
   const showTip = (
@@ -59,7 +89,11 @@ export function Sidebar({
   return (
     <div className="sidebar-inner">
       <div className="sidebar-top">
-        <Brand />
+        {role === "super-admin" ? (
+          <Brand />
+        ) : (
+          <SchoolBrand school={schoolId} href={roleHref(role)} />
+        )}
         {onToggleCollapse && (
           <button
             type="button"
@@ -86,10 +120,16 @@ export function Sidebar({
       >
         {navigation[role].map((group) => {
           const id = "nav-" + role + "-" + group.label.replace(/\W+/g, "-");
-          const open = collapsed || !closedGroups[group.label];
           const single = group.items.length === 1;
+          const open = collapsed || single || openGroup === group.label;
+          const holdsActive = activeGroup === group.label;
           return (
-            <div className="nav-group" key={group.label}>
+            <div
+              className="nav-group"
+              key={group.label}
+              data-open={open ? "true" : undefined}
+              data-single={single ? "true" : undefined}
+            >
               {!single &&
                 (collapsed ? (
                   <hr className="nav-divider" aria-hidden="true" />
@@ -99,50 +139,55 @@ export function Sidebar({
                     className="nav-group-toggle"
                     aria-expanded={open}
                     aria-controls={id}
+                    data-has-active={holdsActive ? "true" : undefined}
                     onClick={() =>
-                      setClosedGroups((groups) => ({
-                        ...groups,
-                        [group.label]: open,
-                      }))
+                      setChoice({ active, group: open ? null : group.label })
                     }
                   >
-                    {group.label}
+                    <span>{group.label}</span>
+                    {!open && (
+                      <span className="nav-group-count" aria-hidden="true">
+                        {group.items.length}
+                      </span>
+                    )}
                     <ChevronDown size={14} aria-hidden="true" />
                   </button>
                 ))}
-              <ul id={id} hidden={!open}>
-                {group.items.map((entry) => {
-                  const Icon = entry.icon;
-                  const label =
-                    entry.title +
-                    (entry.status === "preview" ? " (preview)" : "");
-                  return (
-                    <li key={entry.slug}>
-                      <Link
-                        href={roleHref(role, entry.slug)}
-                        className="nav-link"
-                        aria-current={
-                          active === entry.slug ? "page" : undefined
-                        }
-                        aria-label={collapsed ? label : undefined}
-                        onClick={onNavigate}
-                        onMouseEnter={(event) => showTip(label, event)}
-                        onMouseLeave={() => setTooltip(undefined)}
-                        onFocus={(event) => showTip(label, event)}
-                        onBlur={() => setTooltip(undefined)}
-                      >
-                        <Icon size={18} aria-hidden="true" />
-                        <span className="nav-label">{entry.title}</span>
-                        {entry.status === "preview" && (
-                          <span className="nav-badge" aria-hidden="true">
-                            Preview
-                          </span>
-                        )}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
+              <div className="nav-group-panel" inert={!open}>
+                <ul id={id}>
+                  {group.items.map((entry) => {
+                    const Icon = entry.icon;
+                    const label =
+                      entry.title +
+                      (entry.status === "preview" ? " (preview)" : "");
+                    return (
+                      <li key={entry.slug}>
+                        <Link
+                          href={roleHref(role, entry.slug)}
+                          className="nav-link"
+                          aria-current={
+                            active === entry.slug ? "page" : undefined
+                          }
+                          aria-label={collapsed ? label : undefined}
+                          onClick={onNavigate}
+                          onMouseEnter={(event) => showTip(label, event)}
+                          onMouseLeave={() => setTooltip(undefined)}
+                          onFocus={(event) => showTip(label, event)}
+                          onBlur={() => setTooltip(undefined)}
+                        >
+                          <Icon size={18} aria-hidden="true" />
+                          <span className="nav-label">{entry.title}</span>
+                          {entry.status === "preview" && (
+                            <span className="nav-badge" aria-hidden="true">
+                              Preview
+                            </span>
+                          )}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
             </div>
           );
         })}
@@ -184,29 +229,125 @@ export function Sidebar({
 }
 
 function Notifications({ rows, href }: { rows: DemoRow[]; href?: string }) {
+  const { role, records, actor, setChild } = useDemo();
   const [read, setRead] = useState(false);
   const panel = useRef<HTMLDetailsElement>(null);
+  const leave = leaveSchool(useLeaveState(), actor.school);
+  const notices = notificationsFor(leave, records, actor).slice(0, 8);
+  const updates = appNotificationsFor(
+    useCommunicationState().schools[actor.school]?.notifications ?? [],
+    actor,
+  );
+  const unreadUpdates = updates.filter((item) => !item.readAt).length;
+  const unreadNotices =
+    notices.filter((item) => !item.read).length + unreadUpdates;
+  const slug = leaveSlug[role];
+  const unread = unreadNotices > 0 || (rows.length > 0 && !read);
+  const close = () => panel.current?.removeAttribute("open");
   return (
     <details className="popover" ref={panel}>
-      <summary className="icon-button" aria-label="Notifications">
+      <summary
+        className="icon-button"
+        aria-label={
+          "Notifications" +
+          (unreadNotices ? ", " + unreadNotices + " unread" : "")
+        }
+      >
         <Bell size={19} aria-hidden="true" />
-        {rows.length > 0 && !read && (
-          <span className="unread-dot" aria-label="Unread" />
+        {unreadNotices > 0 ? (
+          <span className="unread-count" aria-hidden="true">
+            {unreadNotices > 9 ? "9+" : unreadNotices}
+          </span>
+        ) : (
+          unread && <span className="unread-dot" aria-label="Unread" />
         )}
       </summary>
       <div className="popover-panel">
         <div className="popover-title">
           <h2>Notifications</h2>
-          {rows.length > 0 && !read && (
+          {unread && (
             <button
               type="button"
               className="text-button"
-              onClick={() => setRead(true)}
+              onClick={() => {
+                setRead(true);
+                updateLeaveState((state) =>
+                  markNotificationsRead(state, records, actor, "all"),
+                );
+                updateCommunicationState((state) =>
+                  readNotifications(state, actor, "all", new Date()),
+                );
+              }}
             >
               Mark as read
             </button>
           )}
         </div>
+        {updates.length > 0 && (
+          <ul
+            className="popover-list app-notices"
+            aria-label="Calendar, PTM and message updates"
+          >
+            {updates.slice(0, 8).map((item) => (
+              <li key={item.id} className={item.readAt ? "" : "is-unread"}>
+                <Link
+                  href={item.href}
+                  onClick={() => {
+                    updateCommunicationState((state) =>
+                      readNotifications(state, actor, item.id, new Date()),
+                    );
+                    close();
+                  }}
+                >
+                  <strong>
+                    {item.title}
+                    {item.count > 1 && " (" + item.count + " new)"}
+                  </strong>
+                  <span>{item.body}</span>
+                  <small suppressHydrationWarning>
+                    {formatDateTime(localDateTime(new Date(item.createdAt)))}
+                  </small>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+        {notices.length > 0 && slug && (
+          <ul
+            className="popover-list leave-notices"
+            aria-label="Leave and attendance alerts"
+          >
+            {notices.map((item) => (
+              <li
+                key={item.id}
+                className={
+                  (item.read ? "" : "is-unread ") +
+                  (item.kind === "absence"
+                    ? item.state === "Active"
+                      ? "is-alert"
+                      : "is-resolved"
+                    : "")
+                }
+              >
+                <Link
+                  href={roleHref(role, slug)}
+                  onClick={() => {
+                    if (role === "parent" && item.student)
+                      setChild(item.student);
+                    updateLeaveState((state) =>
+                      markNotificationsRead(state, records, actor, [item.id]),
+                    );
+                    close();
+                  }}
+                >
+                  <strong>{item.title}</strong>
+                  <span>{item.message}</span>
+                  <small>{formatDateTime(item.created)}</small>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
         {rows.length ? (
           <ul className="popover-list">
             {rows.map((row) => (
@@ -217,7 +358,8 @@ function Notifications({ rows, href }: { rows: DemoRow[]; href?: string }) {
             ))}
           </ul>
         ) : (
-          <EmptyState>No notifications.</EmptyState>
+          !notices.length &&
+          !updates.length && <EmptyState>No notifications.</EmptyState>
         )}
         {href && (
           <Link
@@ -242,9 +384,12 @@ export function DashboardHeader({ onOpenMenu }: { onOpenMenu: () => void }) {
     school,
     schools,
     scopeKey,
+    schoolId,
     setSchool,
     setChild,
   } = useDemo();
+  const session = useWorkspaceSession(role, schoolId);
+  const router = useRouter();
   const searchDialog = useRef<HTMLDialogElement>(null);
   const profileMenu = useRef<HTMLDetailsElement>(null);
   const [query, setQuery] = useState("");
@@ -286,7 +431,7 @@ export function DashboardHeader({ onOpenMenu }: { onOpenMenu: () => void }) {
       </button>
       <div className="header-actions">
         <div className="context-controls">
-          {role !== "super-admin" && (
+          {role !== "super-admin" && !session && (
             <SchoolSelector
               school={school}
               schools={schools}
@@ -326,7 +471,25 @@ export function DashboardHeader({ onOpenMenu }: { onOpenMenu: () => void }) {
           </summary>
           <div className="popover-panel profile-panel">
             <p className="popover-title">{data.person.name}</p>
-            <DemoBanner />
+            {session ? (
+              <p className="session-pill">
+                <ShieldCheck size={14} aria-hidden="true" />
+                Signed in ·{" "}
+                {session.method === "otp" ? "phone OTP" : "password"}
+              </p>
+            ) : (
+              <DemoBanner />
+            )}
+            {!session && (
+              <Link
+                href={
+                  "/login/" + (role === "super-admin" ? "platform" : schoolId)
+                }
+              >
+                <LogIn size={17} aria-hidden="true" />
+                Sign in
+              </Link>
+            )}
             <Link
               href="/demo/select-profile"
               onClick={() => profileMenu.current?.removeAttribute("open")}
@@ -334,10 +497,20 @@ export function DashboardHeader({ onOpenMenu }: { onOpenMenu: () => void }) {
               <PersonIcon />
               Switch Demo Role
             </Link>
-            <Link href="/">
-              <LogOut size={17} aria-hidden="true" />
-              Logout Demo
-            </Link>
+            {session ? (
+              <button
+                type="button"
+                onClick={() => signOutTo(router, session, "signedOut")}
+              >
+                <LogOut size={17} aria-hidden="true" />
+                Sign out
+              </button>
+            ) : (
+              <Link href="/">
+                <LogOut size={17} aria-hidden="true" />
+                Leave demo
+              </Link>
+            )}
           </div>
         </details>
       </div>

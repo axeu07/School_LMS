@@ -7,11 +7,18 @@ import {
   type LearningState,
 } from "./learning-model";
 import { createLocalStore, useLocalStore } from "./local-store";
+import { getAcademicSnapshot } from "./academic-store";
+import { diffLearning } from "./audit-model";
+import { recordAudit } from "./audit-store";
 
 const store = createLocalStore(
   "school-lms-learning",
   learningSeed,
   decodeLearningState,
+  (before, after) =>
+    recordAudit(
+      diffLearning(before, after, (id) => getAcademicSnapshot().schools[id]),
+    ),
 );
 
 export function useLearningState() {

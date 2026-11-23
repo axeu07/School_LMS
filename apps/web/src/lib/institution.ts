@@ -1,3 +1,3 @@
 export const institution = {
-  name: "School LMS",
+  name: "ACADMAXIS",
 };

@@ -15,6 +15,11 @@ import {
   SchoolSettings,
 } from "./pages/admin-pages";
 import { DoubtBoard } from "./pages/doubt-board";
+import {
+  AdminLeavePage,
+  LearnerLeavePage,
+  TeacherLeavePage,
+} from "./leave/leave-pages";
 import { ChildrenPage, LearnerProgress } from "./pages/family-pages";
 import { PlatformAnalytics, SchoolsDirectory } from "./pages/platform-pages";
 import {
@@ -23,15 +28,24 @@ import {
   TeacherAssessments,
 } from "./pages/assessment-pages";
 import { Courses } from "./pages/course-pages";
+import { AdminFees, ParentFees } from "./pages/fee-pages";
+import {
+  AuditLog,
+  BulkImport,
+  ParentPrivacy,
+  PlatformBranding,
+  PrivacyAdmin,
+  SchoolBrandingPage,
+} from "./pages/onboarding-pages";
 import { LeadsPreview, RecruitmentPreview } from "./pages/growth-pages";
 import { ExamsAdmin } from "./pages/results-pages";
+import { SchoolCalendarPage } from "./pages/calendar-pages";
+import { AdminCommunication, MessagesInbox } from "./pages/messaging-pages";
 import {
   AiNotesPreview,
   AiTeachingPreview,
-  BrandingPreview,
   HomeworkHelperPreview,
   MarketingPreview,
-  MessagesPreview,
   PlatformSettingsPreview,
   SubscriptionsPreview,
 } from "./pages/preview-pages";
@@ -73,7 +87,7 @@ function renderSection(role: DemoRole, slug: string): ReactNode {
     case "super-admin/analytics":
       return <PlatformAnalytics />;
     case "super-admin/branding":
-      return <BrandingPreview />;
+      return <PlatformBranding />;
     case "super-admin/settings":
       return <PlatformSettingsPreview />;
 
@@ -102,6 +116,27 @@ function renderSection(role: DemoRole, slug: string): ReactNode {
     case "student/attendance":
     case "parent/attendance":
       return <Attendance />;
+    case "school-admin/fees":
+      return <AdminFees />;
+    case "school-admin/import":
+      return <BulkImport />;
+    case "school-admin/branding":
+      return <SchoolBrandingPage />;
+    case "school-admin/privacy":
+      return <PrivacyAdmin />;
+    case "school-admin/audit":
+      return <AuditLog />;
+    case "parent/privacy":
+      return <ParentPrivacy />;
+    case "parent/fees":
+      return <ParentFees />;
+    case "school-admin/leave-management":
+      return <AdminLeavePage />;
+    case "teacher/leave-requests":
+      return <TeacherLeavePage />;
+    case "student/leave-requests":
+    case "parent/leave-requests":
+      return <LearnerLeavePage />;
     case "school-admin/results":
       return <ExamsAdmin />;
     case "school-admin/performance":
@@ -156,8 +191,16 @@ function renderSection(role: DemoRole, slug: string): ReactNode {
 
     case "parent/children":
       return <ChildrenPage />;
+    case "school-admin/calendar":
+    case "teacher/calendar":
+    case "student/calendar":
+    case "parent/calendar":
+      return <SchoolCalendarPage />;
     case "parent/messages":
-      return <MessagesPreview />;
+    case "teacher/messages":
+      return <MessagesInbox />;
+    case "school-admin/messages":
+      return <AdminCommunication />;
   }
   return <EmptyState>This page is unavailable.</EmptyState>;
 }

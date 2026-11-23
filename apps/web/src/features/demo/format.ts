@@ -28,3 +28,12 @@ export function formatCountdown(ms: number) {
     (hours ? hours + ":" + pad(minutes) : pad(minutes)) + ":" + pad(seconds)
   );
 }
+
+/** A unique id for a new demo record, e.g. "westfield-event-lx2k-1a2b3c4d". */
+export function newId(prefix: string) {
+  const random =
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID().slice(0, 8)
+      : Math.random().toString(36).slice(2, 10);
+  return prefix + "-" + Date.now().toString(36) + "-" + random;
+}

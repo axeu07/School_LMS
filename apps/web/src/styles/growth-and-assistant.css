@@ -31,13 +31,27 @@
   background: var(--src);
   flex: none;
 }
-.src-instagram { --src: #d6249f; }
-.src-facebook { --src: #1877f2; }
-.src-meta { --src: #0467df; }
-.src-google { --src: #ea8600; }
-.src-website { --src: #4c3bd2; }
-.src-walkin { --src: #11665c; }
-.src-referral { --src: #8a4b0f; }
+.src-instagram {
+  --src: #d6249f;
+}
+.src-facebook {
+  --src: #1877f2;
+}
+.src-meta {
+  --src: #0467df;
+}
+.src-google {
+  --src: #ea8600;
+}
+.src-website {
+  --src: #4c3bd2;
+}
+.src-walkin {
+  --src: #11665c;
+}
+.src-referral {
+  --src: #8a4b0f;
+}
 .row-select {
   min-height: 34px;
   border: 1px solid #d5d8e6;
@@ -189,7 +203,7 @@
   filter: drop-shadow(0 8px 14px #28204430);
 }
 .chat-launcher:focus-visible {
-  outline: 3px solid #8b7cf0;
+  outline: 3px solid var(--t-1-light, #8b7cf0);
   outline-offset: 2px;
   border-radius: 16px;
 }
@@ -214,90 +228,329 @@
 .mascot * {
   transform-box: fill-box;
 }
-.m-shadow { fill: #28204424; }
+.m-shadow {
+  fill: #28204424;
+}
 .m-leg rect,
-.m-arm rect { fill: var(--school-accent, #4c3bd2); }
-.m-foot { fill: #2b2160; }
+.m-arm rect {
+  fill: var(--t-1-light, #7a69f0);
+}
+.m-foot {
+  fill: var(--t-ink, #2b2160);
+}
 .m-hand circle,
-.m-hand rect { fill: #ffd8b8; }
+.m-hand rect {
+  fill: #ffd8b8;
+}
 .m-body,
-.m-skull { fill: var(--school-accent, #5946d8); }
+.m-skull {
+  fill: var(--t-1, #5946d8);
+}
 .m-belly,
-.m-face { fill: #fff; }
-.m-badge { fill: #ffc940; }
-.m-antenna { stroke: var(--school-accent, #5946d8); stroke-width: 3; stroke-linecap: round; }
-.m-antenna-tip { fill: #ffc940; transform-origin: center; animation: m-glow 2s ease-in-out infinite; }
-.m-eye { fill: #1d1747; }
-.m-glint { fill: #fff; }
-.m-cheek { fill: #ffb3c7; opacity: 0.8; }
-.m-smile { fill: none; stroke: #1d1747; stroke-width: 2.6; stroke-linecap: round; transition: opacity 0.15s; }
-.m-mouth { fill: #1d1747; opacity: 0; transform-origin: center; }
+.m-face {
+  fill: #fff;
+}
+.m-badge {
+  fill: #ffc940;
+}
+.m-antenna {
+  stroke: var(--t-1, #5946d8);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.m-antenna-tip {
+  fill: #ffc940;
+  transform-origin: center;
+  animation: m-glow 2s ease-in-out infinite;
+}
+.m-eye {
+  fill: #1d1747;
+}
+.m-glint {
+  fill: #fff;
+}
+.m-cheek {
+  fill: #ffb3c7;
+  opacity: 0.8;
+}
+.m-smile {
+  fill: none;
+  stroke: #1d1747;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  transition: opacity 0.15s;
+}
+.m-mouth {
+  fill: #1d1747;
+  opacity: 0;
+  transform-origin: center;
+}
 
 .m-arm-left,
-.m-arm-right { transform-origin: 50% 6%; transition: transform 0.3s ease; }
+.m-arm-right {
+  transform-origin: 50% 6%;
+  transition: transform 0.3s ease;
+}
 .m-leg-left,
-.m-leg-right { transform-origin: 50% 0%; transition: transform 0.3s ease; }
-.m-head { transform-origin: 50% 100%; transition: transform 0.3s ease; }
-.m-eyes { transform-origin: center; animation: m-blink 4.2s infinite; transition: transform 0.3s; }
-.m-figure { transform-origin: 50% 100%; }
+.m-leg-right {
+  transform-origin: 50% 0%;
+  transition: transform 0.3s ease;
+}
+.m-head {
+  transform-origin: 50% 100%;
+  transition: transform 0.3s ease;
+}
+.m-eyes {
+  transform-origin: center;
+  animation: m-blink 4.2s infinite;
+  transition: transform 0.3s;
+}
+.m-figure {
+  transform-origin: 50% 100%;
+}
 
 /* idle: breathe, sway arms, tilt head */
-.mascot[data-gesture="idle"] .m-figure { animation: m-bob 2.6s ease-in-out infinite; }
-.mascot[data-gesture="idle"] .m-arm-left { animation: m-sway-l 2.6s ease-in-out infinite; }
-.mascot[data-gesture="idle"] .m-arm-right { animation: m-sway-r 2.6s ease-in-out infinite; }
-.mascot[data-gesture="idle"] .m-head { animation: m-tilt 5s ease-in-out infinite; }
+.mascot[data-gesture="idle"] .m-figure {
+  animation: m-bob 2.6s ease-in-out infinite;
+}
+.mascot[data-gesture="idle"] .m-arm-left {
+  animation: m-sway-l 2.6s ease-in-out infinite;
+}
+.mascot[data-gesture="idle"] .m-arm-right {
+  animation: m-sway-r 2.6s ease-in-out infinite;
+}
+.mascot[data-gesture="idle"] .m-head {
+  animation: m-tilt 5s ease-in-out infinite;
+}
 
 /* walk in from the right with alternating legs and arms */
-.mascot[data-gesture="walk"] .m-figure { animation: m-walk-in 1.3s ease-out both; }
-.mascot[data-gesture="walk"] .m-leg-left { animation: m-step 0.33s ease-in-out infinite alternate; }
-.mascot[data-gesture="walk"] .m-leg-right { animation: m-step 0.33s ease-in-out infinite alternate-reverse; }
-.mascot[data-gesture="walk"] .m-arm-left { animation: m-step 0.33s ease-in-out infinite alternate-reverse; }
-.mascot[data-gesture="walk"] .m-arm-right { animation: m-step 0.33s ease-in-out infinite alternate; }
+.mascot[data-gesture="walk"] .m-figure {
+  animation: m-walk-in 1.3s ease-out both;
+}
+.mascot[data-gesture="walk"] .m-leg-left {
+  animation: m-step 0.33s ease-in-out infinite alternate;
+}
+.mascot[data-gesture="walk"] .m-leg-right {
+  animation: m-step 0.33s ease-in-out infinite alternate-reverse;
+}
+.mascot[data-gesture="walk"] .m-arm-left {
+  animation: m-step 0.33s ease-in-out infinite alternate-reverse;
+}
+.mascot[data-gesture="walk"] .m-arm-right {
+  animation: m-step 0.33s ease-in-out infinite alternate;
+}
 
 /* wave hello */
-.mascot[data-gesture="wave"] .m-arm-right { animation: m-wave 0.9s ease-in-out infinite; }
-.mascot[data-gesture="wave"] .m-head { animation: m-nod 0.9s ease-in-out infinite; }
-.mascot[data-gesture="wave"] .m-figure { animation: m-bob 0.9s ease-in-out infinite; }
+.mascot[data-gesture="wave"] .m-arm-right {
+  animation: m-wave 0.9s ease-in-out infinite;
+}
+.mascot[data-gesture="wave"] .m-head {
+  animation: m-nod 0.9s ease-in-out infinite;
+}
+.mascot[data-gesture="wave"] .m-figure {
+  animation: m-bob 0.9s ease-in-out infinite;
+}
 
 /* think: hand to chin, head tilted, eyes up, foot tapping */
-.mascot[data-gesture="think"] .m-arm-left { transform: rotate(-150deg) translateY(4px); }
-.mascot[data-gesture="think"] .m-head { transform: rotate(-8deg); }
-.mascot[data-gesture="think"] .m-eyes { animation: none; transform: translate(2px, -2px); }
-.mascot[data-gesture="think"] .m-antenna-tip { animation: m-glow 0.5s ease-in-out infinite; }
-.mascot[data-gesture="think"] .m-leg-right { animation: m-tap 0.5s ease-in-out infinite alternate; }
+.mascot[data-gesture="think"] .m-arm-left {
+  transform: rotate(-150deg) translateY(4px);
+}
+.mascot[data-gesture="think"] .m-head {
+  transform: rotate(-8deg);
+}
+.mascot[data-gesture="think"] .m-eyes {
+  animation: none;
+  transform: translate(2px, -2px);
+}
+.mascot[data-gesture="think"] .m-antenna-tip {
+  animation: m-glow 0.5s ease-in-out infinite;
+}
+.mascot[data-gesture="think"] .m-leg-right {
+  animation: m-tap 0.5s ease-in-out infinite alternate;
+}
 
 /* talk: mouth moves, explaining hand gesture */
-.mascot[data-gesture="talk"] .m-smile { opacity: 0; }
-.mascot[data-gesture="talk"] .m-mouth { opacity: 1; animation: m-talk 0.22s ease-in-out infinite alternate; }
-.mascot[data-gesture="talk"] .m-arm-right { animation: m-explain 0.8s ease-in-out infinite alternate; }
-.mascot[data-gesture="talk"] .m-arm-left { animation: m-sway-l 0.8s ease-in-out infinite; }
-.mascot[data-gesture="talk"] .m-head { animation: m-nod 0.8s ease-in-out infinite; }
+.mascot[data-gesture="talk"] .m-smile {
+  opacity: 0;
+}
+.mascot[data-gesture="talk"] .m-mouth {
+  opacity: 1;
+  animation: m-talk 0.22s ease-in-out infinite alternate;
+}
+.mascot[data-gesture="talk"] .m-arm-right {
+  animation: m-explain 0.8s ease-in-out infinite alternate;
+}
+.mascot[data-gesture="talk"] .m-arm-left {
+  animation: m-sway-l 0.8s ease-in-out infinite;
+}
+.mascot[data-gesture="talk"] .m-head {
+  animation: m-nod 0.8s ease-in-out infinite;
+}
 
 /* cheer: jump with both arms up */
-.mascot[data-gesture="cheer"] .m-figure { animation: m-jump 0.6s ease-in-out infinite; }
-.mascot[data-gesture="cheer"] .m-arm-left { animation: m-cheer-l 0.3s ease-in-out infinite alternate; }
-.mascot[data-gesture="cheer"] .m-arm-right { animation: m-cheer-r 0.3s ease-in-out infinite alternate; }
-.mascot[data-gesture="cheer"] .m-leg-left { transform: rotate(10deg); }
-.mascot[data-gesture="cheer"] .m-leg-right { transform: rotate(-10deg); }
+.mascot[data-gesture="cheer"] .m-figure {
+  animation: m-jump 0.6s ease-in-out infinite;
+}
+.mascot[data-gesture="cheer"] .m-arm-left {
+  animation: m-cheer-l 0.3s ease-in-out infinite alternate;
+}
+.mascot[data-gesture="cheer"] .m-arm-right {
+  animation: m-cheer-r 0.3s ease-in-out infinite alternate;
+}
+.mascot[data-gesture="cheer"] .m-leg-left {
+  transform: rotate(10deg);
+}
+.mascot[data-gesture="cheer"] .m-leg-right {
+  transform: rotate(-10deg);
+}
 
-@keyframes m-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
-@keyframes m-glow { 50% { opacity: 0.45; } }
-@keyframes m-bob { 50% { transform: translateY(-3px); } }
-@keyframes m-tilt { 0%, 100% { transform: rotate(0); } 30% { transform: rotate(4deg); } 70% { transform: rotate(-4deg); } }
-@keyframes m-nod { 50% { transform: rotate(5deg); } }
-@keyframes m-sway-l { 50% { transform: rotate(8deg); } }
-@keyframes m-sway-r { 50% { transform: rotate(-8deg); } }
-@keyframes m-step { from { transform: rotate(-18deg); } to { transform: rotate(18deg); } }
-@keyframes m-tap { from { transform: rotate(0); } to { transform: rotate(-10deg); } }
-@keyframes m-walk-in { from { transform: translateX(70px); opacity: 0; } 25% { opacity: 1; } to { transform: translateX(0); } }
-@keyframes m-wave { 0%, 100% { transform: rotate(-150deg); } 50% { transform: rotate(-115deg); } }
-@keyframes m-explain { from { transform: rotate(-35deg); } to { transform: rotate(-70deg); } }
-@keyframes m-talk { from { transform: scaleY(0.35); } to { transform: scaleY(1.1); } }
-@keyframes m-jump { 0%, 100% { transform: translateY(0); } 45% { transform: translateY(-12px); } }
-@keyframes m-cheer-l { from { transform: rotate(140deg); } to { transform: rotate(165deg); } }
-@keyframes m-cheer-r { from { transform: rotate(-140deg); } to { transform: rotate(-165deg); } }
-@keyframes chat-pop { from { opacity: 0; transform: translateY(8px) scale(0.96); } to { opacity: 1; transform: none; } }
-@keyframes chat-dot { 0%, 80%, 100% { transform: translateY(0); opacity: 0.4; } 40% { transform: translateY(-4px); opacity: 1; } }
+@keyframes m-blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.1);
+  }
+}
+@keyframes m-glow {
+  50% {
+    opacity: 0.45;
+  }
+}
+@keyframes m-bob {
+  50% {
+    transform: translateY(-3px);
+  }
+}
+@keyframes m-tilt {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  30% {
+    transform: rotate(4deg);
+  }
+  70% {
+    transform: rotate(-4deg);
+  }
+}
+@keyframes m-nod {
+  50% {
+    transform: rotate(5deg);
+  }
+}
+@keyframes m-sway-l {
+  50% {
+    transform: rotate(8deg);
+  }
+}
+@keyframes m-sway-r {
+  50% {
+    transform: rotate(-8deg);
+  }
+}
+@keyframes m-step {
+  from {
+    transform: rotate(-18deg);
+  }
+  to {
+    transform: rotate(18deg);
+  }
+}
+@keyframes m-tap {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(-10deg);
+  }
+}
+@keyframes m-walk-in {
+  from {
+    transform: translateX(70px);
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes m-wave {
+  0%,
+  100% {
+    transform: rotate(-150deg);
+  }
+  50% {
+    transform: rotate(-115deg);
+  }
+}
+@keyframes m-explain {
+  from {
+    transform: rotate(-35deg);
+  }
+  to {
+    transform: rotate(-70deg);
+  }
+}
+@keyframes m-talk {
+  from {
+    transform: scaleY(0.35);
+  }
+  to {
+    transform: scaleY(1.1);
+  }
+}
+@keyframes m-jump {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  45% {
+    transform: translateY(-12px);
+  }
+}
+@keyframes m-cheer-l {
+  from {
+    transform: rotate(140deg);
+  }
+  to {
+    transform: rotate(165deg);
+  }
+}
+@keyframes m-cheer-r {
+  from {
+    transform: rotate(-140deg);
+  }
+  to {
+    transform: rotate(-165deg);
+  }
+}
+@keyframes chat-pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes chat-dot {
+  0%,
+  80%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  40% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
 
 /* Chat panel */
 .chat-panel {
@@ -368,7 +621,7 @@
 }
 .chat-user {
   align-self: flex-end;
-  background: var(--school-accent, #4c3bd2);
+  background: var(--t-1, #4c3bd2);
   color: #fff;
   border-bottom-right-radius: 4px;
 }
@@ -420,8 +673,12 @@
   background: #8b84b8;
   animation: chat-dot 1s infinite;
 }
-.chat-typing span:nth-child(2) { animation-delay: 0.15s; }
-.chat-typing span:nth-child(3) { animation-delay: 0.3s; }
+.chat-typing span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.chat-typing span:nth-child(3) {
+  animation-delay: 0.3s;
+}
 .chat-chips {
   display: flex;
   gap: 0.35rem;

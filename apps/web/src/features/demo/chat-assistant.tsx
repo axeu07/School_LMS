@@ -48,13 +48,30 @@ export function Mascot({ gesture }: { gesture: Gesture }) {
         {/* body */}
         <rect className="m-body" x="32" y="64" width="56" height="46" rx="16" />
         <rect className="m-belly" x="44" y="74" width="32" height="22" rx="8" />
-        <path className="m-badge" d="M60 78 l3 6 6 1 -4.5 4 1 6 -5.5 -3 -5.5 3 1 -6 -4.5 -4 6 -1z" />
+        <path
+          className="m-badge"
+          d="M60 78 l3 6 6 1 -4.5 4 1 6 -5.5 -3 -5.5 3 1 -6 -4.5 -4 6 -1z"
+        />
         {/* head */}
         <g className="m-head">
           <line className="m-antenna" x1="60" y1="14" x2="60" y2="4" />
           <circle className="m-antenna-tip" cx="60" cy="4" r="4" />
-          <rect className="m-skull" x="28" y="12" width="64" height="50" rx="22" />
-          <rect className="m-face" x="35" y="20" width="50" height="34" rx="15" />
+          <rect
+            className="m-skull"
+            x="28"
+            y="12"
+            width="64"
+            height="50"
+            rx="22"
+          />
+          <rect
+            className="m-face"
+            x="35"
+            y="20"
+            width="50"
+            height="34"
+            rx="15"
+          />
           <ellipse className="m-cheek" cx="42" cy="44" rx="4" ry="2.5" />
           <ellipse className="m-cheek" cx="78" cy="44" rx="4" ry="2.5" />
           <g className="m-eyes">
@@ -73,15 +90,40 @@ export function Mascot({ gesture }: { gesture: Gesture }) {
 
 /* ---------- Role-aware demo answers ---------- */
 
-type Message = { id: number; from: "bot" | "user"; text: string; rows?: DemoRow[] };
+type Message = {
+  id: number;
+  from: "bot" | "user";
+  text: string;
+  rows?: DemoRow[];
+};
 type Reply = { text: string; rows?: DemoRow[]; gesture?: Gesture };
 
 const suggestions: Record<DemoRole, string[]> = {
-  "super-admin": ["Platform summary", "Schools on trial", "Recent activity", "What can you do?"],
-  "school-admin": ["Today's summary", "New leads", "Interviews this week", "Upcoming deals"],
-  teacher: ["My schedule", "Assignments to review", "Student doubts", "Upcoming assessments"],
+  "super-admin": [
+    "Platform summary",
+    "Schools on trial",
+    "Recent activity",
+    "What can you do?",
+  ],
+  "school-admin": [
+    "Today's summary",
+    "New leads",
+    "Interviews this week",
+    "Upcoming deals",
+  ],
+  teacher: [
+    "My schedule",
+    "Assignments to review",
+    "Student doubts",
+    "Upcoming assessments",
+  ],
   student: ["Pending homework", "My attendance", "My timetable", "Study tip"],
-  parent: ["Child's attendance", "Homework due", "Upcoming exams", "Announcements"],
+  parent: [
+    "Child's attendance",
+    "Homework due",
+    "Upcoming exams",
+    "Announcements",
+  ],
 };
 
 const studyTips = [
@@ -96,79 +138,202 @@ const has = (text: string, ...words: string[]) =>
 function answer(input: string, ctx: DemoContextValue): Reply {
   const text = input.toLowerCase();
   const { role, data, school, schools } = ctx;
-  const stat = (label: string) => data.stats.find((item) => item.label === label);
+  const stat = (label: string) =>
+    data.stats.find((item) => item.label === label);
   const panel = (id: string) => data.panels.find((item) => item.id === id);
-  const rowsOf = (id: string, limit = 4) => panel(id)?.rows.slice(0, limit) ?? [];
+  const rowsOf = (id: string, limit = 4) =>
+    panel(id)?.rows.slice(0, limit) ?? [];
   const who = role === "parent" ? (data.child?.name ?? "your child") : "you";
 
   if (has(text, "hello", "hi", "hey", "namaste"))
-    return { text: "Hello " + data.person.name.split(" ")[0] + "! 👋 Ask me anything about " + (role === "super-admin" ? "the platform" : school.name) + ".", gesture: "wave" };
+    return {
+      text:
+        "Hello " +
+        data.person.name.split(" ")[0] +
+        "! 👋 Ask me anything about " +
+        (role === "super-admin" ? "the platform" : school.name) +
+        ".",
+      gesture: "wave",
+    };
   if (has(text, "what can you do", "help"))
     return {
-      text: "I can answer quick questions using your " + ctx.profile.label + " workspace. Try one of these:",
-      rows: suggestions[role].slice(0, 3).map((item) => ({ title: item, detail: "Tap a suggestion below or type it" })),
+      text:
+        "I can answer quick questions using your " +
+        ctx.profile.label +
+        " workspace. Try one of these:",
+      rows: suggestions[role].slice(0, 3).map((item) => ({
+        title: item,
+        detail: "Tap a suggestion below or type it",
+      })),
       gesture: "cheer",
     };
   if (has(text, "thank"))
-    return { text: "You're welcome! Happy to help any time. 🎉", gesture: "cheer" };
+    return {
+      text: "You're welcome! Happy to help any time. 🎉",
+      gesture: "cheer",
+    };
 
   if (role === "super-admin") {
     if (has(text, "trial"))
-      return { text: "Schools currently on a trial plan:", rows: schools.filter((item) => item.status === "Trial").map((item) => ({ title: item.name, detail: item.location + " · " + item.students + " students", meta: item.plan })) };
+      return {
+        text: "Schools currently on a trial plan:",
+        rows: schools
+          .filter((item) => item.status === "Trial")
+          .map((item) => ({
+            title: item.name,
+            detail: item.location + " · " + item.students + " students",
+            meta: item.plan,
+          })),
+      };
     if (has(text, "activity", "recent"))
       return { text: "Latest platform activity:", rows: rowsOf("activity") };
     if (has(text, "subscription", "plan", "billing"))
       return { text: "Subscription overview:", rows: rowsOf("subscriptions") };
     if (has(text, "summary", "platform", "school"))
-      return { text: "Here's the platform at a glance:", rows: data.stats.map((item) => ({ title: item.label, detail: item.note, meta: item.value })) };
+      return {
+        text: "Here's the platform at a glance:",
+        rows: data.stats.map((item) => ({
+          title: item.label,
+          detail: item.note,
+          meta: item.value,
+        })),
+      };
   }
 
   if (role === "school-admin") {
-    if (has(text, "lead", "enquir", "admission", "instagram", "facebook", "meta")) {
+    if (
+      has(text, "lead", "enquir", "admission", "instagram", "facebook", "meta")
+    ) {
       const fresh = seedLeads.filter((lead) => lead.stage === "New");
-      return { text: fresh.length + " new leads need a first call. Newest first:", rows: fresh.map((lead) => ({ title: lead.name + " · " + lead.grade, detail: lead.source + " · " + lead.campaign, meta: "Follow up " + lead.followUp })) };
+      return {
+        text: fresh.length + " new leads need a first call. Newest first:",
+        rows: fresh.map((lead) => ({
+          title: lead.name + " · " + lead.grade,
+          detail: lead.source + " · " + lead.campaign,
+          meta: "Follow up " + lead.followUp,
+        })),
+      };
     }
     if (has(text, "interview", "recruit", "hiring", "candidate")) {
       const upcoming = seedCandidates.filter((item) => item.interview);
-      return { text: upcoming.length + " interviews are booked this week:", rows: upcoming.map((item) => ({ title: item.name, detail: item.role, meta: item.interview!.date + " " + item.interview!.time })) };
+      return {
+        text: upcoming.length + " interviews are booked this week:",
+        rows: upcoming.map((item) => ({
+          title: item.name,
+          detail: item.role,
+          meta: item.interview!.date + " " + item.interview!.time,
+        })),
+      };
     }
     if (has(text, "deal", "collab", "partner", "sponsor"))
-      return { text: "Deals closing soon:", rows: deals.slice(0, 4).map((deal) => ({ title: deal.partner, detail: deal.kind + " · " + deal.stage, meta: deal.probability + "%" })) };
+      return {
+        text: "Deals closing soon:",
+        rows: deals.slice(0, 4).map((deal) => ({
+          title: deal.partner,
+          detail: deal.kind + " · " + deal.stage,
+          meta: deal.probability + "%",
+        })),
+      };
     if (has(text, "event"))
-      return { text: "Upcoming events at " + school.name + ":", rows: rowsOf("events") };
-    if (has(text, "summary", "today", "overview", "attendance", "student", "teacher"))
-      return { text: "Today at " + school.name + ":", rows: data.stats.map((item) => ({ title: item.label, detail: item.note, meta: item.value })) };
+      return {
+        text: "Upcoming events at " + school.name + ":",
+        rows: rowsOf("events"),
+      };
+    if (
+      has(
+        text,
+        "summary",
+        "today",
+        "overview",
+        "attendance",
+        "student",
+        "teacher",
+      )
+    )
+      return {
+        text: "Today at " + school.name + ":",
+        rows: data.stats.map((item) => ({
+          title: item.label,
+          detail: item.note,
+          meta: item.value,
+        })),
+      };
   }
 
   if (has(text, "attendance", "present", "absent")) {
     const value = stat("Attendance") ?? stat("Recorded attendance");
     return value
-      ? { text: (role === "parent" ? data.child?.name + "'s" : "Your") + " recorded attendance is " + value.value + ". " + (parseInt(value.value) >= 85 ? "Great consistency — keep it up! ✅" : "A little below the 85% target — let's aim for full weeks. 💪"), gesture: parseInt(value.value) >= 85 ? "cheer" : "talk" }
+      ? {
+          text:
+            (role === "parent" ? data.child?.name + "'s" : "Your") +
+            " recorded attendance is " +
+            value.value +
+            ". " +
+            (parseInt(value.value) >= 85
+              ? "Great consistency — keep it up! ✅"
+              : "A little below the 85% target — let's aim for full weeks. 💪"),
+          gesture: parseInt(value.value) >= 85 ? "cheer" : "talk",
+        }
       : { text: "No attendance has been recorded yet." };
   }
   if (has(text, "homework", "assignment", "review", "due", "pending")) {
     const id = role === "teacher" ? "assignments" : "homework";
     const rows = rowsOf(id);
     return rows.length
-      ? { text: role === "teacher" ? "Submissions waiting for your review:" : "Open homework for " + who + ":", rows }
-      : { text: role === "teacher" ? "Nothing to review right now. 🎉" : "No pending homework — all caught up! 🎉", gesture: "cheer" };
+      ? {
+          text:
+            role === "teacher"
+              ? "Submissions waiting for your review:"
+              : "Open homework for " + who + ":",
+          rows,
+        }
+      : {
+          text:
+            role === "teacher"
+              ? "Nothing to review right now. 🎉"
+              : "No pending homework — all caught up! 🎉",
+          gesture: "cheer",
+        };
   }
   if (has(text, "schedule", "timetable", "class", "lesson", "next")) {
     const rows = rowsOf("schedule", 5);
-    return rows.length ? { text: "Here's " + (role === "parent" ? who + "'s" : "your") + " weekly timetable:", rows } : { text: "No sessions on the timetable yet." };
+    return rows.length
+      ? {
+          text:
+            "Here's " +
+            (role === "parent" ? who + "'s" : "your") +
+            " weekly timetable:",
+          rows,
+        }
+      : { text: "No sessions on the timetable yet." };
   }
   if (has(text, "doubt", "question"))
-    return rowsOf("doubts").length ? { text: "Most recent anonymous doubts:", rows: rowsOf("doubts") } : { text: "No new doubts from your classes." };
+    return rowsOf("doubts").length
+      ? { text: "Most recent anonymous doubts:", rows: rowsOf("doubts") }
+      : { text: "No new doubts from your classes." };
   if (has(text, "exam", "quiz", "test", "assessment")) {
-    const rows = [...rowsOf("assessments"), ...rowsOf("quizzes"), ...rowsOf("exams")];
-    return rows.length ? { text: "Upcoming assessments:", rows } : { text: "No assessments are scheduled right now." };
+    const rows = [
+      ...rowsOf("assessments"),
+      ...rowsOf("quizzes"),
+      ...rowsOf("exams"),
+    ];
+    return rows.length
+      ? { text: "Upcoming assessments:", rows }
+      : { text: "No assessments are scheduled right now." };
   }
   if (has(text, "announcement", "notice", "news"))
-    return rowsOf("announcements", 3).length ? { text: "Latest announcements:", rows: rowsOf("announcements", 3) } : { text: "No announcements yet." };
+    return rowsOf("announcements", 3).length
+      ? { text: "Latest announcements:", rows: rowsOf("announcements", 3) }
+      : { text: "No announcements yet." };
   if (has(text, "tip", "study", "focus", "motivat"))
-    return { text: studyTips[Math.floor(Math.random() * studyTips.length)], gesture: "cheer" };
+    return {
+      text: studyTips[Math.floor(Math.random() * studyTips.length)],
+      gesture: "cheer",
+    };
   if (has(text, "result", "grade", "mark", "score"))
-    return rowsOf("assignment-results").length ? { text: "Recent graded work:", rows: rowsOf("assignment-results") } : { text: "No graded work yet." };
+    return rowsOf("assignment-results").length
+      ? { text: "Recent graded work:", rows: rowsOf("assignment-results") }
+      : { text: "No graded work yet." };
 
   return {
     text: "I'm a demo assistant, so I only know this workspace's sample data. Try one of the suggestions below. 🙂",
@@ -191,7 +356,12 @@ export function ChatAssistant() {
     {
       id: 0,
       from: "bot",
-      text: "Hi " + firstName + "! I'm Orbi, your " + profile.label + " assistant. What would you like to know?",
+      text:
+        "Hi " +
+        firstName +
+        "! I'm Orbi, your " +
+        profile.label +
+        " assistant. What would you like to know?",
     },
   ]);
   const timers = useRef<number[]>([]);
@@ -212,7 +382,10 @@ export function ChatAssistant() {
     later(() => setNudge(false), 9000);
     const interval = window.setInterval(() => {
       setGesture((current) => (current === "idle" ? "wave" : current));
-      later(() => setGesture((current) => (current === "wave" ? "idle" : current)), 1800);
+      later(
+        () => setGesture((current) => (current === "wave" ? "idle" : current)),
+        1800,
+      );
     }, 14000);
     const pending = timers.current;
     return () => {
@@ -223,22 +396,34 @@ export function ChatAssistant() {
   }, []);
 
   useEffect(() => {
-    log.current?.scrollTo({ top: log.current.scrollHeight, behavior: "smooth" });
+    log.current?.scrollTo({
+      top: log.current.scrollHeight,
+      behavior: "smooth",
+    });
   }, [messages, typing]);
 
   const ask = (question: string) => {
     const text = question.trim();
     if (!text || typing) return;
-    setMessages((current) => [...current, { id: nextId.current++, from: "user", text }]);
+    setMessages((current) => [
+      ...current,
+      { id: nextId.current++, from: "user", text },
+    ]);
     setDraft("");
     setTyping(true);
     setGesture("think");
     const reply = answer(text, ctx);
-    later(() => {
-      setTyping(false);
-      setMessages((current) => [...current, { id: nextId.current++, from: "bot", ...reply }]);
-      play(reply.gesture ?? "talk", 2000);
-    }, 900 + Math.min(900, reply.text.length * 8));
+    later(
+      () => {
+        setTyping(false);
+        setMessages((current) => [
+          ...current,
+          { id: nextId.current++, from: "bot", ...reply },
+        ]);
+        play(reply.gesture ?? "talk", 2000);
+      },
+      900 + Math.min(900, reply.text.length * 8),
+    );
   };
 
   const toggle = () => {
@@ -253,15 +438,25 @@ export function ChatAssistant() {
         <section className="chat-panel" aria-label="Orbi assistant">
           <header>
             <span className="chat-avatar">
-              <Mascot gesture={typing ? "think" : gesture === "walk" ? "idle" : gesture} />
+              <Mascot
+                gesture={
+                  typing ? "think" : gesture === "walk" ? "idle" : gesture
+                }
+              />
             </span>
             <div>
               <strong>Orbi</strong>
               <small>
-                <i className="chat-online" /> {profile.label} assistant · demo data
+                <i className="chat-online" /> {profile.label} assistant · demo
+                data
               </small>
             </div>
-            <button type="button" className="icon-button" aria-label="Close assistant" onClick={toggle}>
+            <button
+              type="button"
+              className="icon-button"
+              aria-label="Close assistant"
+              onClick={toggle}
+            >
               <X size={18} aria-hidden="true" />
             </button>
           </header>
@@ -285,7 +480,10 @@ export function ChatAssistant() {
               </div>
             ))}
             {typing && (
-              <div className="chat-msg chat-bot chat-typing" aria-label="Orbi is typing">
+              <div
+                className="chat-msg chat-bot chat-typing"
+                aria-label="Orbi is typing"
+              >
                 <span />
                 <span />
                 <span />
@@ -294,7 +492,12 @@ export function ChatAssistant() {
           </div>
           <div className="chat-chips">
             {suggestions[role].map((item) => (
-              <button key={item} type="button" onClick={() => ask(item)} disabled={typing}>
+              <button
+                key={item}
+                type="button"
+                onClick={() => ask(item)}
+                disabled={typing}
+              >
                 {item}
               </button>
             ))}
@@ -313,7 +516,12 @@ export function ChatAssistant() {
               placeholder="Ask Orbi…"
               aria-label="Message Orbi"
             />
-            <button type="submit" className="button button-primary" aria-label="Send" disabled={!draft.trim() || typing}>
+            <button
+              type="submit"
+              className="button button-primary"
+              aria-label="Send"
+              disabled={!draft.trim() || typing}
+            >
               <Send size={16} aria-hidden="true" />
             </button>
           </form>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { X } from "lucide-react";
 import type { DemoRole } from "@/types/demo";
 import { ChatAssistant } from "./chat-assistant";
@@ -8,6 +8,12 @@ import { DemoProvider, useDemo } from "./demo-context";
 import { DashboardHeader, Sidebar } from "./dashboard-navigation";
 import { EmptyState } from "./dashboard-widgets";
 import { sidebarPreferenceKey, usePreference } from "./preferences";
+import { syncReminders } from "@/services/calendar-model";
+import { updateCommunicationState } from "@/services/communication-store";
+import { setAuditActor } from "@/services/audit-store";
+import { useSchoolBranding } from "@/services/branding-store";
+import { brandStyle } from "../brand/school-brand";
+import { SessionGuard } from "./session-guard";
 
 /** Persistent layout: stays mounted while nested role routes change. */
 export function RoleShell({
@@ -32,7 +38,21 @@ export function RoleShell({
 }
 
 function Shell({ role, children }: { role: DemoRole; children: ReactNode }) {
-  const { schoolId, scopeKey } = useDemo();
+  const { schoolId, scopeKey, records, data } = useDemo();
+  const branding = useSchoolBranding(schoolId);
+  const personName = data.person.name;
+  // Every saved change is attributed to whoever is using this workspace.
+  useEffect(() => {
+    setAuditActor({ role, name: personName });
+  }, [role, personName]);
+  // Upcoming exam/PTM reminders are generated when the demo opens (or the
+  // school changes) — there is no background scheduler in the browser demo.
+  useEffect(() => {
+    if (role === "super-admin") return;
+    updateCommunicationState((state) =>
+      syncReminders(state, records, schoolId, new Date()),
+    );
+  }, [role, schoolId, records]);
   const [collapsedPreference, setCollapsed] = usePreference(
     sidebarPreferenceKey,
     "false",
@@ -42,9 +62,12 @@ function Shell({ role, children }: { role: DemoRole; children: ReactNode }) {
   return (
     <div
       className="app-shell"
+      data-role={role}
       data-school={schoolId}
       data-collapsed={collapsed ? "true" : undefined}
+      style={role === "super-admin" ? undefined : brandStyle(branding)}
     >
+      <SessionGuard role={role} school={schoolId} />
       <a className="skip-link" href="#main-content">
         Skip to page content
       </a>

@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: Props) {
       entry.title +
       " · " +
       roleProfiles[role as DemoRole].label +
-      " | School LMS",
+      " | ACADMAXIS",
     description: entry.description,
   };
 }

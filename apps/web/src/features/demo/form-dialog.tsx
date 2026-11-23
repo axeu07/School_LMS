@@ -13,6 +13,7 @@ export type FormField = {
     | "number"
     | "date"
     | "datetime-local"
+    | "time"
     | "url"
     | "select"
     | "checkbox"

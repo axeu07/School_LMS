@@ -1,0 +1,925 @@
+/* ==========================================================================
+   Role themes
+   Each workspace gets its own personality through a small set of tokens:
+     student            → playful, colourful, bouncy ("candy playground")
+     teacher / admin    → calm, soothing, professional (sea-glass teal)
+     parent             → mature and calm (navy, ivory, serif headings)
+     super-admin        → the original indigo brand
+   Components read the --t-* tokens, so a theme is just a block of variables
+   plus a few personality touches further down.
+   ========================================================================== */
+
+/* ---------- Default tokens (indigo brand, also used on marketing pages) --- */
+:root {
+  --t-1: #4c3bd2;
+  --t-1-strong: #3929af;
+  --t-1-light: #7a69f0;
+  --t-ink: #2f2390;
+  --t-soft: #eeebff;
+  --t-soft-2: #f5f3ff;
+  --t-line: #d6cdfc;
+  --t-glow: 76 59 210;
+  --t-grad: linear-gradient(135deg, #6152e6, #4232c4 55%, #3a29b0);
+  --t-grad-hover: linear-gradient(135deg, #5545de, #3a2ab6 55%, #31219f);
+  --t-nav-active: linear-gradient(100deg, #ebe7ff, #f4f1ff 70%, #f8f6ff00);
+  --t-meter: linear-gradient(90deg, #8b7cf6, #5b49e0 60%, #4532c8);
+  --t-bar-1: #d6cefe;
+  --t-bar-2: #b9adfb;
+  --t-bg: #f6f7fc;
+  --t-a1: #c9bfff59;
+  --t-a2: #b7dcff55;
+  --t-a3: #c4f1e64d;
+  --t-a4: #ffe3c447;
+  --t-hero: linear-gradient(120deg, #ffffff 0%, #f3f0ff 55%, #e9f1ff 100%);
+  --t-drift: 38s;
+  --tilt-max: 7;
+  --tint0-fg: #503cc8;
+  --tint0-bg: #eeeaff;
+  --tint1-fg: #2054a0;
+  --tint1-bg: #e7f0ff;
+  --tint2-fg: #11665c;
+  --tint2-bg: #ddf5ef;
+  --tint3-fg: #9a4c14;
+  --tint3-bg: #fff0de;
+}
+
+/* ---------- Student: playful & bright ---------- */
+.app-shell[data-role="student"] {
+  --t-1: #7c3aed;
+  --t-1-strong: #5b21b6;
+  --t-1-light: #a855f7;
+  --t-ink: #5b21b6;
+  --t-soft: #f3e8ff;
+  --t-soft-2: #faf5ff;
+  --t-line: #e4cffe;
+  --t-glow: 124 58 237;
+  --t-grad: linear-gradient(135deg, #a855f7, #7c3aed 55%, #db2777);
+  --t-grad-hover: linear-gradient(135deg, #9333ea, #6d28d9 55%, #be185d);
+  --t-nav-active: linear-gradient(110deg, #8b5cf6, #a855f7 55%, #ec4899);
+  --t-meter: linear-gradient(90deg, #22d3ee, #a855f7 55%, #ec4899);
+  --t-bar-1: #f5d0fe;
+  --t-bar-2: #d8b4fe;
+  --t-bg: #fffaf2;
+  --t-a1: #ffc8e47a;
+  --t-a2: #b9e3ff80;
+  --t-a3: #c9f7d870;
+  --t-a4: #fff0a87a;
+  --t-hero: linear-gradient(120deg, #fff6cf 0%, #ffe2f1 45%, #dff0ff 100%);
+  --t-drift: 26s;
+  --tilt-max: 10;
+  --tint0-fg: #7c3aed;
+  --tint0-bg: #f1e6ff;
+  --tint1-fg: #0284c7;
+  --tint1-bg: #dff3ff;
+  --tint2-fg: #059669;
+  --tint2-bg: #d7fbe9;
+  --tint3-fg: #ea580c;
+  --tint3-bg: #ffecd9;
+  --primary: var(--t-1);
+  --accent: var(--t-soft);
+  --border: #efe4f7;
+  --radius: 1.35rem;
+  font-family:
+    var(--font-nunito), "Segoe UI Rounded", "Arial Rounded MT Bold",
+    var(--ui-font);
+}
+
+/* ---------- Teacher & school admin: calm, soothing, professional ---------- */
+.app-shell[data-role="teacher"],
+.app-shell[data-role="school-admin"] {
+  --t-1: #0f766e;
+  --t-1-strong: #115e59;
+  --t-1-light: #2a9d92;
+  --t-ink: #134e4a;
+  --t-soft: #e3f3ef;
+  --t-soft-2: #f0f8f6;
+  --t-line: #bfe0d9;
+  --t-glow: 15 118 110;
+  --t-grad: linear-gradient(135deg, #1b8f85, #0f766e 55%, #0e6a63);
+  --t-grad-hover: linear-gradient(135deg, #15807a, #0d6861 55%, #0b5b55);
+  --t-nav-active: linear-gradient(100deg, #dff1ed, #eef8f5 70%, #f4faf800);
+  --t-meter: linear-gradient(90deg, #7cc9bd, #2a9d92 60%, #0f766e);
+  --t-bar-1: #d3ece6;
+  --t-bar-2: #a9d9cf;
+  --t-bg: #f3f7f6;
+  --t-a1: #cfe9e266;
+  --t-a2: #d6e5f266;
+  --t-a3: #e2efe55c;
+  --t-a4: #e5eef459;
+  --t-hero: linear-gradient(125deg, #ffffff 0%, #eef8f5 55%, #e6f1f5 100%);
+  --t-drift: 60s;
+  --tilt-max: 3.5;
+  --tint0-fg: #0f766e;
+  --tint0-bg: #e0f2ee;
+  --tint1-fg: #33658a;
+  --tint1-bg: #e4eef6;
+  --tint2-fg: #4d7c5a;
+  --tint2-bg: #e7f1e9;
+  --tint3-fg: #8f6229;
+  --tint3-bg: #f6eee1;
+  --primary: var(--t-1);
+  --accent: var(--t-soft);
+  --border: #dfe9e6;
+  --muted: #4d5f5c;
+  --radius: 0.9rem;
+}
+/* School admin: same calm family, a touch deeper (ocean) for authority. */
+.app-shell[data-role="school-admin"] {
+  --t-1: #1f6383;
+  --t-1-strong: #174d67;
+  --t-1-light: #3a87a8;
+  --t-ink: #173f54;
+  --t-soft: #e3eff5;
+  --t-soft-2: #f0f6f9;
+  --t-line: #c3dbe6;
+  --t-glow: 31 99 131;
+  --t-grad: linear-gradient(135deg, #2c7a9c, #1f6383 55%, #1a5874);
+  --t-grad-hover: linear-gradient(135deg, #256c8b, #195571 55%, #154a62);
+  --t-nav-active: linear-gradient(100deg, #e0edf4, #eef5f9 70%, #f4f8fb00);
+  --t-meter: linear-gradient(90deg, #8ec3d6, #3a87a8 60%, #1f6383);
+  --t-bar-1: #d6e7ef;
+  --t-bar-2: #aecfdf;
+  --tint0-fg: #1f6383;
+  --tint0-bg: #e2eef5;
+  --tint1-fg: #0f766e;
+  --tint1-bg: #e0f2ee;
+}
+
+/* ---------- Parent: mature & calm ---------- */
+.app-shell[data-role="parent"] {
+  --t-1: #2f4a6d;
+  --t-1-strong: #22384f;
+  --t-1-light: #4f6f96;
+  --t-ink: #1f3048;
+  --t-soft: #eaeef4;
+  --t-soft-2: #f4f5f7;
+  --t-line: #d3dbe6;
+  --t-glow: 47 74 109;
+  --t-grad: linear-gradient(135deg, #3b5a80, #2f4a6d 55%, #283f5d);
+  --t-grad-hover: linear-gradient(135deg, #324f73, #263d5a 55%, #20344f);
+  --t-nav-active: linear-gradient(100deg, #e8ecf2, #f3f4f6 70%, #f7f6f300);
+  --t-meter: linear-gradient(90deg, #c7a77c, #8d8a83 50%, #2f4a6d);
+  --t-bar-1: #e4e8ee;
+  --t-bar-2: #c6d0dd;
+  --t-bg: #f7f5f0;
+  --t-a1: #eadfcd66;
+  --t-a2: #dfe6ef66;
+  --t-a3: #e6e2d85c;
+  --t-a4: #e3e9e159;
+  --t-hero: linear-gradient(125deg, #fffdf8 0%, #f6f1e7 60%, #eef1f4 100%);
+  --t-drift: 75s;
+  --tilt-max: 2;
+  --tint0-fg: #2f4a6d;
+  --tint0-bg: #e7ecf2;
+  --tint1-fg: #5f6b3a;
+  --tint1-bg: #eef0e1;
+  --tint2-fg: #9a5b3c;
+  --tint2-bg: #f5e9e0;
+  --tint3-fg: #6b4a6b;
+  --tint3-bg: #f1e7f0;
+  --primary: var(--t-1);
+  --accent: var(--t-soft);
+  --border: #e6e0d4;
+  --muted: #5a5d63;
+  --radius: 0.75rem;
+}
+
+/* ==========================================================================
+   Components read the tokens (replaces hard-coded brand purples)
+   ========================================================================== */
+.app-shell :focus-visible {
+  outline-color: var(--t-1);
+}
+.app-shell .brand-mark {
+  background: var(--t-grad);
+}
+.app-shell .nav-link:hover {
+  background: var(--t-soft-2);
+  color: var(--t-ink);
+}
+.app-shell .button-outline {
+  color: var(--t-ink);
+}
+.app-shell .button-outline:hover,
+.app-shell .button-outline[aria-pressed="true"] {
+  border-color: var(--t-line);
+  background: var(--t-soft-2);
+}
+.app-shell .demo-pill {
+  color: var(--t-ink);
+  background: var(--t-soft);
+}
+.app-shell .demo-pill > span {
+  background: var(--t-1);
+}
+.app-shell .person-avatar {
+  color: #fff;
+  background: var(--t-grad);
+  box-shadow: 0 4px 10px -4px rgb(var(--t-glow) / 0.6);
+}
+.app-shell .tint-0 {
+  color: var(--tint0-fg);
+  background: var(--tint0-bg);
+}
+.app-shell .tint-1 {
+  color: var(--tint1-fg);
+  background: var(--tint1-bg);
+}
+.app-shell .tint-2 {
+  color: var(--tint2-fg);
+  background: var(--tint2-bg);
+}
+.app-shell .tint-3 {
+  color: var(--tint3-fg);
+  background: var(--tint3-bg);
+}
+.app-shell .segmented {
+  background: var(--t-soft-2);
+}
+.app-shell .segmented button[aria-pressed="true"] {
+  color: var(--t-1);
+}
+.app-shell .row-meta {
+  background: var(--t-soft);
+  color: var(--t-ink);
+}
+.app-shell progress {
+  accent-color: var(--t-1);
+}
+.app-shell .icon-button:hover,
+.app-shell .search-trigger:hover,
+.app-shell .profile-trigger:hover,
+.app-shell .cal-day-number:hover {
+  background: var(--t-soft-2);
+}
+.app-shell .action-card:hover,
+.app-shell .section-card.is-selected,
+.app-shell .vote-count[aria-pressed="true"],
+.app-shell .cal-week-day[data-selected] {
+  border-color: var(--t-line);
+}
+.app-shell .section-card.is-selected,
+.app-shell .question-nav button[aria-current="step"] {
+  box-shadow: 0 0 0 3px rgb(var(--t-glow) / 0.14);
+}
+.app-shell .cal-day[aria-selected="true"] {
+  background: var(--t-soft-2);
+  box-shadow: inset 0 0 0 2px var(--t-line);
+}
+.app-shell .cal-week-day[data-selected] {
+  background: var(--t-soft-2);
+}
+.app-shell .slot[data-state="yours"] {
+  border-color: var(--t-1-light);
+  background: var(--t-soft);
+}
+.app-shell .msg-own .msg-bubble {
+  background: var(--t-grad);
+}
+.app-shell .nav-group-toggle:hover {
+  background: var(--t-soft-2);
+}
+
+/* ==========================================================================
+   Accordion sidebar — one group open at a time, animated
+   ========================================================================== */
+.nav-group + .nav-group {
+  margin-top: 0.3rem;
+}
+.nav-group[data-single] + .nav-group {
+  margin-top: 0.6rem;
+}
+.nav-group-toggle {
+  gap: 0.45rem;
+  min-height: 34px;
+  padding: 0.4rem 0.65rem;
+  margin-bottom: 0;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+.nav-group-toggle > span:first-child {
+  margin-right: auto;
+}
+.nav-group-toggle[aria-expanded="true"],
+.nav-group-toggle[data-has-active] {
+  color: var(--t-ink);
+}
+.nav-group-toggle svg {
+  transition: transform 0.3s var(--ease-out);
+}
+.nav-group-count {
+  min-width: 1.35rem;
+  padding: 0.05rem 0.35rem;
+  border-radius: 999px;
+  background: var(--t-soft);
+  color: var(--t-ink);
+  font-size: 0.65rem;
+  letter-spacing: 0;
+  text-align: center;
+  animation: fade-in 0.25s ease-out;
+}
+.nav-group-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 0.38s var(--ease-out),
+    opacity 0.25s ease;
+}
+.nav-group[data-open] > .nav-group-panel {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.nav-group-panel > ul {
+  min-height: 0;
+  overflow: hidden;
+  /* Room inside the clip for the active marker and focus rings. */
+  margin: -4px -0.75rem;
+  padding: 4px 0.75rem;
+}
+.nav-group[data-open]:not([data-single]) > .nav-group-panel > ul {
+  padding-bottom: 0.4rem;
+}
+/* Items cascade in when a group opens. */
+.nav-group[data-open] > .nav-group-panel li {
+  animation: nav-item-in 0.35s var(--ease-out) backwards;
+}
+.nav-group[data-open] > .nav-group-panel li:nth-child(2) {
+  animation-delay: 0.03s;
+}
+.nav-group[data-open] > .nav-group-panel li:nth-child(3) {
+  animation-delay: 0.06s;
+}
+.nav-group[data-open] > .nav-group-panel li:nth-child(4) {
+  animation-delay: 0.09s;
+}
+.nav-group[data-open] > .nav-group-panel li:nth-child(5) {
+  animation-delay: 0.12s;
+}
+.nav-group[data-open] > .nav-group-panel li:nth-child(n + 6) {
+  animation-delay: 0.15s;
+}
+@keyframes nav-item-in {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+}
+
+/* ==========================================================================
+   Dashboard welcome banner
+   ========================================================================== */
+.page-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  align-items: center;
+  padding: clamp(1.1rem, 2.6vw, 1.9rem);
+  border: 1px solid var(--t-line);
+  border-radius: calc(var(--radius) + 6px);
+  background: var(--t-hero);
+  box-shadow: var(--shadow-rest);
+}
+.page-hero .page-header-copy {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-width: 40rem;
+}
+.page-hero .breadcrumbs {
+  order: -1;
+}
+.page-hero .hero-greeting {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.55rem;
+  color: var(--t-ink);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.page-hero h1 {
+  margin-top: 0.2rem;
+}
+.page-hero .page-actions {
+  position: relative;
+}
+.hero-art {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+.hero-art i {
+  position: absolute;
+  display: block;
+}
+
+/* Default / calm / parent art: soft concentric rings that slowly breathe. */
+.hero-art i:nth-child(-n + 3) {
+  right: -60px;
+  top: 50%;
+  width: 220px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid rgb(var(--t-glow) / 0.16);
+  translate: 0 -50%;
+  animation: ring-breathe 9s ease-in-out infinite;
+}
+.hero-art i:nth-child(2) {
+  width: 320px;
+  right: -110px;
+  animation-delay: -3s;
+}
+.hero-art i:nth-child(3) {
+  width: 430px;
+  right: -165px;
+  animation-delay: -6s;
+}
+.hero-art i:nth-child(4) {
+  right: 6%;
+  top: -40%;
+  width: 260px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgb(var(--t-glow) / 0.14),
+    transparent 70%
+  );
+  animation: orb-drift 14s ease-in-out infinite alternate;
+}
+.hero-art i:nth-child(5) {
+  left: 30%;
+  bottom: -60%;
+  width: 340px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffffb0, transparent 70%);
+  animation: orb-drift 18s ease-in-out infinite alternate-reverse;
+}
+@keyframes ring-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 0.45;
+  }
+}
+@keyframes orb-drift {
+  to {
+    transform: translate(-40px, 25px) scale(1.1);
+  }
+}
+
+/* ==========================================================================
+   Student personality — candy colours, chunky toy buttons, bouncy motion
+   ========================================================================== */
+.app-shell[data-role="student"] h1,
+.app-shell[data-role="student"] h2,
+.app-shell[data-role="student"] h3 {
+  letter-spacing: -0.01em;
+  font-weight: 850;
+}
+/* Confetti dots sprinkled over the ambient background */
+.app-shell[data-role="student"]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.55;
+  background-image:
+    radial-gradient(circle, #f472b6 1.6px, transparent 2.2px),
+    radial-gradient(circle, #60a5fa 1.6px, transparent 2.2px),
+    radial-gradient(circle, #facc15 1.8px, transparent 2.4px),
+    radial-gradient(circle, #34d399 1.4px, transparent 2px);
+  background-size:
+    190px 170px,
+    230px 210px,
+    260px 240px,
+    170px 200px;
+  background-position:
+    20px 30px,
+    120px 90px,
+    60px 160px,
+    150px 10px;
+  animation: confetti-float 40s linear infinite;
+}
+@keyframes confetti-float {
+  to {
+    background-position:
+      20px -140px,
+      120px -120px,
+      60px 400px,
+      150px -190px;
+  }
+}
+
+/* Sidebar: every icon gets its own colour; active item is a candy pill. */
+.app-shell[data-role="student"] .nav-group li:nth-child(5n + 1) .nav-link svg {
+  color: #8b5cf6;
+}
+.app-shell[data-role="student"] .nav-group li:nth-child(5n + 2) .nav-link svg {
+  color: #0ea5e9;
+}
+.app-shell[data-role="student"] .nav-group li:nth-child(5n + 3) .nav-link svg {
+  color: #10b981;
+}
+.app-shell[data-role="student"] .nav-group li:nth-child(5n + 4) .nav-link svg {
+  color: #f97316;
+}
+.app-shell[data-role="student"] .nav-group li:nth-child(5n + 5) .nav-link svg {
+  color: #ec4899;
+}
+.app-shell[data-role="student"] .nav-link {
+  border-radius: 14px;
+  font-weight: 700;
+}
+.app-shell[data-role="student"] .nav-link:hover svg {
+  animation: wiggle 0.5s ease-in-out;
+}
+.app-shell[data-role="student"] .nav-link[aria-current="page"] {
+  color: #fff;
+  box-shadow:
+    0 6px 14px -6px rgb(var(--t-glow) / 0.7),
+    inset 0 1px 0 #ffffff55;
+}
+.app-shell[data-role="student"] .nav-link[aria-current="page"] svg {
+  color: #fff;
+}
+.app-shell[data-role="student"] .nav-link[aria-current="page"]::before {
+  display: none;
+}
+.app-shell[data-role="student"] .nav-group-toggle {
+  border-radius: 12px;
+  font-size: 0.72rem;
+}
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  25% {
+    transform: rotate(-14deg) scale(1.15);
+  }
+  60% {
+    transform: rotate(10deg) scale(1.15);
+  }
+}
+
+/* Chunky, pressable toy buttons */
+.app-shell[data-role="student"] .button {
+  border-radius: 14px;
+}
+.app-shell[data-role="student"] .button-primary {
+  box-shadow:
+    0 4px 0 #5b21b6,
+    0 10px 20px -8px rgb(var(--t-glow) / 0.6),
+    inset 0 1px 0 #ffffff55;
+}
+.app-shell[data-role="student"] .button-primary:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 0 #5b21b6,
+    0 14px 24px -8px rgb(var(--t-glow) / 0.65),
+    inset 0 1px 0 #ffffff55;
+}
+.app-shell[data-role="student"] .button-primary:active {
+  transform: translateY(3px);
+  box-shadow:
+    0 1px 0 #5b21b6,
+    0 4px 8px -4px rgb(var(--t-glow) / 0.5);
+}
+.app-shell[data-role="student"] .button-outline {
+  border-width: 2px;
+  box-shadow: 0 3px 0 var(--t-line);
+}
+.app-shell[data-role="student"] .button-outline:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--t-line);
+}
+
+/* Each stat card is its own pastel colour */
+.app-shell[data-role="student"] .stat-card {
+  border-width: 2px;
+}
+.app-shell[data-role="student"] .stat-grid > :nth-child(4n + 1) {
+  background: linear-gradient(160deg, #ffffff 30%, #f3e8ff);
+  border-color: #e9d5ff;
+}
+.app-shell[data-role="student"] .stat-grid > :nth-child(4n + 2) {
+  background: linear-gradient(160deg, #ffffff 30%, #e0f2fe);
+  border-color: #bae6fd;
+}
+.app-shell[data-role="student"] .stat-grid > :nth-child(4n + 3) {
+  background: linear-gradient(160deg, #ffffff 30%, #dcfce7);
+  border-color: #bbf7d0;
+}
+.app-shell[data-role="student"] .stat-grid > :nth-child(4n + 4) {
+  background: linear-gradient(160deg, #ffffff 30%, #ffedd5);
+  border-color: #fed7aa;
+}
+.app-shell[data-role="student"] .stat-icon {
+  border-radius: 16px;
+}
+.app-shell[data-role="student"] .stat-card:hover .stat-icon {
+  transform: translateZ(30px) scale(1.15) rotate(-10deg);
+}
+.app-shell[data-role="student"] [data-slot="card"]:hover,
+.app-shell[data-role="student"] .action-card:hover {
+  border-color: #d8b4fe;
+}
+.app-shell[data-role="student"] .stat-card:hover,
+.app-shell[data-role="student"] .action-card:hover,
+.app-shell[data-role="student"] .course-grid > .dash-card:hover {
+  transform: perspective(900px) rotateX(var(--rx, 0deg))
+    rotateY(var(--ry, 0deg)) translateY(-6px) scale(1.015);
+  transition-timing-function: var(--ease-spring);
+}
+.app-shell[data-role="student"] .pill,
+.app-shell[data-role="student"] .row-meta {
+  border-radius: 999px;
+}
+.app-shell[data-role="student"] .meter {
+  height: 9px;
+}
+.app-shell[data-role="student"] .chart-bar {
+  border-radius: 10px 10px 4px 4px;
+}
+
+/* Student welcome banner: floating sticker shapes */
+.page-hero[data-role="student"] h1 {
+  background: linear-gradient(90deg, #7c3aed, #db2777 50%, #ea580c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  padding-bottom: 0.08em;
+}
+.page-hero[data-role="student"] .hero-greeting {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #6d28d9;
+}
+.hero-wave {
+  display: inline-block;
+  transform-origin: 70% 75%;
+  animation: hand-wave 2.4s ease-in-out infinite;
+}
+@keyframes hand-wave {
+  0%,
+  60%,
+  100% {
+    transform: rotate(0);
+  }
+  10%,
+  30% {
+    transform: rotate(16deg);
+  }
+  20%,
+  40% {
+    transform: rotate(-10deg);
+  }
+}
+.page-hero[data-role="student"] .hero-art i {
+  inset: auto;
+  border: 0;
+  translate: none;
+  opacity: 1;
+  background: none;
+  animation: none;
+  width: auto;
+  aspect-ratio: auto;
+}
+.page-hero[data-role="student"] .hero-art i:nth-child(1) {
+  /* yellow star */
+  right: 16%;
+  top: 14%;
+  width: 54px;
+  height: 54px;
+  background: linear-gradient(135deg, #fde047, #f59e0b);
+  clip-path: polygon(
+    50% 0%,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
+  filter: drop-shadow(0 4px 6px #f59e0b66);
+  animation: spin-float 9s ease-in-out infinite;
+}
+.page-hero[data-role="student"] .hero-art i:nth-child(2) {
+  /* big pink bubble */
+  right: -36px;
+  bottom: -46px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fbcfe8, #f472b6);
+  opacity: 0.85;
+  animation: bob 6s ease-in-out infinite;
+}
+.page-hero[data-role="student"] .hero-art i:nth-child(3) {
+  /* sky ball */
+  right: 31%;
+  bottom: 12%;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #bae6fd, #38bdf8);
+  animation: bounce 2.8s var(--ease-spring) infinite;
+}
+.page-hero[data-role="student"] .hero-art i:nth-child(4) {
+  /* mint block */
+  right: 9%;
+  top: 56%;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #6ee7b7, #10b981);
+  animation: spin-float 7s ease-in-out infinite reverse;
+}
+.page-hero[data-role="student"] .hero-art i:nth-child(5) {
+  /* tiny purple star */
+  right: 40%;
+  top: 16%;
+  width: 22px;
+  height: 22px;
+  background: #a855f7;
+  clip-path: polygon(
+    50% 0%,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
+  animation: twinkle 2.6s ease-in-out infinite;
+}
+@keyframes spin-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(25deg);
+  }
+}
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-12px) scale(1.04);
+  }
+}
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  45% {
+    transform: translateY(-22px);
+  }
+  60% {
+    transform: translateY(0) scaleY(0.85) scaleX(1.1);
+  }
+}
+@keyframes twinkle {
+  0%,
+  100% {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.55) rotate(40deg);
+    opacity: 0.5;
+  }
+}
+
+/* ==========================================================================
+   Teacher & school admin — quiet, precise, unhurried
+   ========================================================================== */
+.app-shell[data-role="teacher"] h1,
+.app-shell[data-role="school-admin"] h1 {
+  color: #0f2f2c;
+}
+.app-shell[data-role="school-admin"] h1 {
+  color: #10293a;
+}
+.app-shell[data-role="teacher"] .nav-link[aria-current="page"],
+.app-shell[data-role="school-admin"] .nav-link[aria-current="page"] {
+  color: var(--t-1-strong);
+}
+.app-shell[data-role="teacher"] [data-slot="card"],
+.app-shell[data-role="school-admin"] [data-slot="card"] {
+  transition-duration: 0.5s;
+}
+.app-shell[data-role="teacher"] .stat-card .stat-icon,
+.app-shell[data-role="school-admin"] .stat-card .stat-icon {
+  animation-duration: 8s;
+}
+/* A calm accent rule along the top of each stat card. */
+.app-shell[data-role="teacher"] .stat-card,
+.app-shell[data-role="school-admin"] .stat-card {
+  background:
+    linear-gradient(90deg, var(--t-1-light), transparent 70%) top / 100% 2px
+      no-repeat,
+    #fff;
+}
+
+/* ==========================================================================
+   Parent — mature and calm: serif headings, warm ivory, minimal motion
+   ========================================================================== */
+.app-shell[data-role="parent"] h1,
+.app-shell[data-role="parent"] h2,
+.app-shell[data-role="parent"] h3 {
+  font-family: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: #1c2a3d;
+}
+.app-shell[data-role="parent"] .page-hero h1 {
+  font-weight: 560;
+}
+.app-shell[data-role="parent"] .hero-greeting {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+  color: #8a6a43;
+}
+.app-shell[data-role="parent"] .nav-link[aria-current="page"] {
+  color: var(--t-ink);
+}
+.app-shell[data-role="parent"] .button-primary::after {
+  display: none; /* no sheen — keep it understated */
+}
+.app-shell[data-role="parent"] .stat-card .stat-icon {
+  animation: none;
+}
+.app-shell[data-role="parent"] [data-slot="card"] {
+  box-shadow:
+    0 1px 2px #3b2f1d0a,
+    0 3px 10px -4px #3b2f1d12,
+    inset 0 1px 0 #ffffff;
+}
+.app-shell[data-role="parent"] .stat-card:hover,
+.app-shell[data-role="parent"] .action-card:hover,
+.app-shell[data-role="parent"] .course-grid > .dash-card:hover {
+  transform: perspective(1200px) rotateX(var(--rx, 0deg))
+    rotateY(var(--ry, 0deg)) translateY(-2px);
+}
+.page-hero[data-role="parent"] {
+  border-color: #e4dccd;
+}
+.page-hero[data-role="parent"] .hero-art i:nth-child(-n + 3) {
+  border-color: #c7a77c40;
+  animation-duration: 14s;
+}
+
+/* ---------- Small screens: keep decorations out of the text ---------- */
+@media (max-width: 625px) {
+  .hero-art {
+    opacity: 0.45;
+  }
+  .page-hero[data-role="student"] .hero-art i:nth-child(3),
+  .page-hero[data-role="student"] .hero-art i:nth-child(5) {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell[data-role="student"]::after,
+  .hero-art i,
+  .hero-wave {
+    animation: none !important;
+  }
+  .nav-group-panel {
+    transition: none;
+  }
+}
+
+/* ---------- Small layout polish ---------- */
+/* Breathing room between the stat row and whatever card follows it. */
+.dashboard-main > .stat-grid + * {
+  margin-top: 0.85rem;
+}
+/* Selected/hovered chart bar follows the role colour. */
+.app-shell .chart-bar:hover,
+.app-shell .chart-bar[aria-pressed="true"] {
+  background: linear-gradient(180deg, var(--t-1-light), var(--t-1));
+}

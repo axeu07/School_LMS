@@ -7,6 +7,11 @@ import { resetAcademicState } from "@/services/academic-store";
 import { attendancePercentage } from "@/services/attendance-model";
 import { resetDoubtState } from "@/services/doubt-store";
 import { resetLearningState } from "@/services/learning-store";
+import { resetFeeState } from "@/services/fee-store";
+import { resetBrandingState } from "@/services/branding-store";
+import { resetPrivacyState } from "@/services/privacy-store";
+import { logAudit, resetAuditState } from "@/services/audit-store";
+import { resetLeaveState } from "@/services/leave-store";
 import { SectionTopics } from "./results-pages";
 import {
   formatPercent,
@@ -317,7 +322,7 @@ export function SchoolPerformance() {
 const planLimits: Record<string, number> = { Starter: 750, Professional: 2000 };
 
 export function SchoolSettings() {
-  const { school, records } = useDemo();
+  const { school, records, schoolId } = useDemo();
   const dialog = useRef<HTMLDialogElement>(null);
   const [notice, setNotice] = useState("");
   const enrolled = records.students.filter((item) =>
@@ -430,7 +435,7 @@ export function SchoolSettings() {
       </SectionCard>
       <SectionCard
         title="Demo data"
-        description="Restore the original records for all three demo schools, including academics, assignments, attendance, doubts, courses, tests and exam results."
+        description="Restore the original records for all three demo schools, including academics, assignments, attendance, leave requests, absence alerts, doubts, courses, tests, exam results and fees."
         className="page-section"
         actions={
           <button
@@ -469,6 +474,17 @@ export function SchoolSettings() {
               resetAcademicState();
               resetDoubtState();
               resetLearningState();
+              resetFeeState();
+              resetLeaveState();
+              resetBrandingState();
+              resetPrivacyState();
+              resetAuditState();
+              logAudit(
+                schoolId,
+                "Records",
+                "Reset demo data",
+                "All demo schools restored to their original records",
+              );
               setNotice("Demo data reset.");
               dialog.current?.close();
             }}

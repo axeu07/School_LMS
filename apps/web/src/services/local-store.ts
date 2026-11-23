@@ -10,6 +10,8 @@ export function createLocalStore<T>(
   key: string,
   seed: T,
   decode: (raw: string | null) => T,
+  /** Called after each update (not after reset), e.g. to write the audit log. */
+  onChange?: (before: T, after: T) => void,
 ) {
   const updateEvent = key + "-updated";
   let cachedRaw: string | null | undefined;
@@ -43,7 +45,13 @@ export function createLocalStore<T>(
   }
 
   function update(change: (state: T) => T) {
-    const state = change(snapshot());
+    const before = snapshot();
+    const state = change(before);
+    write(state);
+    if (onChange && state !== before) onChange(before, state);
+  }
+
+  function write(state: T) {
     const raw = JSON.stringify(state);
     try {
       localStorage.setItem(key, raw);
@@ -61,7 +69,7 @@ export function createLocalStore<T>(
     snapshot,
     serverSnapshot: () => seed,
     update,
-    reset: () => update(() => seed),
+    reset: () => write(seed),
   };
 }
 

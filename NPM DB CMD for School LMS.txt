@@ -1,4 +1,4 @@
-NPM DB CMD for School LMS
+NPM DB CMD for ACADMAXIS
 
 
 npm.cmd run db:validate

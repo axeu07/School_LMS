@@ -3,6 +3,8 @@
 import { useSyncExternalStore } from "react";
 import { academicSeed, decodeAcademicState } from "./academic-seed";
 import type { AcademicState } from "./academic-model";
+import { diffAcademic } from "./audit-model";
+import { recordAudit } from "./audit-store";
 
 const key = "school-lms-academics";
 const updateEvent = "school-lms-academics-updated";
@@ -40,10 +42,21 @@ export function useAcademicState() {
   return useSyncExternalStore(subscribe, snapshot, () => academicSeed);
 }
 
+/** The latest academic records, for non-React code such as audit labels. */
+export function getAcademicSnapshot() {
+  return snapshot();
+}
+
 export function updateAcademicState(
   update: (state: AcademicState) => AcademicState,
 ) {
-  const state = update(snapshot());
+  const before = snapshot();
+  const state = update(before);
+  write(state);
+  if (state !== before) recordAudit(diffAcademic(before, state));
+}
+
+function write(state: AcademicState) {
   const raw = JSON.stringify(state);
   try {
     localStorage.setItem(key, raw);
@@ -57,5 +70,5 @@ export function updateAcademicState(
 }
 
 export function resetAcademicState() {
-  updateAcademicState(() => academicSeed);
+  write(academicSeed);
 }

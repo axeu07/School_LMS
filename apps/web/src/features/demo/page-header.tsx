@@ -21,11 +21,43 @@ export function PageHeader({
   preview?: boolean;
   actions?: ReactNode;
 }) {
-  const { role, profile, school } = useDemo();
+  const { role, profile, school, data } = useDemo();
   const scope = role === "super-admin" ? "Platform" : school.name;
+  // The dashboard (no group) gets a themed welcome banner.
+  const hero = !group;
+  const firstName = data.person.name.split(" ")[0];
+  const greeting = {
+    student: "Hi " + firstName + "! Ready for an awesome day?",
+    teacher: "Good to see you, " + data.person.name,
+    "school-admin": "Welcome back, " + firstName,
+    parent: "Welcome, " + firstName,
+    "super-admin": "",
+  }[role];
   return (
-    <div className="page-header">
-      <div>
+    <div
+      className={"page-header" + (hero ? " page-hero" : "")}
+      data-role={role}
+    >
+      {hero && (
+        <span className="hero-art" aria-hidden="true">
+          <i />
+          <i />
+          <i />
+          <i />
+          <i />
+        </span>
+      )}
+      <div className="page-header-copy">
+        {hero && greeting && (
+          <p className="hero-greeting">
+            {role === "student" && (
+              <span className="hero-wave" aria-hidden="true">
+                👋
+              </span>
+            )}
+            {greeting}
+          </p>
+        )}
         <nav aria-label="Breadcrumb" className="breadcrumbs">
           <ol>
             <li>{scope}</li>

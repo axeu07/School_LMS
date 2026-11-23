@@ -6,7 +6,6 @@ import type {
   AcademicSchool,
   AttendanceStatus,
 } from "@/services/academic-model";
-import { updateAcademicState } from "@/services/academic-store";
 import {
   activeAllocations,
   localCalendarDate,
@@ -16,8 +15,14 @@ import {
   attendanceFor,
   attendancePercentage,
   attendanceRoster,
-  saveAttendance,
 } from "@/services/attendance-model";
+import {
+  approvedLeaveOn,
+  leaveSchool,
+  pendingLeaveOn,
+  studentAttendanceWithLeave,
+} from "@/services/leave-model";
+import { recordAttendance, useLeaveState } from "@/services/leave-store";
 
 const statuses: AttendanceStatus[] = ["Present", "Absent", "Late"];
 
@@ -49,6 +54,23 @@ export function AttendanceWorkspace({
   const saved = visible.find((item) => item.date === date);
   const percent = attendancePercentage(visible);
   const manager = teacher || actor.role === "school-admin";
+  const leave = leaveSchool(useLeaveState(), actor.school);
+  const learner =
+    actor.role === "student"
+      ? actor.person
+      : actor.role === "parent"
+        ? actor.child
+        : undefined;
+  const withLeave = learner
+    ? studentAttendanceWithLeave(school, leave, learner)
+    : undefined;
+  /** Absent marks on a record that are covered by approved student leave. */
+  const excused = (record: (typeof visible)[number]) =>
+    Object.entries(record.marks).filter(
+      ([student, mark]) =>
+        mark === "Absent" &&
+        approvedLeaveOn(leave, "student", student, record.date),
+    ).length;
   return (
     <Card id="attendance-workspace" className="dash-card academic-workspace">
       <div className="academic-toolbar">
@@ -57,7 +79,15 @@ export function AttendanceWorkspace({
           <p>
             {percent === undefined
               ? "No attendance recorded"
-              : percent + "% attendance · Late counts as attended"}
+              : percent +
+                "% physical attendance · Late counts as attended" +
+                (withLeave
+                  ? " · " +
+                    withLeave.approvedLeaveDays +
+                    " approved leave day" +
+                    (withLeave.approvedLeaveDays === 1 ? "" : "s") +
+                    " (not counted as presence)"
+                  : "")}
           </p>
         </div>
         {manager && (
@@ -109,30 +139,47 @@ export function AttendanceWorkspace({
               const marks = Object.fromEntries(
                 new FormData(event.currentTarget),
               ) as Record<string, AttendanceStatus>;
-              updateAcademicState((state) =>
-                saveAttendance(state, actor, section, date, marks),
-              );
+              recordAttendance(actor, section, date, marks);
               setError("");
-              setNotice("Attendance saved.");
+              setNotice(
+                Object.values(marks).includes("Absent")
+                  ? "Attendance saved. Linked parents have an in-app absence alert."
+                  : "Attendance saved.",
+              );
             } catch (failure) {
               setNotice("");
               setError((failure as Error).message);
             }
           }}
         >
-          {roster.map((item) => (
-            <label key={item.id}>
-              {item.name}
-              <select
-                name={item.id}
-                defaultValue={saved?.marks[item.id] ?? "Present"}
-              >
-                {statuses.map((status) => (
-                  <option key={status}>{status}</option>
-                ))}
-              </select>
-            </label>
-          ))}
+          {roster.map((item) => {
+            const approved = approvedLeaveOn(leave, "student", item.id, date);
+            const pending = pendingLeaveOn(leave, "student", item.id, date);
+            return (
+              <label key={item.id}>
+                <span className="attendance-name">
+                  {item.name}
+                  {approved ? (
+                    <span className="pill pill-info">
+                      Approved leave · {approved.type}
+                    </span>
+                  ) : (
+                    pending && (
+                      <span className="pill pill-warning">Leave pending</span>
+                    )
+                  )}
+                </span>
+                <select
+                  name={item.id}
+                  defaultValue={saved?.marks[item.id] ?? "Present"}
+                >
+                  {statuses.map((status) => (
+                    <option key={status}>{status}</option>
+                  ))}
+                </select>
+              </label>
+            );
+          })}
           <button className="button button-outline" type="submit">
             Save attendance
           </button>
@@ -141,7 +188,10 @@ export function AttendanceWorkspace({
       {visible.length > 0 && (
         <div className="academic-table">
           <table>
-            <caption className="sr-only">Attendance history</caption>
+            <caption className="sr-only">
+              Attendance history. Absent counts are the recorded marks; Approved
+              Leave shows how many of them are covered by approved leave.
+            </caption>
             <thead>
               <tr>
                 <th scope="col">Date</th>
@@ -151,6 +201,13 @@ export function AttendanceWorkspace({
                     {item}
                   </th>
                 ))}
+                <th scope="col">
+                  Approved Leave
+                  <span className="sr-only">
+                    {" "}
+                    (absent marks covered by approved leave)
+                  </span>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -185,6 +242,7 @@ export function AttendanceWorkspace({
                         }
                       </td>
                     ))}
+                    <td>{excused(item)}</td>
                   </tr>
                 );
               })}

@@ -57,18 +57,138 @@ type Lead = {
 };
 
 export const seedLeads: Lead[] = [
-  { id: "l1", name: "Aarav Mehta", guardian: "Ritu Mehta", grade: "Grade 6", source: "Instagram", stage: "New", received: "22 Nov", followUp: "24 Nov", campaign: "Admissions open reel" },
-  { id: "l2", name: "Sara Thomas", guardian: "Joseph Thomas", grade: "Grade 9", source: "Facebook", stage: "Contacted", received: "21 Nov", followUp: "25 Nov", campaign: "Science fair post" },
-  { id: "l3", name: "Kabir Singh", guardian: "Harpreet Singh", grade: "Grade 1", source: "Meta Ads", stage: "Campus visit", received: "19 Nov", followUp: "26 Nov", campaign: "Early years lead form" },
-  { id: "l4", name: "Ananya Iyer", guardian: "Lakshmi Iyer", grade: "Grade 11", source: "Google", stage: "Applied", received: "17 Nov", followUp: "27 Nov", campaign: "Search · best CBSE school" },
-  { id: "l5", name: "Vihaan Rao", guardian: "Kiran Rao", grade: "Grade 4", source: "Website", stage: "Admitted", received: "12 Nov", followUp: "—", campaign: "Enquiry form" },
-  { id: "l6", name: "Meera Kapoor", guardian: "Neha Kapoor", grade: "Grade 7", source: "Instagram", stage: "Contacted", received: "20 Nov", followUp: "24 Nov", campaign: "Sports day story" },
-  { id: "l7", name: "Ishaan Das", guardian: "Arjun Das", grade: "Grade 2", source: "Walk-in", stage: "Campus visit", received: "18 Nov", followUp: "25 Nov", campaign: "Front office" },
-  { id: "l8", name: "Zara Khan", guardian: "Farah Khan", grade: "Grade 8", source: "Referral", stage: "Applied", received: "15 Nov", followUp: "26 Nov", campaign: "Parent referral · Vihaan Rao" },
-  { id: "l9", name: "Rohan Pillai", guardian: "Suresh Pillai", grade: "Grade 10", source: "Meta Ads", stage: "Lost", received: "10 Nov", followUp: "—", campaign: "Board results carousel" },
-  { id: "l10", name: "Diya Sharma", guardian: "Pooja Sharma", grade: "Nursery", source: "Facebook", stage: "New", received: "23 Nov", followUp: "24 Nov", campaign: "Open house event" },
-  { id: "l11", name: "Advik Nair", guardian: "Maya Nair", grade: "Grade 3", source: "Instagram", stage: "Admitted", received: "08 Nov", followUp: "—", campaign: "Admissions open reel" },
-  { id: "l12", name: "Tara Bose", guardian: "Anil Bose", grade: "Grade 5", source: "Google", stage: "New", received: "23 Nov", followUp: "25 Nov", campaign: "Maps · school near me" },
+  {
+    id: "l1",
+    name: "Aarav Mehta",
+    guardian: "Ritu Mehta",
+    grade: "Grade 6",
+    source: "Instagram",
+    stage: "New",
+    received: "22 Nov",
+    followUp: "24 Nov",
+    campaign: "Admissions open reel",
+  },
+  {
+    id: "l2",
+    name: "Sara Thomas",
+    guardian: "Joseph Thomas",
+    grade: "Grade 9",
+    source: "Facebook",
+    stage: "Contacted",
+    received: "21 Nov",
+    followUp: "25 Nov",
+    campaign: "Science fair post",
+  },
+  {
+    id: "l3",
+    name: "Kabir Singh",
+    guardian: "Harpreet Singh",
+    grade: "Grade 1",
+    source: "Meta Ads",
+    stage: "Campus visit",
+    received: "19 Nov",
+    followUp: "26 Nov",
+    campaign: "Early years lead form",
+  },
+  {
+    id: "l4",
+    name: "Ananya Iyer",
+    guardian: "Lakshmi Iyer",
+    grade: "Grade 11",
+    source: "Google",
+    stage: "Applied",
+    received: "17 Nov",
+    followUp: "27 Nov",
+    campaign: "Search · best CBSE school",
+  },
+  {
+    id: "l5",
+    name: "Vihaan Rao",
+    guardian: "Kiran Rao",
+    grade: "Grade 4",
+    source: "Website",
+    stage: "Admitted",
+    received: "12 Nov",
+    followUp: "—",
+    campaign: "Enquiry form",
+  },
+  {
+    id: "l6",
+    name: "Meera Kapoor",
+    guardian: "Neha Kapoor",
+    grade: "Grade 7",
+    source: "Instagram",
+    stage: "Contacted",
+    received: "20 Nov",
+    followUp: "24 Nov",
+    campaign: "Sports day story",
+  },
+  {
+    id: "l7",
+    name: "Ishaan Das",
+    guardian: "Arjun Das",
+    grade: "Grade 2",
+    source: "Walk-in",
+    stage: "Campus visit",
+    received: "18 Nov",
+    followUp: "25 Nov",
+    campaign: "Front office",
+  },
+  {
+    id: "l8",
+    name: "Zara Khan",
+    guardian: "Farah Khan",
+    grade: "Grade 8",
+    source: "Referral",
+    stage: "Applied",
+    received: "15 Nov",
+    followUp: "26 Nov",
+    campaign: "Parent referral · Vihaan Rao",
+  },
+  {
+    id: "l9",
+    name: "Rohan Pillai",
+    guardian: "Suresh Pillai",
+    grade: "Grade 10",
+    source: "Meta Ads",
+    stage: "Lost",
+    received: "10 Nov",
+    followUp: "—",
+    campaign: "Board results carousel",
+  },
+  {
+    id: "l10",
+    name: "Diya Sharma",
+    guardian: "Pooja Sharma",
+    grade: "Nursery",
+    source: "Facebook",
+    stage: "New",
+    received: "23 Nov",
+    followUp: "24 Nov",
+    campaign: "Open house event",
+  },
+  {
+    id: "l11",
+    name: "Advik Nair",
+    guardian: "Maya Nair",
+    grade: "Grade 3",
+    source: "Instagram",
+    stage: "Admitted",
+    received: "08 Nov",
+    followUp: "—",
+    campaign: "Admissions open reel",
+  },
+  {
+    id: "l12",
+    name: "Tara Bose",
+    guardian: "Anil Bose",
+    grade: "Grade 5",
+    source: "Google",
+    stage: "New",
+    received: "23 Nov",
+    followUp: "25 Nov",
+    campaign: "Maps · school near me",
+  },
 ];
 
 const sourceTone: Record<Source, string> = {
@@ -101,11 +221,51 @@ type Deal = {
 };
 
 export const deals: Deal[] = [
-  { partner: "BrightMinds Robotics", kind: "Collaboration", detail: "After-school robotics lab for Grades 5–9", value: 450000, stage: "Negotiation", close: "05 Dec", probability: 60 },
-  { partner: "City Sports Academy", kind: "Partnership", detail: "Weekend football & swimming coaching", value: 280000, stage: "Agreement sent", close: "29 Nov", probability: 80 },
-  { partner: "Readwell Publishers", kind: "Vendor deal", detail: "Library refresh + 20% book discount", value: 175000, stage: "Closing", close: "26 Nov", probability: 90 },
-  { partner: "GreenLeaf Foundation", kind: "Sponsorship", detail: "Eco-club & solar panel sponsorship", value: 600000, stage: "Proposal", close: "15 Dec", probability: 35 },
-  { partner: "LinguaLeap", kind: "Collaboration", detail: "French & German language exchange", value: 120000, stage: "Negotiation", close: "10 Dec", probability: 55 },
+  {
+    partner: "BrightMinds Robotics",
+    kind: "Collaboration",
+    detail: "After-school robotics lab for Grades 5–9",
+    value: 450000,
+    stage: "Negotiation",
+    close: "05 Dec",
+    probability: 60,
+  },
+  {
+    partner: "City Sports Academy",
+    kind: "Partnership",
+    detail: "Weekend football & swimming coaching",
+    value: 280000,
+    stage: "Agreement sent",
+    close: "29 Nov",
+    probability: 80,
+  },
+  {
+    partner: "Readwell Publishers",
+    kind: "Vendor deal",
+    detail: "Library refresh + 20% book discount",
+    value: 175000,
+    stage: "Closing",
+    close: "26 Nov",
+    probability: 90,
+  },
+  {
+    partner: "GreenLeaf Foundation",
+    kind: "Sponsorship",
+    detail: "Eco-club & solar panel sponsorship",
+    value: 600000,
+    stage: "Proposal",
+    close: "15 Dec",
+    probability: 35,
+  },
+  {
+    partner: "LinguaLeap",
+    kind: "Collaboration",
+    detail: "French & German language exchange",
+    value: 120000,
+    stage: "Negotiation",
+    close: "10 Dec",
+    probability: 55,
+  },
 ];
 
 const dealPill: Record<Deal["stage"], string> = {
@@ -121,7 +281,8 @@ export function LeadsPreview() {
   const [source, setSource] = useState<"" | Source>("");
   const [stage, setStage] = useState<"" | LeadStage>("");
   const visible = leads.filter(
-    (lead) => (!source || lead.source === source) && (!stage || lead.stage === stage),
+    (lead) =>
+      (!source || lead.source === source) && (!stage || lead.stage === stage),
   );
   const admitted = leads.filter((lead) => lead.stage === "Admitted").length;
   const open = leads.filter(
@@ -156,10 +317,30 @@ export function LeadsPreview() {
       />
       <StatCards
         stats={[
-          { label: "Total leads", value: String(leads.length), note: "Last 30 days · all sources", icon: "students" },
-          { label: "Open leads", value: String(open), note: "Need a follow-up", icon: "tasks" },
-          { label: "Admitted", value: String(admitted), note: Math.round((100 * admitted) / leads.length) + "% conversion", icon: "attendance" },
-          { label: "Deals pipeline", value: inr(pipelineValue), note: inr(weighted) + " weighted", icon: "calendar" },
+          {
+            label: "Total leads",
+            value: String(leads.length),
+            note: "Last 30 days · all sources",
+            icon: "students",
+          },
+          {
+            label: "Open leads",
+            value: String(open),
+            note: "Need a follow-up",
+            icon: "tasks",
+          },
+          {
+            label: "Admitted",
+            value: String(admitted),
+            note: Math.round((100 * admitted) / leads.length) + "% conversion",
+            icon: "attendance",
+          },
+          {
+            label: "Deals pipeline",
+            value: inr(pipelineValue),
+            note: inr(weighted) + " weighted",
+            icon: "calendar",
+          },
         ]}
       />
       <div className="dashboard-grid">
@@ -174,7 +355,10 @@ export function LeadsPreview() {
                   <i className={"source-dot " + sourceTone[item.name]} />
                   {item.name} <strong>{item.count}</strong>
                 </span>
-                <Meter value={(100 * item.count) / topCount} label={item.name} />
+                <Meter
+                  value={(100 * item.count) / topCount}
+                  label={item.name}
+                />
               </li>
             ))}
           </ul>
@@ -189,15 +373,17 @@ export function LeadsPreview() {
               .map((name, index, list) => {
                 const reached = leads.filter(
                   (lead) =>
-                    lead.stage !== "Lost" &&
-                    list.indexOf(lead.stage) >= index,
+                    lead.stage !== "Lost" && list.indexOf(lead.stage) >= index,
                 ).length;
                 return (
                   <li key={name}>
                     <span>
                       {name} <strong>{reached}</strong>
                     </span>
-                    <Meter value={(100 * reached) / leads.length} label={name} />
+                    <Meter
+                      value={(100 * reached) / leads.length}
+                      label={name}
+                    />
                   </li>
                 );
               })}
@@ -212,7 +398,10 @@ export function LeadsPreview() {
         <div className="filter-bar">
           <label>
             Source
-            <select value={source} onChange={(event) => setSource(event.target.value as Source)}>
+            <select
+              value={source}
+              onChange={(event) => setSource(event.target.value as Source)}
+            >
               <option value="">All sources</option>
               {sources.map((name) => (
                 <option key={name}>{name}</option>
@@ -221,7 +410,10 @@ export function LeadsPreview() {
           </label>
           <label>
             Stage
-            <select value={stage} onChange={(event) => setStage(event.target.value as LeadStage)}>
+            <select
+              value={stage}
+              onChange={(event) => setStage(event.target.value as LeadStage)}
+            >
               <option value="">All stages</option>
               {leadStages.map((name) => (
                 <option key={name}>{name}</option>
@@ -260,7 +452,9 @@ export function LeadsPreview() {
                     <td>{lead.received}</td>
                     <td>{lead.followUp}</td>
                     <td>
-                      <span className={"pill " + stagePill[lead.stage]}>{lead.stage}</span>
+                      <span className={"pill " + stagePill[lead.stage]}>
+                        {lead.stage}
+                      </span>
                     </td>
                     <td>
                       <select
@@ -271,7 +465,10 @@ export function LeadsPreview() {
                           setLeads((current) =>
                             current.map((item) =>
                               item.id === lead.id
-                                ? { ...item, stage: event.target.value as LeadStage }
+                                ? {
+                                    ...item,
+                                    stage: event.target.value as LeadStage,
+                                  }
                                 : item,
                             ),
                           )
@@ -295,7 +492,9 @@ export function LeadsPreview() {
         title="Upcoming deals & collaborations"
         description="Partnerships, sponsorships and vendor deals expected to close soon."
         className="page-section"
-        actions={<Handshake size={20} className="muted-icon" aria-hidden="true" />}
+        actions={
+          <Handshake size={20} className="muted-icon" aria-hidden="true" />
+        }
       >
         <div className="deal-grid">
           {[...deals]
@@ -304,7 +503,9 @@ export function LeadsPreview() {
               <article className="deal-card" key={deal.partner}>
                 <header>
                   <span className="pill pill-muted">{deal.kind}</span>
-                  <span className={"pill " + dealPill[deal.stage]}>{deal.stage}</span>
+                  <span className={"pill " + dealPill[deal.stage]}>
+                    {deal.stage}
+                  </span>
                 </header>
                 <h3>{deal.partner}</h3>
                 <p>{deal.detail}</p>
@@ -314,7 +515,10 @@ export function LeadsPreview() {
                 </div>
                 <div className="meter-cell">
                   <small>{deal.probability}% likely</small>
-                  <Meter value={deal.probability} label={deal.probability + "% likely"} />
+                  <Meter
+                    value={deal.probability}
+                    label={deal.probability + "% likely"}
+                  />
                 </div>
               </article>
             ))}
@@ -343,27 +547,192 @@ type Candidate = {
   source: string;
   stage: CandidateStage;
   score?: number;
-  interview?: { date: string; time: string; mode: "In person" | "Video"; panel: string };
+  interview?: {
+    date: string;
+    time: string;
+    mode: "In person" | "Video";
+    panel: string;
+  };
   note?: string;
 };
 
 export const seedCandidates: Candidate[] = [
-  { id: "c1", name: "Priya Menon", role: "Mathematics Teacher (PGT)", experience: "7 yrs", source: "Naukri", stage: "Interview scheduled", score: 86, interview: { date: "Tue 24 Nov", time: "10:30", mode: "In person", panel: "Principal · HOD Maths" } },
-  { id: "c2", name: "Daniel Fernandes", role: "Physics Teacher (PGT)", experience: "5 yrs", source: "LinkedIn", stage: "Interview scheduled", score: 81, interview: { date: "Tue 24 Nov", time: "14:00", mode: "Video", panel: "HOD Science" } },
-  { id: "c3", name: "Ayesha Siddiqui", role: "Primary Teacher (PRT)", experience: "3 yrs", source: "Referral", stage: "Interview scheduled", score: 78, interview: { date: "Wed 25 Nov", time: "11:00", mode: "In person", panel: "Primary coordinator" } },
-  { id: "c4", name: "Rahul Verma", role: "Sports Coach", experience: "6 yrs", source: "Walk-in", stage: "Interview scheduled", score: 74, interview: { date: "Thu 26 Nov", time: "09:30", mode: "In person", panel: "Vice principal · PE head" } },
-  { id: "c5", name: "Sneha Kulkarni", role: "School Counsellor", experience: "4 yrs", source: "Indeed", stage: "Interview scheduled", score: 83, interview: { date: "Fri 27 Nov", time: "15:00", mode: "Video", panel: "Principal" } },
-  { id: "c6", name: "Vikram Joshi", role: "Computer Science Teacher", experience: "8 yrs", source: "LinkedIn", stage: "Shortlisted", score: 88 },
-  { id: "c7", name: "Fatima Sheikh", role: "English Teacher (TGT)", experience: "4 yrs", source: "Naukri", stage: "Shortlisted", score: 79 },
-  { id: "c8", name: "Arjun Reddy", role: "Mathematics Teacher (PGT)", experience: "2 yrs", source: "Indeed", stage: "Shortlisted", score: 72 },
-  { id: "c9", name: "Neha Gupta", role: "Primary Teacher (PRT)", experience: "6 yrs", source: "Referral", stage: "Offered", score: 90, note: "Offer sent 20 Nov · awaiting acceptance" },
-  { id: "c10", name: "Manoj Tiwari", role: "Accountant", experience: "10 yrs", source: "Naukri", stage: "Offered", score: 84, note: "Joining 1 Dec" },
-  { id: "c11", name: "Kavya Hegde", role: "Art Teacher", experience: "1 yr", source: "Website", stage: "Applied" },
-  { id: "c12", name: "Siddharth Rao", role: "Physics Teacher (PGT)", experience: "3 yrs", source: "LinkedIn", stage: "Applied" },
-  { id: "c13", name: "Lina D'Souza", role: "Music Teacher", experience: "5 yrs", source: "Instagram", stage: "Applied" },
-  { id: "c14", name: "Gaurav Malhotra", role: "Sports Coach", experience: "1 yr", source: "Walk-in", stage: "Rejected", score: 52, note: "Certification missing" },
-  { id: "c15", name: "Pooja Bhatt", role: "English Teacher (TGT)", experience: "2 yrs", source: "Indeed", stage: "Rejected", score: 58, note: "Demo lesson below bar" },
-  { id: "c16", name: "Imran Ali", role: "Computer Science Teacher", experience: "0 yrs", source: "Website", stage: "Rejected", score: 45, note: "Experience requirement not met" },
+  {
+    id: "c1",
+    name: "Priya Menon",
+    role: "Mathematics Teacher (PGT)",
+    experience: "7 yrs",
+    source: "Naukri",
+    stage: "Interview scheduled",
+    score: 86,
+    interview: {
+      date: "Tue 24 Nov",
+      time: "10:30",
+      mode: "In person",
+      panel: "Principal · HOD Maths",
+    },
+  },
+  {
+    id: "c2",
+    name: "Daniel Fernandes",
+    role: "Physics Teacher (PGT)",
+    experience: "5 yrs",
+    source: "LinkedIn",
+    stage: "Interview scheduled",
+    score: 81,
+    interview: {
+      date: "Tue 24 Nov",
+      time: "14:00",
+      mode: "Video",
+      panel: "HOD Science",
+    },
+  },
+  {
+    id: "c3",
+    name: "Ayesha Siddiqui",
+    role: "Primary Teacher (PRT)",
+    experience: "3 yrs",
+    source: "Referral",
+    stage: "Interview scheduled",
+    score: 78,
+    interview: {
+      date: "Wed 25 Nov",
+      time: "11:00",
+      mode: "In person",
+      panel: "Primary coordinator",
+    },
+  },
+  {
+    id: "c4",
+    name: "Rahul Verma",
+    role: "Sports Coach",
+    experience: "6 yrs",
+    source: "Walk-in",
+    stage: "Interview scheduled",
+    score: 74,
+    interview: {
+      date: "Thu 26 Nov",
+      time: "09:30",
+      mode: "In person",
+      panel: "Vice principal · PE head",
+    },
+  },
+  {
+    id: "c5",
+    name: "Sneha Kulkarni",
+    role: "School Counsellor",
+    experience: "4 yrs",
+    source: "Indeed",
+    stage: "Interview scheduled",
+    score: 83,
+    interview: {
+      date: "Fri 27 Nov",
+      time: "15:00",
+      mode: "Video",
+      panel: "Principal",
+    },
+  },
+  {
+    id: "c6",
+    name: "Vikram Joshi",
+    role: "Computer Science Teacher",
+    experience: "8 yrs",
+    source: "LinkedIn",
+    stage: "Shortlisted",
+    score: 88,
+  },
+  {
+    id: "c7",
+    name: "Fatima Sheikh",
+    role: "English Teacher (TGT)",
+    experience: "4 yrs",
+    source: "Naukri",
+    stage: "Shortlisted",
+    score: 79,
+  },
+  {
+    id: "c8",
+    name: "Arjun Reddy",
+    role: "Mathematics Teacher (PGT)",
+    experience: "2 yrs",
+    source: "Indeed",
+    stage: "Shortlisted",
+    score: 72,
+  },
+  {
+    id: "c9",
+    name: "Neha Gupta",
+    role: "Primary Teacher (PRT)",
+    experience: "6 yrs",
+    source: "Referral",
+    stage: "Offered",
+    score: 90,
+    note: "Offer sent 20 Nov · awaiting acceptance",
+  },
+  {
+    id: "c10",
+    name: "Manoj Tiwari",
+    role: "Accountant",
+    experience: "10 yrs",
+    source: "Naukri",
+    stage: "Offered",
+    score: 84,
+    note: "Joining 1 Dec",
+  },
+  {
+    id: "c11",
+    name: "Kavya Hegde",
+    role: "Art Teacher",
+    experience: "1 yr",
+    source: "Website",
+    stage: "Applied",
+  },
+  {
+    id: "c12",
+    name: "Siddharth Rao",
+    role: "Physics Teacher (PGT)",
+    experience: "3 yrs",
+    source: "LinkedIn",
+    stage: "Applied",
+  },
+  {
+    id: "c13",
+    name: "Lina D'Souza",
+    role: "Music Teacher",
+    experience: "5 yrs",
+    source: "Instagram",
+    stage: "Applied",
+  },
+  {
+    id: "c14",
+    name: "Gaurav Malhotra",
+    role: "Sports Coach",
+    experience: "1 yr",
+    source: "Walk-in",
+    stage: "Rejected",
+    score: 52,
+    note: "Certification missing",
+  },
+  {
+    id: "c15",
+    name: "Pooja Bhatt",
+    role: "English Teacher (TGT)",
+    experience: "2 yrs",
+    source: "Indeed",
+    stage: "Rejected",
+    score: 58,
+    note: "Demo lesson below bar",
+  },
+  {
+    id: "c16",
+    name: "Imran Ali",
+    role: "Computer Science Teacher",
+    experience: "0 yrs",
+    source: "Website",
+    stage: "Rejected",
+    score: 45,
+    note: "Experience requirement not met",
+  },
 ];
 
 const candidatePill: Record<CandidateStage, string> = {
@@ -383,7 +752,13 @@ const openings = [
   { role: "Accountant", positions: 1, filled: 1 },
 ];
 
-const tabs = ["Upcoming interviews", "Shortlisted", "Offered", "Rejected", "All candidates"] as const;
+const tabs = [
+  "Upcoming interviews",
+  "Shortlisted",
+  "Offered",
+  "Rejected",
+  "All candidates",
+] as const;
 type Tab = (typeof tabs)[number];
 
 export function RecruitmentPreview() {
@@ -406,7 +781,9 @@ export function RecruitmentPreview() {
     setCandidates((current) =>
       current.map((item) => (item.id === id ? { ...item, stage } : item)),
     );
-  const interviews = candidates.filter((item) => item.interview && item.stage === "Interview scheduled");
+  const interviews = candidates.filter(
+    (item) => item.interview && item.stage === "Interview scheduled",
+  );
 
   return (
     <>
@@ -424,14 +801,39 @@ export function RecruitmentPreview() {
       />
       <StatCards
         stats={[
-          { label: "Open positions", value: String(openings.reduce((s, o) => s + o.positions - o.filled, 0)), note: openings.length + " roles hiring", icon: "teachers" },
-          { label: "Upcoming interviews", value: String(interviews.length), note: "This week", icon: "calendar" },
-          { label: "Shortlisted", value: String(count("Shortlisted")), note: "Awaiting interview slot", icon: "tasks" },
-          { label: "Rejected", value: String(count("Rejected")), note: count("Offered") + " offers out", icon: "students" },
+          {
+            label: "Open positions",
+            value: String(
+              openings.reduce((s, o) => s + o.positions - o.filled, 0),
+            ),
+            note: openings.length + " roles hiring",
+            icon: "teachers",
+          },
+          {
+            label: "Upcoming interviews",
+            value: String(interviews.length),
+            note: "This week",
+            icon: "calendar",
+          },
+          {
+            label: "Shortlisted",
+            value: String(count("Shortlisted")),
+            note: "Awaiting interview slot",
+            icon: "tasks",
+          },
+          {
+            label: "Rejected",
+            value: String(count("Rejected")),
+            note: count("Offered") + " offers out",
+            icon: "students",
+          },
         ]}
       />
       <div className="dashboard-grid">
-        <SectionCard title="Interviews this week" description="Panels and slots booked for shortlisted candidates.">
+        <SectionCard
+          title="Interviews this week"
+          description="Panels and slots booked for shortlisted candidates."
+        >
           {interviews.length ? (
             <ul className="interview-list">
               {interviews.map((item) => (
@@ -449,7 +851,8 @@ export function RecruitmentPreview() {
                       ) : (
                         <MapPin size={13} aria-hidden="true" />
                       )}
-                      {item.interview!.time} · {item.interview!.mode} · {item.interview!.panel}
+                      {item.interview!.time} · {item.interview!.mode} ·{" "}
+                      {item.interview!.panel}
                     </small>
                   </div>
                 </li>
@@ -459,14 +862,20 @@ export function RecruitmentPreview() {
             <EmptyState>No interviews scheduled.</EmptyState>
           )}
         </SectionCard>
-        <SectionCard title="Hiring pipeline" description="Candidates at each stage.">
+        <SectionCard
+          title="Hiring pipeline"
+          description="Candidates at each stage."
+        >
           <ul className="usage-list">
             {candidateStages.map((stage) => (
               <li key={stage}>
                 <span>
                   {stage} <strong>{count(stage)}</strong>
                 </span>
-                <Meter value={(100 * count(stage)) / candidates.length} label={stage} />
+                <Meter
+                  value={(100 * count(stage)) / candidates.length}
+                  label={stage}
+                />
               </li>
             ))}
           </ul>
@@ -490,9 +899,18 @@ export function RecruitmentPreview() {
         description="Shortlist, schedule or reject candidates. Changes are kept for this visit only."
         className="page-section"
       >
-        <div className="segmented-tabs" role="group" aria-label="Candidate view">
+        <div
+          className="segmented-tabs"
+          role="group"
+          aria-label="Candidate view"
+        >
           {tabs.map((name) => (
-            <button key={name} type="button" aria-pressed={tab === name} onClick={() => setTab(name)}>
+            <button
+              key={name}
+              type="button"
+              aria-pressed={tab === name}
+              onClick={() => setTab(name)}
+            >
               {name}
               <span className="tab-count">
                 {tabStage[name] ? count(tabStage[name]!) : candidates.length}
@@ -524,18 +942,28 @@ export function RecruitmentPreview() {
                     <td>{item.source}</td>
                     <td>{item.score ?? "—"}</td>
                     <td>
-                      <span className={"pill " + candidatePill[item.stage]}>{item.stage}</span>
-                      {item.interview && item.stage === "Interview scheduled" && (
-                        <small className="cell-note">
-                          {item.interview.date} · {item.interview.time}
-                        </small>
+                      <span className={"pill " + candidatePill[item.stage]}>
+                        {item.stage}
+                      </span>
+                      {item.interview &&
+                        item.stage === "Interview scheduled" && (
+                          <small className="cell-note">
+                            {item.interview.date} · {item.interview.time}
+                          </small>
+                        )}
+                      {item.note && (
+                        <small className="cell-note">{item.note}</small>
                       )}
-                      {item.note && <small className="cell-note">{item.note}</small>}
                     </td>
                     <td>
                       <div className="row-actions">
-                        {(item.stage === "Applied" || item.stage === "Rejected") && (
-                          <button type="button" className="button button-outline button-sm" onClick={() => move(item.id, "Shortlisted")}>
+                        {(item.stage === "Applied" ||
+                          item.stage === "Rejected") && (
+                          <button
+                            type="button"
+                            className="button button-outline button-sm"
+                            onClick={() => move(item.id, "Shortlisted")}
+                          >
                             <UserCheck size={14} aria-hidden="true" /> Shortlist
                           </button>
                         )}
@@ -562,19 +990,29 @@ export function RecruitmentPreview() {
                               )
                             }
                           >
-                            <CalendarCheck size={14} aria-hidden="true" /> Schedule
+                            <CalendarCheck size={14} aria-hidden="true" />{" "}
+                            Schedule
                           </button>
                         )}
                         {item.stage === "Interview scheduled" && (
-                          <button type="button" className="button button-outline button-sm" onClick={() => move(item.id, "Offered")}>
+                          <button
+                            type="button"
+                            className="button button-outline button-sm"
+                            onClick={() => move(item.id, "Offered")}
+                          >
                             <Phone size={14} aria-hidden="true" /> Offer
                           </button>
                         )}
-                        {item.stage !== "Rejected" && item.stage !== "Offered" && (
-                          <button type="button" className="button button-outline button-sm button-danger" onClick={() => move(item.id, "Rejected")}>
-                            <UserX size={14} aria-hidden="true" /> Reject
-                          </button>
-                        )}
+                        {item.stage !== "Rejected" &&
+                          item.stage !== "Offered" && (
+                            <button
+                              type="button"
+                              className="button button-outline button-sm button-danger"
+                              onClick={() => move(item.id, "Rejected")}
+                            >
+                              <UserX size={14} aria-hidden="true" /> Reject
+                            </button>
+                          )}
                       </div>
                     </td>
                   </tr>

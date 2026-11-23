@@ -19,6 +19,7 @@ import {
 import { useDemo } from "../demo-context";
 import { EmptyState, TrendChart } from "../dashboard-widgets";
 import { roleHref } from "../navigation";
+import { TimetableLeaveNotice } from "../leave/leave-widgets";
 import { SectionCard } from "../page-header";
 
 const weekdays = [
@@ -132,6 +133,7 @@ export function TimetableView() {
           <EmptyState>No sessions are scheduled for this week.</EmptyState>
         )}
       </SectionCard>
+      <TimetableLeaveNotice />
     </>
   );
 }

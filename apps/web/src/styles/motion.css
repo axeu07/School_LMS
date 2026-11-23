@@ -1,0 +1,574 @@
+/* ==========================================================================
+   Motion & depth layer
+   Loaded last. Adds ambient life, 3D depth and entrance motion on top of the
+   existing design without changing layout. Everything here is switched off
+   for people who prefer reduced motion (see the bottom of this file).
+   ========================================================================== */
+
+/* Redeclared on .app-shell so the shadows pick up each role's --t-glow. */
+:root,
+.app-shell {
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --shadow-rest:
+    0 1px 2px #1c17460a, 0 2px 6px -2px #1c17460f, inset 0 1px 0 #ffffff;
+  --shadow-lift:
+    0 2px 4px #1c174608, 0 14px 28px -10px rgb(var(--t-glow) / 0.2),
+    0 28px 56px -24px rgb(var(--t-glow) / 0.18), inset 0 1px 0 #ffffff;
+}
+
+/* ---------- Ambient, slowly drifting background ---------- */
+.app-shell::before {
+  content: "";
+  position: fixed;
+  inset: -20vmax;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(34vmax 30vmax at 12% 18%, var(--t-a1), transparent 70%),
+    radial-gradient(30vmax 28vmax at 88% 12%, var(--t-a2), transparent 70%),
+    radial-gradient(32vmax 30vmax at 72% 88%, var(--t-a3), transparent 70%),
+    radial-gradient(26vmax 24vmax at 20% 92%, var(--t-a4), transparent 70%),
+    var(--t-bg);
+  filter: blur(10px);
+  animation: aurora-drift var(--t-drift, 38s) ease-in-out infinite alternate;
+}
+@keyframes aurora-drift {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translate3d(3vmax, -2vmax, 0) rotate(6deg) scale(1.06);
+  }
+  100% {
+    transform: translate3d(-3vmax, 2vmax, 0) rotate(-4deg) scale(1.02);
+  }
+}
+
+/* ---------- Glassy chrome so the ambient colour shows through ---------- */
+.app-sidebar {
+  background: #ffffffc7;
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+}
+.dashboard-header {
+  background: #ffffffb8;
+  backdrop-filter: blur(16px) saturate(1.5);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+}
+
+/* ---------- Brand mark: glossy 3D tile with a periodic shine ---------- */
+.brand-mark {
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 6px 14px -4px rgb(var(--t-glow) / 0.5),
+    inset 0 1px 0 #ffffff59,
+    inset 0 -2px 0 #0000002e;
+  transition: transform 0.5s var(--ease-spring);
+}
+.brand-mark::after {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  background: linear-gradient(
+    115deg,
+    transparent 40%,
+    #ffffff8c 50%,
+    transparent 60%
+  );
+  transform: translateX(-120%);
+  animation: shine 6s ease-in-out infinite 1.5s;
+}
+.brand:hover .brand-mark {
+  transform: perspective(200px) rotateY(-18deg) rotateX(8deg) scale(1.06);
+}
+@keyframes shine {
+  0%,
+  70% {
+    transform: translateX(-120%);
+  }
+  85%,
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+/* ---------- Live indicators: soft ping around status dots ---------- */
+.eyebrow > span,
+.demo-pill > span,
+.unread-dot {
+  animation: live-ping 2.4s var(--ease-out) infinite;
+}
+@keyframes live-ping {
+  0% {
+    box-shadow: 0 0 0 0 rgb(var(--t-glow) / 0.45);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 7px rgb(var(--t-glow) / 0);
+  }
+}
+
+/* ---------- Buttons: lift, press and sheen ---------- */
+.button,
+.icon-button {
+  transition:
+    background 0.18s,
+    border-color 0.18s,
+    color 0.18s,
+    box-shadow 0.25s var(--ease-out),
+    transform 0.25s var(--ease-out);
+}
+.button:hover,
+.icon-button:hover {
+  transform: translateY(-1px);
+}
+.button:active,
+.icon-button:active {
+  transform: translateY(0) scale(0.97);
+  transition-duration: 0.08s;
+}
+.button-primary {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--t-grad);
+  box-shadow:
+    0 8px 18px -6px rgb(var(--t-glow) / 0.55),
+    inset 0 1px 0 #ffffff40;
+}
+.button-primary:hover {
+  background: var(--t-grad-hover);
+  box-shadow:
+    0 12px 24px -8px rgb(var(--t-glow) / 0.65),
+    inset 0 1px 0 #ffffff4d;
+}
+.button-primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    #ffffff47 50%,
+    transparent 70%
+  );
+  transform: translateX(-110%);
+  transition: transform 0.7s var(--ease-out);
+}
+.button-primary:hover::after {
+  transform: translateX(110%);
+}
+.button-outline:hover {
+  box-shadow: 0 6px 14px -8px rgb(var(--t-glow) / 0.35);
+}
+
+/* ---------- Sidebar navigation ---------- */
+.nav-link {
+  transition:
+    background 0.2s,
+    color 0.2s,
+    transform 0.25s var(--ease-out);
+}
+.nav-link svg {
+  transition: transform 0.35s var(--ease-spring);
+}
+.nav-link:hover svg {
+  transform: scale(1.15) rotate(-6deg);
+}
+.nav-link:hover {
+  transform: translateX(2px);
+}
+.nav-link[aria-current="page"] {
+  background: var(--t-nav-active);
+  box-shadow: inset 0 0 0 1px var(--t-line);
+}
+.nav-link[aria-current="page"]::before {
+  box-shadow: 0 0 10px 1px rgb(var(--t-glow) / 0.6);
+  animation: indicator-in 0.45s var(--ease-spring);
+}
+@keyframes indicator-in {
+  from {
+    transform: scaleY(0);
+  }
+}
+
+/* ---------- Cards: depth at rest, lift on hover ---------- */
+[data-slot="card"],
+.action-card,
+.role-card,
+.marketing-card,
+.marketing-role,
+.spotlight {
+  box-shadow: var(--shadow-rest);
+  transition:
+    box-shadow 0.35s var(--ease-out),
+    border-color 0.25s,
+    transform 0.45s var(--ease-out);
+}
+[data-slot="card"]:hover {
+  box-shadow: var(--shadow-lift);
+}
+
+/* 3D tilt targets — rotation comes from MotionLayer (--rx / --ry). */
+.stat-card,
+.action-card,
+.role-card,
+.marketing-card,
+.marketing-role,
+.course-grid > .dash-card,
+[data-tilt] {
+  position: relative;
+  transform-style: preserve-3d;
+}
+.stat-card:hover,
+.action-card:hover,
+.role-card:hover,
+.marketing-card:hover,
+.marketing-role:hover,
+.course-grid > .dash-card:hover,
+[data-tilt]:hover {
+  transform: perspective(900px) rotateX(var(--rx, 0deg))
+    rotateY(var(--ry, 0deg)) translateY(-4px);
+  box-shadow: var(--shadow-lift);
+  border-color: var(--t-line);
+}
+.stat-card[data-tilting],
+.action-card[data-tilting],
+.role-card[data-tilting],
+.marketing-card[data-tilting],
+.marketing-role[data-tilting],
+.course-grid > .dash-card[data-tilting],
+[data-tilt][data-tilting] {
+  /* Follow the pointer closely, but settle back smoothly on leave. */
+  transition:
+    box-shadow 0.35s var(--ease-out),
+    border-color 0.25s,
+    transform 0.12s linear;
+}
+/* Moving light glare */
+.stat-card::after,
+.action-card::after,
+.role-card::after,
+.marketing-card::after,
+.marketing-role::after,
+.course-grid > .dash-card::after,
+[data-tilt]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    circle at var(--gx, 50%) var(--gy, 0%),
+    #ffffffb3,
+    #ffffff00 55%
+  );
+  mix-blend-mode: soft-light;
+  transition: opacity 0.3s;
+}
+.stat-card:hover::after,
+.action-card:hover::after,
+.role-card:hover::after,
+.marketing-card:hover::after,
+.marketing-role:hover::after,
+.course-grid > .dash-card:hover::after,
+[data-tilt]:hover::after {
+  opacity: 1;
+}
+
+/* Icons float above the card surface in 3D */
+.stat-icon,
+.role-icon {
+  box-shadow:
+    inset 0 1px 0 #ffffffb3,
+    inset 0 -2px 0 #0000000d,
+    0 6px 14px -8px currentColor;
+  transition: transform 0.45s var(--ease-spring);
+}
+.stat-card:hover .stat-icon,
+.action-card:hover .stat-icon,
+.role-card:hover .role-icon,
+.marketing-card:hover .role-icon,
+.marketing-role:hover .role-icon {
+  transform: translateZ(28px) scale(1.08) rotate(-4deg);
+}
+.stat-card .stat-icon {
+  animation: icon-float 5s ease-in-out infinite;
+}
+.stat-grid > :nth-child(2) .stat-icon {
+  animation-delay: -1.2s;
+}
+.stat-grid > :nth-child(3) .stat-icon {
+  animation-delay: -2.5s;
+}
+.stat-grid > :nth-child(4) .stat-icon {
+  animation-delay: -3.7s;
+}
+.stat-card:hover .stat-icon {
+  animation-play-state: paused;
+}
+@keyframes icon-float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -3px;
+  }
+}
+.stat-card strong,
+.action-card strong {
+  transition: transform 0.45s var(--ease-out);
+}
+.stat-card:hover strong {
+  transform: translateZ(18px);
+}
+.action-card > svg {
+  transition:
+    transform 0.35s var(--ease-spring),
+    color 0.2s;
+}
+.action-card:hover > svg {
+  transform: translateX(4px);
+  color: var(--primary);
+}
+.count-up {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Page entrance: content rises in, staggered ---------- */
+.dashboard-main > *,
+.stat-grid > *,
+.action-grid > *,
+.course-grid > *,
+.dashboard-grid > * {
+  animation: rise-in 0.6s var(--ease-out) backwards;
+}
+.dashboard-main > :nth-child(2),
+.stat-grid > :nth-child(2),
+.action-grid > :nth-child(2),
+.course-grid > :nth-child(2),
+.dashboard-grid > :nth-child(2) {
+  animation-delay: 0.06s;
+}
+.dashboard-main > :nth-child(3),
+.stat-grid > :nth-child(3),
+.action-grid > :nth-child(3),
+.course-grid > :nth-child(3),
+.dashboard-grid > :nth-child(3) {
+  animation-delay: 0.12s;
+}
+.dashboard-main > :nth-child(4),
+.stat-grid > :nth-child(4),
+.action-grid > :nth-child(4),
+.course-grid > :nth-child(4),
+.dashboard-grid > :nth-child(4) {
+  animation-delay: 0.18s;
+}
+.dashboard-main > :nth-child(n + 5),
+.action-grid > :nth-child(n + 5),
+.course-grid > :nth-child(n + 5) {
+  animation-delay: 0.24s;
+}
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+}
+
+/* ---------- Data that grows into place ---------- */
+.meter > span {
+  transform-origin: left center;
+  animation: meter-grow 1s var(--ease-out) backwards 0.2s;
+  background: var(--t-meter);
+  box-shadow: 0 0 8px rgb(var(--t-glow) / 0.35);
+}
+@keyframes meter-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+.chart-bar {
+  transform-origin: bottom center;
+  background: linear-gradient(180deg, var(--t-bar-1), var(--t-bar-2));
+  animation: bar-rise 0.8s var(--ease-spring) backwards;
+}
+.chart-bar:hover,
+.chart-bar[aria-pressed="true"] {
+  background: linear-gradient(180deg, var(--t-1-light), var(--t-1));
+  box-shadow: 0 -4px 14px -2px rgb(var(--t-glow) / 0.4);
+}
+.chart-column:nth-child(2) .chart-bar {
+  animation-delay: 0.05s;
+}
+.chart-column:nth-child(3) .chart-bar {
+  animation-delay: 0.1s;
+}
+.chart-column:nth-child(4) .chart-bar {
+  animation-delay: 0.15s;
+}
+.chart-column:nth-child(5) .chart-bar {
+  animation-delay: 0.2s;
+}
+.chart-column:nth-child(6) .chart-bar {
+  animation-delay: 0.25s;
+}
+.chart-column:nth-child(n + 7) .chart-bar {
+  animation-delay: 0.3s;
+}
+@keyframes bar-rise {
+  from {
+    transform: scaleY(0);
+  }
+}
+
+/* ---------- Tables & lists: gentle row highlight ---------- */
+.data-table tbody tr {
+  transition: background 0.2s;
+}
+.data-table tbody tr:hover {
+  background: var(--t-soft-2);
+}
+.segmented button {
+  transition:
+    background 0.2s,
+    color 0.2s,
+    box-shadow 0.2s;
+}
+
+/* ---------- Dialogs pop in with depth ---------- */
+dialog[open] {
+  animation: dialog-in 0.35s var(--ease-spring);
+}
+dialog.mobile-dialog[open] {
+  animation: drawer-in 0.35s var(--ease-out);
+}
+dialog[open]::backdrop {
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  animation: fade-in 0.3s ease-out;
+}
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: perspective(900px) translateY(12px) rotateX(8deg) scale(0.96);
+  }
+}
+@keyframes drawer-in {
+  from {
+    transform: translateX(-100%);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* ---------- Marketing page ---------- */
+.marketing-page {
+  background:
+    radial-gradient(60rem 30rem at 85% -5%, #ece8ff, transparent 70%),
+    radial-gradient(40rem 24rem at -10% 20%, #e8f3ff, transparent 70%), #fff;
+}
+.hero-copy > * {
+  animation: rise-in 0.8s var(--ease-out) backwards;
+}
+.hero-copy > :nth-child(2) {
+  animation-delay: 0.08s;
+}
+.hero-copy > :nth-child(3) {
+  animation-delay: 0.16s;
+}
+.hero-copy > :nth-child(4) {
+  animation-delay: 0.24s;
+}
+.hero-copy > :nth-child(5) {
+  animation-delay: 0.32s;
+}
+.hero h1 em {
+  background: linear-gradient(90deg, #5240cf, #8a5cf6, #3f7be0, #5240cf);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradient-flow 9s ease-in-out infinite;
+}
+@keyframes gradient-flow {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+.preview-frame {
+  animation:
+    frame-in 1s var(--ease-out) backwards 0.2s,
+    frame-float 7s ease-in-out infinite 1.2s;
+  transform: perspective(1400px) rotateX(var(--rx, 0deg))
+    rotateY(var(--ry, 0deg));
+  transition: transform 0.4s var(--ease-out);
+  box-shadow:
+    0 30px 70px -20px #4737a64d,
+    0 12px 30px -12px #4737a633,
+    0 0 0 1px #e6e1fa;
+}
+@keyframes frame-in {
+  from {
+    opacity: 0;
+    transform: perspective(1400px) rotateX(14deg) rotateY(-10deg)
+      translateY(30px);
+  }
+}
+@keyframes frame-float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -8px;
+  }
+}
+.closing-cta {
+  background:
+    radial-gradient(ellipse at 95% 0%, #7b69ef, transparent 48%),
+    radial-gradient(ellipse at 0% 100%, #4f7be055, transparent 50%), #34258c;
+  background-size: 140% 140%;
+  animation: cta-glow 12s ease-in-out infinite alternate;
+}
+@keyframes cta-glow {
+  to {
+    background-position: 100% 100%;
+  }
+}
+
+/* ---------- Respect reduced-motion preferences ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0s !important;
+  }
+  [data-slot="card"]:hover,
+  .stat-card:hover,
+  .action-card:hover,
+  .role-card:hover,
+  .marketing-card:hover,
+  .marketing-role:hover,
+  .course-grid > .dash-card:hover,
+  .button:hover,
+  .icon-button:hover,
+  .nav-link:hover,
+  .preview-frame {
+    transform: none !important;
+  }
+}

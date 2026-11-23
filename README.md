@@ -1,4 +1,4 @@
-# School LMS
+# ACADMAXIS
 
 A Phase 1 foundation for a school and college learning management system. The npm workspace contains a Next.js web app, a NestJS REST API, and a shared TypeScript package.
 
