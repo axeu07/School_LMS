@@ -1,0 +1,40 @@
+{
+  "name": "school-lms",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": "^22.18.0 || ^24.11.0 || ^26.0.0",
+    "npm": ">=10"
+  },
+  "scripts": {
+    "dev:web": "npm run dev -w @school-lms/web",
+    "dev:api": "npm run dev -w @school-lms/api",
+    "dev": "concurrently -k -n web,api \"npm run dev:web\" \"npm run dev:api\"",
+    "build": "npm run build --workspaces",
+    "lint": "npm run lint --workspaces",
+    "typecheck": "npm run typecheck --workspaces",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "db:validate": "npm run db:validate -w @school-lms/api",
+    "db:generate": "npm run db:generate -w @school-lms/api",
+    "db:check": "npm run db:check -w @school-lms/api"
+  },
+  "devDependencies": {
+    "concurrently": "^9",
+    "eslint": "^9",
+    "@eslint/js": "^9",
+    "prettier": "^3",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8",
+    "@types/node": "^24"
+  },
+  "overrides": {
+    "@prisma/config": {
+      "effect": "3.22.5"
+    }
+  }
+}

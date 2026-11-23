@@ -1,0 +1,10 @@
+NPM DB CMD for School LMS
+
+
+npm.cmd run db:validate
+npm.cmd exec -w @school-lms/api -- prisma migrate dev --name describe_change --create-only
+npm.cmd exec -w @school-lms/api -- prisma migrate dev
+npm.cmd run db:generate
+npm.cmd exec -w @school-lms/api -- prisma migrate status
+npm.cmd run db:check
+

@@ -1,0 +1,40 @@
+import type { School } from "@/types/demo";
+
+export const schools: readonly School[] = [
+  {
+    id: "westfield",
+    name: "Westfield Academy",
+    initials: "WA",
+    location: "Pune",
+    students: 1248,
+    teachers: 64,
+    classes: 32,
+    attendance: 96.4,
+    plan: "Professional",
+    status: "Active",
+  },
+  {
+    id: "harborview",
+    name: "Harborview International",
+    initials: "HI",
+    location: "Kochi",
+    students: 836,
+    teachers: 47,
+    classes: 26,
+    attendance: 93.8,
+    plan: "Professional",
+    status: "Active",
+  },
+  {
+    id: "cedar",
+    name: "Cedar Grove College",
+    initials: "CG",
+    location: "Bengaluru",
+    students: 612,
+    teachers: 39,
+    classes: 20,
+    attendance: 91.2,
+    plan: "Starter",
+    status: "Trial",
+  },
+];

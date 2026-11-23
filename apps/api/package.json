@@ -1,0 +1,33 @@
+{
+  "name": "@school-lms/api",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "nest start --watch",
+    "start": "node dist/main.js",
+    "build": "nest build",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "db:validate": "prisma validate",
+    "predev": "npm run db:generate",
+    "prebuild": "npm run db:generate",
+    "pretypecheck": "npm run db:generate",
+    "db:generate": "prisma generate",
+    "db:check": "npm run build && node dist/database/check-connection.js"
+  },
+  "dependencies": {
+    "@nestjs/common": "^11",
+    "@nestjs/config": "^4",
+    "@nestjs/core": "^11",
+    "@nestjs/platform-express": "^11",
+    "@prisma/adapter-pg": "7.10.1",
+    "@prisma/client": "^7.2",
+    "dotenv": "^17",
+    "reflect-metadata": "^0.2",
+    "rxjs": "^7"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^11",
+    "prisma": "^7.2"
+  }
+}
