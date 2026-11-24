@@ -12,7 +12,6 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Search,
-  UsersRound,
   X,
 } from "lucide-react";
 import Link from "next/link";
@@ -62,6 +61,8 @@ export function Sidebar({
   onNavigate?: () => void;
 }) {
   const { data, profile, schoolId } = useDemo();
+  const session = useWorkspaceSession(role, schoolId);
+  const router = useRouter();
   const active = useActiveSlug(role);
   // Accordion: only one group is open at a time. By default that is the group
   // holding the current page; a header click overrides it until the user
@@ -201,19 +202,38 @@ export function Sidebar({
             <strong>{data.person.name}</strong>
             <small>{profile.label}</small>
           </span>
+          <button
+            type="button"
+            className="sidebar-signout"
+            aria-label="Sign out"
+            title={collapsed ? undefined : "Sign out"}
+            onMouseEnter={(event) => showTip("Sign out", event)}
+            onMouseLeave={() => setTooltip(undefined)}
+            onFocus={(event) => showTip("Sign out", event)}
+            onBlur={() => setTooltip(undefined)}
+            onClick={() =>
+              session
+                ? signOutTo(router, session, "signedOut")
+                : router.push("/")
+            }
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+          </button>
         </div>
-        <Link
-          href="/demo/select-profile"
-          className="nav-link"
-          aria-label={collapsed ? "Switch demo role" : undefined}
-          onMouseEnter={(event) => showTip("Switch demo role", event)}
-          onMouseLeave={() => setTooltip(undefined)}
-          onFocus={(event) => showTip("Switch demo role", event)}
-          onBlur={() => setTooltip(undefined)}
-        >
-          <UsersRound size={18} aria-hidden="true" />
-          <span className="nav-label">Switch Demo Role</span>
-        </Link>
       </div>
       {collapsed && tooltip && (
         <span

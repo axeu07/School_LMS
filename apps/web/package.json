@@ -10,20 +10,22 @@
     "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
+    "class-variance-authority": "^0.7",
+    "clsx": "^2",
+    "lucide-react": "latest",
     "next": "^16",
     "react": "^19",
     "react-dom": "^19",
-    "lucide-react": "latest",
-    "class-variance-authority": "^0.7",
-    "clsx": "^2",
     "tailwind-merge": "^3"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^24.19.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
     "eslint-config-next": "^16",
-    "shadcn": "latest"
+    "shadcn": "latest",
+    "tailwindcss": "^4",
+    "typescript": "~5.9.3"
   }
 }

@@ -2,7 +2,8 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { ChevronRight, Info } from "lucide-react";
+import { CalendarDays, ChevronRight, Info, School } from "lucide-react";
+import { useNow } from "@/services/learning-store";
 import { Card } from "@/components/ui/card";
 import { useDemo } from "./demo-context";
 import { roleHref } from "./navigation";
@@ -22,6 +23,7 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   const { role, profile, school, data, stage } = useDemo();
+  const now = useNow(60_000);
   const senior = stage === "senior";
   const scope = role === "super-admin" ? "Platform" : school.name;
   // The dashboard (no group) gets a themed welcome banner.
@@ -51,26 +53,91 @@ export function PageHeader({
           <i />
         </span>
       )}
-      <div className="page-header-copy">
-        {hero && greeting && (
-          <p className="hero-greeting">
-            {role === "student" && !senior && (
-              <span className="hero-wave" aria-hidden="true">
-                👋
+      {hero ? (
+        <>
+          <div className="page-header-copy">
+            {greeting && (
+              <p className="hero-greeting">
+                {role === "student" && !senior && (
+                  <span className="hero-wave" aria-hidden="true">
+                    👋
+                  </span>
+                )}
+                {greeting}
+              </p>
+            )}
+            <h1 title={description}>
+              {title}
+              {preview && (
+                <span className="pill pill-preview">Demo preview</span>
+              )}
+            </h1>
+          </div>
+          <div className="hero-meta">
+            <span className="hero-chip">
+              <School size={13} aria-hidden="true" />
+              {scope}
+            </span>
+            {now && (
+              <span className="hero-chip">
+                <CalendarDays size={13} aria-hidden="true" />
+                {now.toLocaleDateString("en-IN", {
+                  weekday: "short",
+                  day: "numeric",
+                  month: "short",
+                })}
               </span>
             )}
-            {greeting}
-          </p>
-        )}
+            {actions}
+          </div>
+        </>
+      ) : (
+        <PlainHeader
+          title={title}
+          description={description}
+          group={group}
+          preview={preview}
+          actions={actions}
+          scope={scope}
+          role={role}
+          profileLabel={profile.label}
+        />
+      )}
+    </div>
+  );
+}
+
+function PlainHeader({
+  title,
+  description,
+  group,
+  preview,
+  actions,
+  scope,
+  role,
+  profileLabel,
+}: {
+  title: string;
+  description: string;
+  group?: string;
+  preview: boolean;
+  actions?: ReactNode;
+  scope: string;
+  role: Parameters<typeof roleHref>[0];
+  profileLabel: string;
+}) {
+  return (
+    <>
+      <div className="page-header-copy">
         <nav aria-label="Breadcrumb" className="breadcrumbs">
           <ol>
             <li>{scope}</li>
             <li>
               <ChevronRight size={13} aria-hidden="true" />
               {group ? (
-                <Link href={roleHref(role)}>{profile.label}</Link>
+                <Link href={roleHref(role)}>{profileLabel}</Link>
               ) : (
-                <span aria-current="page">{profile.label}</span>
+                <span aria-current="page">{profileLabel}</span>
               )}
             </li>
             {group && (
@@ -94,7 +161,7 @@ export function PageHeader({
         <p>{description}</p>
       </div>
       {actions && <div className="page-actions">{actions}</div>}
-    </div>
+    </>
   );
 }
 

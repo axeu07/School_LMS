@@ -9,6 +9,8 @@ import "@/styles/calendar-and-messages.css";
 import "@/styles/motion.css";
 import "@/styles/role-themes.css";
 import "@/styles/senior-student.css";
+import "@/styles/dashboard-glance.css";
+import "@/styles/dashboard.css";
 import { MotionLayer } from "@/components/common/motion-layer";
 
 // Self-hosted variable font: crisp hinting at every weight (incl. 650/750)

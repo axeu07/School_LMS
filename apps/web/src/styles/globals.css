@@ -813,6 +813,35 @@ h3 {
   color: var(--muted);
   font-size: 0.75rem;
 }
+.sidebar-person .nav-label {
+  flex: 1;
+  min-width: 0;
+}
+.sidebar-signout {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  aspect-ratio: 1;
+  margin-left: auto;
+  border: 0;
+  border-radius: 8px;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+}
+.sidebar-signout:hover,
+.sidebar-signout:focus-visible {
+  color: #c2410c;
+  background: rgb(194 65 12 / 0.1);
+}
+.app-shell[data-collapsed="true"] .app-sidebar .sidebar-person {
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.app-shell[data-collapsed="true"] .app-sidebar .sidebar-signout {
+  margin-left: 0;
+}
 .app-shell[data-collapsed="true"] .app-sidebar .nav-label,
 .app-shell[data-collapsed="true"] .app-sidebar .nav-badge,
 .app-shell[data-collapsed="true"] .app-sidebar .brand > span:last-child {
