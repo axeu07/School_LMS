@@ -36,9 +36,16 @@ export function EmptyState({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function StatCards({ stats }: { stats: DemoStat[] }) {
+export function StatCards({
+  stats,
+  compact = false,
+}: {
+  stats: DemoStat[];
+  /** Smaller single-row cards for list pages. */
+  compact?: boolean;
+}) {
   return (
-    <div className="stat-grid">
+    <div className={compact ? "stat-grid stat-grid-compact" : "stat-grid"}>
       {stats.map((stat, index) => {
         const Icon = statIcons[stat.icon];
         return (

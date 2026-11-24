@@ -5,6 +5,7 @@ import {
   useEffect,
   useRef,
   useState,
+  type CSSProperties,
   type KeyboardEvent,
   type ReactNode,
 } from "react";
@@ -529,6 +530,73 @@ type DayKeyHandler = (
   day: string,
 ) => void;
 
+/** Multi-day entries first, in a stable order, so their bars line up across a week. */
+function chipOrder(a: CalendarEntry, b: CalendarEntry) {
+  const spanA = a.startDate !== a.endDate;
+  const spanB = b.startDate !== b.endDate;
+  if (spanA !== spanB) return spanA ? -1 : 1;
+  return (
+    a.startDate.localeCompare(b.startDate) ||
+    (a.allDay === b.allDay ? 0 : a.allDay ? -1 : 1) ||
+    a.startTime.localeCompare(b.startTime) ||
+    a.key.localeCompare(b.key)
+  );
+}
+
+/** Rows of event bars shown per day cell before "+N more". */
+const MONTH_LANES = 3;
+
+/**
+ * Assigns every entry in a week to a fixed lane (row) so a multi-day bar sits
+ * on the same row in every cell it crosses. Returns, per day, the lane slots
+ * (undefined = empty spacer) plus how many entries did not fit.
+ */
+/** Entries open longer than this are shown only on their first and last day
+ * in the month grid, instead of as a bar across every week in between. */
+const LONG_RUNNING_DAYS = 7;
+
+function isLongRunning(item: Pick<CalendarEntry, "startDate" | "endDate">) {
+  const span =
+    (Date.parse(item.endDate) - Date.parse(item.startDate)) / 86_400_000 + 1;
+  return span > LONG_RUNNING_DAYS;
+}
+
+function weekLayout(week: string[], entries: CalendarEntry[]) {
+  const perDay = week.map((day) =>
+    entriesOn(entries, day).filter(
+      (item) =>
+        !isLongRunning(item) ||
+        item.startDate === day ||
+        item.endDate === day,
+    ),
+  );
+  const inWeek = [
+    ...new Map(perDay.flat().map((item) => [item.key, item])).values(),
+  ].sort(chipOrder);
+  const taken: boolean[][] = [];
+  const laneOf = new Map<string, number>();
+  for (const item of inWeek) {
+    const cols = perDay.flatMap((items, column) =>
+      items.some((other) => other.key === item.key) ? [column] : [],
+    );
+    let lane = 0;
+    while (cols.some((column) => taken[lane]?.[column])) lane += 1;
+    taken[lane] ??= [];
+    for (const column of cols) taken[lane][column] = true;
+    laneOf.set(item.key, lane);
+  }
+  return perDay.map((items) => {
+    const used = items.map((item) => laneOf.get(item.key) ?? 0);
+    const overflow = used.filter((lane) => lane >= MONTH_LANES).length;
+    const visible = Math.min(MONTH_LANES, Math.max(-1, ...used) + 1);
+    const slots: (CalendarEntry | undefined)[] = Array.from(
+      { length: visible },
+      (_, lane) => items.find((item) => laneOf.get(item.key) === lane),
+    );
+    return { items, slots, overflow };
+  });
+}
+
 function MonthView({
   selected,
   today,
@@ -536,6 +604,8 @@ function MonthView({
   onSelect,
   onOpen,
   onKey,
+  highlight,
+  focus,
 }: {
   selected: string;
   today: string;
@@ -543,6 +613,9 @@ function MonthView({
   onSelect: (day: string) => void;
   onOpen: (key: string) => void;
   onKey: DayKeyHandler;
+  /** Days of the month that match the focused category filter. */
+  highlight?: Set<string>;
+  focus?: EntryCategory;
 }) {
   const days = monthGrid(selected);
   const month = selected.slice(0, 7);
@@ -558,100 +631,167 @@ function MonthView({
           </span>
         ))}
       </div>
-      {weeks.map((week) => (
-        <div className="cal-row" role="row" key={week[0]}>
-          {week.map((day) => {
-            const items = entriesOn(entries, day);
-            const isSelected = day === selected;
-            return (
-              <div
-                role="gridcell"
-                key={day}
-                className="cal-day"
-                aria-selected={isSelected}
-                data-outside={day.slice(0, 7) !== month || undefined}
-                data-today={day === today || undefined}
-              >
-                <button
-                  type="button"
-                  className="cal-day-number"
-                  data-date={day}
-                  tabIndex={isSelected ? 0 : -1}
-                  aria-label={
-                    longDate(day) +
-                    (day === today ? ", today" : "") +
-                    ", " +
-                    (items.length
-                      ? items.length +
-                        (items.length === 1 ? " event" : " events")
-                      : "no events")
-                  }
-                  aria-pressed={isSelected}
-                  onClick={() => onSelect(day)}
-                  onKeyDown={(event) => onKey(event, day)}
+      {weeks.map((week) => {
+        const layout = weekLayout(week, entries);
+        return (
+          <div className="cal-row" role="row" key={week[0]}>
+            {week.map((day, column) => {
+              const { items, slots, overflow } = layout[column];
+              const isSelected = day === selected;
+              return (
+                <div
+                  role="gridcell"
+                  key={day}
+                  className="cal-day"
+                  aria-selected={isSelected}
+                  data-outside={day.slice(0, 7) !== month || undefined}
+                  data-today={day === today || undefined}
+                  data-match={highlight?.has(day) || undefined}
+                  data-category={highlight?.has(day) ? focus : undefined}
+                  data-dim={(highlight && !highlight.has(day)) || undefined}
                 >
-                  {Number(day.slice(8))}
-                </button>
-                {items.length > 0 && (
-                  <span className="cal-dots" aria-hidden="true">
-                    {items.slice(0, 4).map((item) => (
-                      <span
-                        key={item.key}
-                        className="cal-dot"
-                        data-category={item.category}
-                      />
-                    ))}
-                  </span>
-                )}
-                <ul className="cal-chips">
-                  {items.slice(0, 3).map((item) => (
-                    <li key={item.key}>
-                      <button
-                        type="button"
-                        className="cal-chip"
-                        data-category={item.category}
-                        data-cancelled={
-                          item.status === "Cancelled" || undefined
-                        }
-                        data-pending={
-                          item.status === "Draft" ||
-                          item.status === "Proposed" ||
-                          undefined
-                        }
-                        tabIndex={isSelected ? 0 : -1}
-                        onClick={() => onOpen(item.key)}
-                        title={item.title}
-                      >
-                        {!item.allDay && item.startDate === day && (
-                          <span className="cal-chip-time">
-                            {item.startTime}
-                          </span>
-                        )}
-                        {item.title}
-                        {item.status === "Cancelled" && (
-                          <span className="sr-only"> (cancelled)</span>
-                        )}
-                      </button>
-                    </li>
-                  ))}
-                  {items.length > 3 && (
-                    <li>
-                      <button
-                        type="button"
-                        className="cal-more"
-                        tabIndex={isSelected ? 0 : -1}
-                        onClick={() => onSelect(day)}
-                      >
-                        +{items.length - 3} more
-                      </button>
-                    </li>
+                  <button
+                    type="button"
+                    className="cal-day-number"
+                    data-date={day}
+                    tabIndex={isSelected ? 0 : -1}
+                    aria-label={
+                      longDate(day) +
+                      (day === today ? ", today" : "") +
+                      ", " +
+                      (items.length
+                        ? items.length +
+                          (items.length === 1 ? " event" : " events")
+                        : "no events")
+                    }
+                    aria-pressed={isSelected}
+                    onClick={() => onSelect(day)}
+                    onKeyDown={(event) => onKey(event, day)}
+                  >
+                    {Number(day.slice(8))}
+                  </button>
+                  {items.length > 0 && (
+                    <span className="cal-dots" aria-hidden="true">
+                      {items.slice(0, 4).map((item) => (
+                        <span
+                          key={item.key}
+                          className="cal-dot"
+                          data-category={item.category}
+                        />
+                      ))}
+                    </span>
                   )}
-                </ul>
-              </div>
-            );
-          })}
-        </div>
-      ))}
+                  <ul className="cal-chips">
+                    {slots.map((item, lane) =>
+                      !item ? (
+                        <li
+                          key={"gap-" + lane}
+                          className="cal-chip-gap"
+                          aria-hidden="true"
+                        />
+                      ) : isLongRunning(item) ? (
+                        // Long windows (e.g. a test open for months) get a
+                        // marker on the opening and closing day only.
+                        <li key={item.key}>
+                          <button
+                            type="button"
+                            className="cal-chip"
+                            data-category={item.category}
+                            data-cancelled={
+                              item.status === "Cancelled" || undefined
+                            }
+                            data-pending={
+                              item.status === "Draft" ||
+                              item.status === "Proposed" ||
+                              undefined
+                            }
+                            tabIndex={isSelected ? 0 : -1}
+                            onClick={() => onOpen(item.key)}
+                            title={item.title + " · " + timeLabel(item)}
+                          >
+                            <span className="cal-chip-time">
+                              {item.startDate === day
+                                ? item.allDay
+                                  ? "Opens"
+                                  : item.startTime
+                                : item.allDay
+                                  ? "Closes"
+                                  : "Closes " + item.endTime}
+                            </span>
+                            {item.title}
+                            {item.status === "Cancelled" && (
+                              <span className="sr-only"> (cancelled)</span>
+                            )}
+                          </button>
+                        </li>
+                      ) : (
+                        <li key={item.key}>
+                          <button
+                            type="button"
+                            className="cal-chip"
+                            style={
+                              {
+                                // The lead chip stretches over every day the
+                                // entry covers in this week, so its title can
+                                // be read in full instead of being cut per cell.
+                                "--span":
+                                  item.startDate < day && column > 0
+                                    ? 1
+                                    : week
+                                        .slice(column)
+                                        .filter((d) => d <= item.endDate)
+                                        .length,
+                              } as CSSProperties
+                            }
+                            data-category={item.category}
+                            data-cancelled={
+                              item.status === "Cancelled" || undefined
+                            }
+                            data-pending={
+                              item.status === "Draft" ||
+                              item.status === "Proposed" ||
+                              undefined
+                            }
+                            data-continued={
+                              (item.startDate < day && column > 0) || undefined
+                            }
+                            data-continues={item.endDate > week[6] || undefined}
+                            tabIndex={isSelected ? 0 : -1}
+                            onClick={() => onOpen(item.key)}
+                            title={item.title + " · " + timeLabel(item)}
+                          >
+                            {!item.allDay && item.startDate === day && (
+                              <span className="cal-chip-time">
+                                {item.startTime}
+                              </span>
+                            )}
+                            {item.title}
+                            {item.status === "Cancelled" && (
+                              <span className="sr-only"> (cancelled)</span>
+                            )}
+                          </button>
+                        </li>
+                      ),
+                    )}
+                    {overflow > 0 && (
+                      <li>
+                        <button
+                          type="button"
+                          className="cal-more"
+                          tabIndex={isSelected ? 0 : -1}
+                          onClick={() => onSelect(day)}
+                        >
+                          +{overflow} more
+                        </button>
+                      </li>
+                    )}
+                  </ul>
+                </div>
+              );
+            })}
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -1743,7 +1883,7 @@ function SchoolCalendar({
   );
   const [view, setView] = useState<View>("month");
   const [cursor, setCursor] = useState<string | undefined>(linked?.startDate);
-  const [hidden, setHidden] = useState<EntryCategory[]>([]);
+  const [focus, setFocus] = useState<EntryCategory>();
   const [openKey, setOpenKey] = useState<string | undefined>(
     linked ? "event:" + linked.id : undefined,
   );
@@ -1761,7 +1901,34 @@ function SchoolCalendar({
   const today = localCalendarDate(now);
   const selected = cursor ?? today;
   const all = calendarEntries(comm, learning, records, actor, leave);
-  const entries = all.filter((item) => !hidden.includes(item.category));
+  const entries = focus ? all.filter((item) => item.category === focus) : all;
+  const monthKey = selected.slice(0, 7);
+  const inMonth = (item: CalendarEntry) =>
+    item.startDate <= monthKey + "-31" && item.endDate >= monthKey + "-01";
+  const monthMatches = focus
+    ? all
+        .filter((item) => item.category === focus && inMonth(item))
+        .sort((a, b) => a.startDate.localeCompare(b.startDate))
+    : [];
+  const highlight = focus
+    ? new Set(
+        monthGrid(selected).filter(
+          (day) =>
+            day.startsWith(monthKey) && entriesOn(monthMatches, day).length,
+        ),
+      )
+    : undefined;
+  const toggleFocus = (category: EntryCategory) => {
+    if (focus === category) return setFocus(undefined);
+    setFocus(category);
+    const first = all
+      .filter((item) => item.category === category && inMonth(item))
+      .map((item) =>
+        item.startDate < monthKey + "-01" ? monthKey + "-01" : item.startDate,
+      )
+      .sort()[0];
+    if (first) setCursor(first);
+  };
   const open = all.find((item) => item.key === openKey);
   const year = records.years.find((item) => item.status === "Active");
   const comms = comm.schools[actor.school];
@@ -2220,7 +2387,7 @@ function SchoolCalendar({
             >
               {entryCategories.map((category) => {
                 const count = all.filter(
-                  (item) => item.category === category,
+                  (item) => item.category === category && inMonth(item),
                 ).length;
                 return (
                   <button
@@ -2228,14 +2395,17 @@ function SchoolCalendar({
                     type="button"
                     className="cal-filter"
                     data-category={category}
-                    aria-pressed={!hidden.includes(category)}
-                    onClick={() =>
-                      setHidden((current) =>
-                        current.includes(category)
-                          ? current.filter((item) => item !== category)
-                          : [...current, category],
-                      )
+                    aria-pressed={focus === category}
+                    data-dimmed={(focus && focus !== category) || undefined}
+                    title={
+                      count +
+                      " in " +
+                      monthTitle(selected) +
+                      (focus === category
+                        ? " · click to show all"
+                        : " · click to show only these")
                     }
+                    onClick={() => toggleFocus(category)}
                   >
                     <span className="cal-dot" aria-hidden="true" />
                     {entryLabels[category]}
@@ -2243,11 +2413,11 @@ function SchoolCalendar({
                   </button>
                 );
               })}
-              {hidden.length > 0 && (
+              {focus && (
                 <button
                   type="button"
                   className="text-button"
-                  onClick={() => setHidden([])}
+                  onClick={() => setFocus(undefined)}
                 >
                   Show all
                 </button>
@@ -2262,6 +2432,8 @@ function SchoolCalendar({
                   onSelect={setCursor}
                   onOpen={setOpenKey}
                   onKey={onKey}
+                  highlight={highlight}
+                  focus={focus}
                 />
               )}
               {view === "week" && (
@@ -2286,6 +2458,34 @@ function SchoolCalendar({
             </div>
           </section>
           <aside className="cal-side" aria-label="Day and upcoming events">
+            {focus && (
+              <SectionCard
+                title={entryLabels[focus] + " · " + monthTitle(selected)}
+                description={
+                  monthMatches.length +
+                  (monthMatches.length === 1 ? " entry" : " entries") +
+                  " this month"
+                }
+                actions={
+                  <button
+                    type="button"
+                    className="text-button"
+                    onClick={() => setFocus(undefined)}
+                  >
+                    Clear
+                  </button>
+                }
+              >
+                <EntryList
+                  entries={monthMatches}
+                  records={records}
+                  onOpen={setOpenKey}
+                  empty={
+                    "No " + entryLabels[focus].toLowerCase() + " this month."
+                  }
+                />
+              </SectionCard>
+            )}
             <SectionCard
               title={longDate(selected)}
               description={selected === today ? "Today" : "Selected day"}

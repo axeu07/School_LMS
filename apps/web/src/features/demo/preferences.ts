@@ -41,4 +41,6 @@ export function usePreference(key: string, fallback: string) {
 export const schoolPreferenceKey = "school-lms-demo-school";
 export const childPreferenceKey = (school: string) =>
   "school-lms-demo-child-" + school;
+/** Which demo student (by learner id) the student workspace shows. */
+export const studentPreferenceKey = "school-lms-demo-student";
 export const sidebarPreferenceKey = "school-lms-sidebar-collapsed";

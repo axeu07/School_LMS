@@ -7,6 +7,7 @@ import {
   MapPin,
   Phone,
   UserCheck,
+  Users,
   UserX,
   Video,
 } from "lucide-react";
@@ -268,6 +269,19 @@ export const deals: Deal[] = [
   },
 ];
 
+const dealStages: Deal["stage"][] = [
+  "Proposal",
+  "Negotiation",
+  "Agreement sent",
+  "Closing",
+];
+const dealKinds: Deal["kind"][] = [
+  "Collaboration",
+  "Sponsorship",
+  "Partnership",
+  "Vendor deal",
+];
+
 const dealPill: Record<Deal["stage"], string> = {
   Proposal: "pill-muted",
   Negotiation: "pill-warning",
@@ -300,6 +314,41 @@ export function LeadsPreview() {
     (sum, deal) => sum + (deal.value * deal.probability) / 100,
     0,
   );
+  const [view, setView] = useState<"Leads" | "Deals">("Leads");
+  const [dealKind, setDealKind] = useState<"" | Deal["kind"]>("");
+  const [dealStage, setDealStage] = useState<"" | Deal["stage"]>("");
+  const visibleDeals = deals
+    .filter(
+      (deal) =>
+        (!dealKind || deal.kind === dealKind) &&
+        (!dealStage || deal.stage === dealStage),
+    )
+    .sort((a, b) => b.probability - a.probability);
+  const likely = deals.filter((deal) => deal.probability >= 75);
+  const averageProbability = Math.round(
+    deals.reduce((sum, deal) => sum + deal.probability, 0) /
+      Math.max(1, deals.length),
+  );
+  const byDealStage = dealStages.map((name) => {
+    const items = deals.filter((deal) => deal.stage === name);
+    return {
+      name,
+      count: items.length,
+      value: items.reduce((sum, deal) => sum + deal.value, 0),
+    };
+  });
+  const byDealKind = dealKinds
+    .map((name) => {
+      const items = deals.filter((deal) => deal.kind === name);
+      return {
+        name,
+        count: items.length,
+        value: items.reduce((sum, deal) => sum + deal.value, 0),
+      };
+    })
+    .sort((a, b) => b.value - a.value);
+  const topStageValue = Math.max(1, ...byDealStage.map((item) => item.value));
+  const topKindValue = Math.max(1, ...byDealKind.map((item) => item.value));
 
   return (
     <>
@@ -315,215 +364,354 @@ export function LeadsPreview() {
           "Track collaborations and sponsorship deals through to signed agreement",
         ]}
       />
-      <StatCards
-        stats={[
-          {
-            label: "Total leads",
-            value: String(leads.length),
-            note: "Last 30 days · all sources",
-            icon: "students",
-          },
-          {
-            label: "Open leads",
-            value: String(open),
-            note: "Need a follow-up",
-            icon: "tasks",
-          },
-          {
-            label: "Admitted",
-            value: String(admitted),
-            note: Math.round((100 * admitted) / leads.length) + "% conversion",
-            icon: "attendance",
-          },
-          {
-            label: "Deals pipeline",
-            value: inr(pipelineValue),
-            note: inr(weighted) + " weighted",
-            icon: "calendar",
-          },
-        ]}
-      />
-      <div className="dashboard-grid">
-        <SectionCard
-          title="Leads by source"
-          description="Where enquiries came from this month."
-        >
-          <ul className="usage-list">
-            {bySource.map((item) => (
-              <li key={item.name}>
-                <span>
-                  <i className={"source-dot " + sourceTone[item.name]} />
-                  {item.name} <strong>{item.count}</strong>
-                </span>
-                <Meter
-                  value={(100 * item.count) / topCount}
-                  label={item.name}
-                />
-              </li>
-            ))}
-          </ul>
-        </SectionCard>
-        <SectionCard
-          title="Admissions funnel"
-          description="Leads currently at or past each stage."
-        >
-          <ul className="usage-list">
-            {leadStages
-              .filter((name) => name !== "Lost")
-              .map((name, index, list) => {
-                const reached = leads.filter(
-                  (lead) =>
-                    lead.stage !== "Lost" && list.indexOf(lead.stage) >= index,
-                ).length;
-                return (
-                  <li key={name}>
+      <div
+        className="segmented-tabs leads-deals-tabs"
+        role="group"
+        aria-label="Leads or deals"
+      >
+        {(["Leads", "Deals"] as const).map((name) => (
+          <button
+            key={name}
+            type="button"
+            aria-pressed={view === name}
+            onClick={() => setView(name)}
+          >
+            {name === "Leads" ? (
+              <Users size={16} aria-hidden="true" />
+            ) : (
+              <Handshake size={16} aria-hidden="true" />
+            )}
+            {name}
+            <span className="tab-count">
+              {name === "Leads" ? leads.length : deals.length}
+            </span>
+          </button>
+        ))}
+      </div>
+      {view === "Leads" && (
+        <>
+          <StatCards
+            stats={[
+              {
+                label: "Total leads",
+                value: String(leads.length),
+                note: "Last 30 days · all sources",
+                icon: "students",
+              },
+              {
+                label: "Open leads",
+                value: String(open),
+                note: "Need a follow-up",
+                icon: "tasks",
+              },
+              {
+                label: "Admitted",
+                value: String(admitted),
+                note:
+                  Math.round((100 * admitted) / leads.length) + "% conversion",
+                icon: "attendance",
+              },
+              {
+                label: "Lost",
+                value: String(
+                  leads.filter((lead) => lead.stage === "Lost").length,
+                ),
+                note: "Did not proceed",
+                icon: "calendar",
+              },
+            ]}
+          />
+          <div className="dashboard-grid">
+            <SectionCard
+              title="Leads by source"
+              description="Where enquiries came from this month."
+            >
+              <ul className="usage-list">
+                {bySource.map((item) => (
+                  <li key={item.name}>
                     <span>
-                      {name} <strong>{reached}</strong>
+                      <i className={"source-dot " + sourceTone[item.name]} />
+                      {item.name} <strong>{item.count}</strong>
                     </span>
                     <Meter
-                      value={(100 * reached) / leads.length}
-                      label={name}
+                      value={(100 * item.count) / topCount}
+                      label={item.name}
                     />
                   </li>
-                );
-              })}
-          </ul>
-        </SectionCard>
-      </div>
-      <SectionCard
-        title="Student leads"
-        description="Update a lead's stage as the admissions desk follows up."
-        className="page-section"
-      >
-        <div className="filter-bar">
-          <label>
-            Source
-            <select
-              value={source}
-              onChange={(event) => setSource(event.target.value as Source)}
-            >
-              <option value="">All sources</option>
-              {sources.map((name) => (
-                <option key={name}>{name}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Stage
-            <select
-              value={stage}
-              onChange={(event) => setStage(event.target.value as LeadStage)}
-            >
-              <option value="">All stages</option>
-              {leadStages.map((name) => (
-                <option key={name}>{name}</option>
-              ))}
-            </select>
-          </label>
-        </div>
-        {visible.length ? (
-          <div className="table-wrap">
-            <table className="pro-table">
-              <thead>
-                <tr>
-                  <th scope="col">Student</th>
-                  <th scope="col">Grade</th>
-                  <th scope="col">Source</th>
-                  <th scope="col">Received</th>
-                  <th scope="col">Follow-up</th>
-                  <th scope="col">Stage</th>
-                  <th scope="col">Update</th>
-                </tr>
-              </thead>
-              <tbody>
-                {visible.map((lead) => (
-                  <tr key={lead.id}>
-                    <th scope="row">
-                      {lead.name}
-                      <small>Guardian: {lead.guardian}</small>
-                    </th>
-                    <td>{lead.grade}</td>
-                    <td>
-                      <span className={"source-tag " + sourceTone[lead.source]}>
-                        {lead.source}
-                      </span>
-                      <small className="cell-note">{lead.campaign}</small>
-                    </td>
-                    <td>{lead.received}</td>
-                    <td>{lead.followUp}</td>
-                    <td>
-                      <span className={"pill " + stagePill[lead.stage]}>
-                        {lead.stage}
-                      </span>
-                    </td>
-                    <td>
-                      <select
-                        className="row-select"
-                        aria-label={"Stage for " + lead.name}
-                        value={lead.stage}
-                        onChange={(event) =>
-                          setLeads((current) =>
-                            current.map((item) =>
-                              item.id === lead.id
-                                ? {
-                                    ...item,
-                                    stage: event.target.value as LeadStage,
-                                  }
-                                : item,
-                            ),
-                          )
-                        }
-                      >
-                        {leadStages.map((name) => (
-                          <option key={name}>{name}</option>
-                        ))}
-                      </select>
-                    </td>
-                  </tr>
                 ))}
-              </tbody>
-            </table>
+              </ul>
+            </SectionCard>
+            <SectionCard
+              title="Admissions funnel"
+              description="Leads currently at or past each stage."
+            >
+              <ul className="usage-list">
+                {leadStages
+                  .filter((name) => name !== "Lost")
+                  .map((name, index, list) => {
+                    const reached = leads.filter(
+                      (lead) =>
+                        lead.stage !== "Lost" &&
+                        list.indexOf(lead.stage) >= index,
+                    ).length;
+                    return (
+                      <li key={name}>
+                        <span>
+                          {name} <strong>{reached}</strong>
+                        </span>
+                        <Meter
+                          value={(100 * reached) / leads.length}
+                          label={name}
+                        />
+                      </li>
+                    );
+                  })}
+              </ul>
+            </SectionCard>
           </div>
-        ) : (
-          <EmptyState>No leads match these filters.</EmptyState>
-        )}
-      </SectionCard>
-      <SectionCard
-        title="Upcoming deals & collaborations"
-        description="Partnerships, sponsorships and vendor deals expected to close soon."
-        className="page-section"
-        actions={
-          <Handshake size={20} className="muted-icon" aria-hidden="true" />
-        }
-      >
-        <div className="deal-grid">
-          {[...deals]
-            .sort((a, b) => b.probability - a.probability)
-            .map((deal) => (
-              <article className="deal-card" key={deal.partner}>
-                <header>
-                  <span className="pill pill-muted">{deal.kind}</span>
-                  <span className={"pill " + dealPill[deal.stage]}>
-                    {deal.stage}
-                  </span>
-                </header>
-                <h3>{deal.partner}</h3>
-                <p>{deal.detail}</p>
-                <div className="deal-meta">
-                  <strong>{inr(deal.value)}</strong>
-                  <span>Close by {deal.close}</span>
-                </div>
-                <div className="meter-cell">
-                  <small>{deal.probability}% likely</small>
-                  <Meter
-                    value={deal.probability}
-                    label={deal.probability + "% likely"}
-                  />
-                </div>
-              </article>
-            ))}
-        </div>
-      </SectionCard>
+          <SectionCard
+            title="Student leads"
+            description="Update a lead's stage as the admissions desk follows up."
+            className="page-section"
+          >
+            <div className="filter-bar">
+              <label>
+                Source
+                <select
+                  value={source}
+                  onChange={(event) => setSource(event.target.value as Source)}
+                >
+                  <option value="">All sources</option>
+                  {sources.map((name) => (
+                    <option key={name}>{name}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Stage
+                <select
+                  value={stage}
+                  onChange={(event) =>
+                    setStage(event.target.value as LeadStage)
+                  }
+                >
+                  <option value="">All stages</option>
+                  {leadStages.map((name) => (
+                    <option key={name}>{name}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            {visible.length ? (
+              <div className="table-wrap">
+                <table className="pro-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Student</th>
+                      <th scope="col">Grade</th>
+                      <th scope="col">Source</th>
+                      <th scope="col">Received</th>
+                      <th scope="col">Follow-up</th>
+                      <th scope="col">Stage</th>
+                      <th scope="col">Update</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {visible.map((lead) => (
+                      <tr key={lead.id}>
+                        <th scope="row">
+                          {lead.name}
+                          <small>Guardian: {lead.guardian}</small>
+                        </th>
+                        <td>{lead.grade}</td>
+                        <td>
+                          <span
+                            className={"source-tag " + sourceTone[lead.source]}
+                          >
+                            {lead.source}
+                          </span>
+                          <small className="cell-note">{lead.campaign}</small>
+                        </td>
+                        <td>{lead.received}</td>
+                        <td>{lead.followUp}</td>
+                        <td>
+                          <span className={"pill " + stagePill[lead.stage]}>
+                            {lead.stage}
+                          </span>
+                        </td>
+                        <td>
+                          <select
+                            className="row-select"
+                            aria-label={"Stage for " + lead.name}
+                            value={lead.stage}
+                            onChange={(event) =>
+                              setLeads((current) =>
+                                current.map((item) =>
+                                  item.id === lead.id
+                                    ? {
+                                        ...item,
+                                        stage: event.target.value as LeadStage,
+                                      }
+                                    : item,
+                                ),
+                              )
+                            }
+                          >
+                            {leadStages.map((name) => (
+                              <option key={name}>{name}</option>
+                            ))}
+                          </select>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <EmptyState>No leads match these filters.</EmptyState>
+            )}
+          </SectionCard>
+        </>
+      )}
+      {view === "Deals" && (
+        <>
+          <StatCards
+            stats={[
+              {
+                label: "Deals pipeline",
+                value: inr(pipelineValue),
+                note: deals.length + " open deals",
+                icon: "calendar",
+              },
+              {
+                label: "Weighted value",
+                value: inr(weighted),
+                note: "Value × likelihood",
+                icon: "tasks",
+              },
+              {
+                label: "Likely to close",
+                value: String(likely.length),
+                note: "75% or higher likelihood",
+                icon: "attendance",
+              },
+              {
+                label: "Average likelihood",
+                value: averageProbability + "%",
+                note: "Across all open deals",
+                icon: "students",
+              },
+            ]}
+          />
+          <div className="dashboard-grid">
+            <SectionCard
+              title="Pipeline by stage"
+              description="Deal value at each stage of negotiation."
+            >
+              <ul className="usage-list">
+                {byDealStage.map((item) => (
+                  <li key={item.name}>
+                    <span>
+                      {item.name} · {item.count}{" "}
+                      <strong>{inr(item.value)}</strong>
+                    </span>
+                    <Meter
+                      value={(100 * item.value) / topStageValue}
+                      label={item.name}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </SectionCard>
+            <SectionCard
+              title="Deals by type"
+              description="Collaborations, sponsorships, partnerships and vendors."
+            >
+              <ul className="usage-list">
+                {byDealKind.map((item) => (
+                  <li key={item.name}>
+                    <span>
+                      {item.name} · {item.count}{" "}
+                      <strong>{inr(item.value)}</strong>
+                    </span>
+                    <Meter
+                      value={(100 * item.value) / topKindValue}
+                      label={item.name}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </SectionCard>
+          </div>
+          <SectionCard
+            title="Upcoming deals & collaborations"
+            description="Partnerships, sponsorships and vendor deals expected to close soon."
+            className="page-section"
+            actions={
+              <Handshake size={20} className="muted-icon" aria-hidden="true" />
+            }
+          >
+            <div className="filter-bar">
+              <label>
+                Type
+                <select
+                  value={dealKind}
+                  onChange={(event) =>
+                    setDealKind(event.target.value as Deal["kind"])
+                  }
+                >
+                  <option value="">All types</option>
+                  {dealKinds.map((name) => (
+                    <option key={name}>{name}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Stage
+                <select
+                  value={dealStage}
+                  onChange={(event) =>
+                    setDealStage(event.target.value as Deal["stage"])
+                  }
+                >
+                  <option value="">All stages</option>
+                  {dealStages.map((name) => (
+                    <option key={name}>{name}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            {!visibleDeals.length && (
+              <EmptyState>No deals match these filters.</EmptyState>
+            )}
+            <div className="deal-grid">
+              {visibleDeals.map((deal) => (
+                <article className="deal-card" key={deal.partner}>
+                  <header>
+                    <span className="pill pill-muted">{deal.kind}</span>
+                    <span className={"pill " + dealPill[deal.stage]}>
+                      {deal.stage}
+                    </span>
+                  </header>
+                  <h3>{deal.partner}</h3>
+                  <p>{deal.detail}</p>
+                  <div className="deal-meta">
+                    <strong>{inr(deal.value)}</strong>
+                    <span>Close by {deal.close}</span>
+                  </div>
+                  <div className="meter-cell">
+                    <small>{deal.probability}% likely</small>
+                    <Meter
+                      value={deal.probability}
+                      label={deal.probability + "% likely"}
+                    />
+                  </div>
+                </article>
+              ))}
+            </div>
+          </SectionCard>
+        </>
+      )}
     </>
   );
 }

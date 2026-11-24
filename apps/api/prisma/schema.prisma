@@ -12,9 +12,21 @@ enum PlatformRole {
   SUPER_ADMIN
 }
 
+enum SignInMethod {
+  PASSWORD
+  OTP
+}
+
+enum CodePurpose {
+  SIGN_IN_OTP
+  PASSWORD_RESET
+}
+
 model School {
   id            String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   slug          String             @unique @db.VarChar(80)
+  /// Short code people type on the sign-in page, stored upper case (e.g. WFA26).
+  code          String             @unique @db.VarChar(16)
   name          String             @db.VarChar(160)
   logoUrl       String?
   theme         Json?
@@ -25,19 +37,36 @@ model School {
   academicYears AcademicYear[]
   classes       Class[]
   subjects      Subject[]
+  authSessions  AuthSession[]
+  oneTimeCodes  OneTimeCode[]
+  auditEvents   AuditEvent[]
   createdAt     DateTime           @default(now()) @db.Timestamptz(3)
   updatedAt     DateTime           @updatedAt @db.Timestamptz(3)
 }
 
 model User {
   id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email             String             @unique @db.VarChar(254)
+  /// Stored lower case. Students may have none and sign in with a student number.
+  email             String?            @unique @db.VarChar(254)
+  /// E.164 format, e.g. +919820011001. Used for parent OTP sign-in.
+  phone             String?            @db.VarChar(20)
   displayName       String             @db.VarChar(160)
   platformRole      PlatformRole?
   isActive          Boolean            @default(true)
+  /// scrypt hash; null means the account cannot sign in with a password.
+  passwordHash      String?            @db.VarChar(255)
+  passwordChangedAt DateTime?          @db.Timestamptz(3)
+  failedLoginCount  Int                @default(0)
+  lockedUntil       DateTime?          @db.Timestamptz(3)
+  lastSignInAt      DateTime?          @db.Timestamptz(3)
   schoolMemberships SchoolMembership[]
+  authSessions      AuthSession[]
+  oneTimeCodes      OneTimeCode[]
+  auditEvents       AuditEvent[]
   createdAt         DateTime           @default(now()) @db.Timestamptz(3)
   updatedAt         DateTime           @updatedAt @db.Timestamptz(3)
+
+  @@index([phone])
 }
 
 model SchoolMembership {
@@ -45,6 +74,8 @@ model SchoolMembership {
   schoolId           String                      @db.Uuid
   userId             String                      @db.Uuid
   isActive           Boolean                     @default(true)
+  /// Student number within the school (e.g. ST-1); a sign-in identifier.
+  studentNumber      String?                     @db.VarChar(40)
   school             School                      @relation(fields: [schoolId], references: [id], onDelete: Restrict, onUpdate: Restrict)
   user               User                        @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
   roles              MembershipRole[]
@@ -57,6 +88,7 @@ model SchoolMembership {
 
   @@unique([schoolId, id])
   @@unique([schoolId, userId])
+  @@unique([schoolId, studentNumber])
   @@index([userId])
 }
 
@@ -221,4 +253,61 @@ model ParentStudentRelationship {
 
   @@unique([schoolId, parentMembershipId, studentMembershipId])
   @@index([schoolId, studentMembershipId])
+}
+
+/// One signed-in device. The refresh token is stored only as a SHA-256 hash.
+model AuthSession {
+  id               String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId           String       @db.Uuid
+  /// Null for platform (Super Admin) sessions.
+  schoolId         String?      @db.Uuid
+  method           SignInMethod
+  refreshTokenHash String       @unique @db.Char(64)
+  userAgent        String?      @db.VarChar(400)
+  ipAddress        String?      @db.VarChar(64)
+  lastUsedAt       DateTime     @default(now()) @db.Timestamptz(3)
+  /// Absolute end of the session, regardless of activity.
+  expiresAt        DateTime     @db.Timestamptz(3)
+  revokedAt        DateTime?    @db.Timestamptz(3)
+  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  school           School?      @relation(fields: [schoolId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  createdAt        DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime     @updatedAt @db.Timestamptz(3)
+
+  @@index([userId])
+  @@index([schoolId])
+}
+
+/// A one-time code sent by SMS or email, stored only as a hash.
+model OneTimeCode {
+  id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String      @db.Uuid
+  schoolId   String?     @db.Uuid
+  purpose    CodePurpose
+  codeHash   String      @db.Char(64)
+  attempts   Int         @default(0)
+  expiresAt  DateTime    @db.Timestamptz(3)
+  consumedAt DateTime?   @db.Timestamptz(3)
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  school     School?     @relation(fields: [schoolId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  createdAt  DateTime    @default(now()) @db.Timestamptz(3)
+
+  @@index([userId, purpose, createdAt])
+}
+
+/// Security and administrative events, e.g. sign-ins and password changes.
+model AuditEvent {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  schoolId  String?  @db.Uuid
+  userId    String?  @db.Uuid
+  action    String   @db.VarChar(80)
+  ipAddress String?  @db.VarChar(64)
+  userAgent String?  @db.VarChar(400)
+  detail    Json?
+  school    School?  @relation(fields: [schoolId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Restrict)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([schoolId, createdAt])
+  @@index([userId, createdAt])
 }

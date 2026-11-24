@@ -1,0 +1,289 @@
+/* ==========================================================================
+   Senior student (Class 9 and above) — "the study desk"
+   Calm and grown-up: warm paper, deep bookbinding green, brass accents,
+   serif headings like a well-made textbook. Motion is slow and small.
+   Students up to Class 8 keep the playful theme in role-themes.css; the
+   shell carries data-stage="senior" when the student's class is Grade 9+.
+   ========================================================================== */
+
+.app-shell[data-role="student"][data-stage="senior"] {
+  --t-1: #2e5a4c;
+  --t-1-strong: #21443a;
+  --t-1-light: #4f7d6d;
+  --t-ink: #1f3a32;
+  --t-soft: #e8efe9;
+  --t-soft-2: #f3f5f0;
+  --t-line: #d3ddd4;
+  --t-glow: 46 90 76;
+  --t-grad: linear-gradient(135deg, #3a6a5a, #2e5a4c 55%, #284f43);
+  --t-grad-hover: linear-gradient(135deg, #33604f, #264c40 55%, #20433a);
+  --t-nav-active: linear-gradient(100deg, #eaf0ea, #f4f5ef 70%, #f7f5ee00);
+  --t-meter: linear-gradient(90deg, #c9a66b, #7f9a85 50%, #2e5a4c);
+  --t-bar-1: #e3e8e0;
+  --t-bar-2: #c3d2c6;
+  --t-bg: #f7f4ec;
+  --t-a1: #e9e0cc66;
+  --t-a2: #dfe8e166;
+  --t-a3: #ece5d75c;
+  --t-a4: #e2e9e459;
+  --t-hero: linear-gradient(125deg, #fffdf7 0%, #f7f2e6 60%, #eef2ec 100%);
+  --t-drift: 90s;
+  --tilt-max: 1.5;
+  --brass: #a9813f;
+  --paper: #fffdf8;
+  --tint0-fg: #2e5a4c;
+  --tint0-bg: #e5eee8;
+  --tint1-fg: #3d5a80;
+  --tint1-bg: #e6ecf4;
+  --tint2-fg: #8a6a2f;
+  --tint2-bg: #f4ecdc;
+  --tint3-fg: #7a4b4b;
+  --tint3-bg: #f3e8e6;
+  --primary: var(--t-1);
+  --accent: var(--t-soft);
+  --border: #e5e0d3;
+  --muted: #59605a;
+  --radius: 0.7rem;
+  color: #1f2724;
+}
+
+/* ---------- Typography: textbook serif headings, calm body ---------- */
+.app-shell[data-stage="senior"] h1,
+.app-shell[data-stage="senior"] h2,
+.app-shell[data-stage="senior"] h3 {
+  font-family: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  font-weight: 560;
+  letter-spacing: -0.012em;
+  color: #1b2b26;
+}
+.app-shell[data-stage="senior"] .stat-card strong,
+.app-shell[data-stage="senior"] .chart-value strong {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-weight: 520;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+/* ---------- Surfaces: paper cards, quiet shadows, no tilt ---------- */
+.app-shell[data-stage="senior"] .app-sidebar {
+  background: #fffdf8e6;
+}
+.app-shell[data-stage="senior"] [data-slot="card"],
+.app-shell[data-stage="senior"] .action-card {
+  background: var(--paper);
+  box-shadow:
+    0 1px 2px #2b241608,
+    0 4px 12px -6px #2b241614,
+    inset 0 1px 0 #ffffff;
+  transition-duration: 0.5s;
+}
+.app-shell[data-stage="senior"] .stat-card:hover,
+.app-shell[data-stage="senior"] .action-card:hover,
+.app-shell[data-stage="senior"] .course-grid > .dash-card:hover {
+  transform: translateY(-2px);
+}
+.app-shell[data-stage="senior"] .stat-card .stat-icon {
+  animation: none;
+}
+.app-shell[data-stage="senior"] .button-primary::after {
+  display: none; /* no sheen */
+}
+
+/* Stat cards read like index cards: a thin brass rule along the top. */
+.app-shell[data-stage="senior"] .stat-card {
+  background:
+    linear-gradient(90deg, var(--brass), transparent 65%) top / 100% 2px
+      no-repeat,
+    var(--paper);
+}
+
+/* ---------- Sidebar: the active page is marked like a bookmark ---------- */
+.app-shell[data-stage="senior"] .nav-link[aria-current="page"] {
+  color: var(--t-1-strong);
+  box-shadow: inset 0 0 0 1px var(--t-line);
+}
+.app-shell[data-stage="senior"] .nav-link[aria-current="page"]::before {
+  left: auto;
+  right: 10px;
+  top: 0;
+  bottom: auto;
+  width: 8px;
+  height: 16px;
+  border-radius: 0;
+  background: var(--brass);
+  box-shadow: none;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 72%, 0 100%);
+  animation: bookmark-in 0.5s var(--ease-out);
+}
+@keyframes bookmark-in {
+  from {
+    transform: translateY(-6px);
+    opacity: 0;
+  }
+}
+.app-shell[data-stage="senior"] .nav-group-toggle {
+  letter-spacing: 0.08em;
+}
+
+/* ---------- Welcome banner: a ruled page with books on the shelf ---------- */
+.page-hero[data-stage="senior"] {
+  border-color: #e2dccb;
+  background:
+    linear-gradient(
+      90deg,
+      transparent 2.6rem,
+      #c98b7a40 2.6rem 2.7rem,
+      transparent 2.7rem
+    ),
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 1.9rem,
+      #9fb4c51f 1.9rem 1.95rem
+    ),
+    var(--t-hero);
+}
+.page-hero[data-stage="senior"] .page-header-copy {
+  padding-left: clamp(0.4rem, 2vw, 1.6rem);
+}
+.page-hero[data-stage="senior"] .hero-greeting {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+  color: #8a6a3a;
+}
+.page-hero[data-stage="senior"] h1 {
+  font-weight: 540;
+}
+
+/* The five hero-art elements become book spines standing on a shelf. */
+.page-hero[data-stage="senior"] .hero-art i {
+  inset: auto;
+  translate: none;
+  border: 0;
+  opacity: 1;
+  aspect-ratio: auto;
+  bottom: 18%;
+  border-radius: 3px 3px 1px 1px;
+  box-shadow:
+    inset -3px 0 0 #00000014,
+    inset 0 8px 0 -5px #ffffff30,
+    inset 0 -10px 0 -7px #ffffff30;
+  animation: none;
+  transform-origin: bottom center;
+}
+.page-hero[data-stage="senior"] .hero-art::after {
+  /* the shelf */
+  content: "";
+  position: absolute;
+  right: 4%;
+  bottom: calc(18% - 6px);
+  width: 210px;
+  height: 6px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #b89466, #8f6d43);
+  box-shadow: 0 6px 12px -6px #5a412066;
+}
+.page-hero[data-stage="senior"] .hero-art i:nth-child(1) {
+  right: calc(4% + 172px);
+  width: 24px;
+  height: 92px;
+  background: #2e5a4c;
+}
+.page-hero[data-stage="senior"] .hero-art i:nth-child(2) {
+  right: calc(4% + 144px);
+  width: 26px;
+  height: 108px;
+  background: #7a4b4b;
+}
+.page-hero[data-stage="senior"] .hero-art i:nth-child(3) {
+  right: calc(4% + 120px);
+  width: 22px;
+  height: 84px;
+  background: #3d5a80;
+}
+.page-hero[data-stage="senior"] .hero-art i:nth-child(4) {
+  right: calc(4% + 92px);
+  width: 26px;
+  height: 100px;
+  background: #c9a66b;
+}
+.page-hero[data-stage="senior"] .hero-art i:nth-child(5) {
+  /* one book leaning on the others */
+  right: calc(4% + 40px);
+  width: 24px;
+  height: 96px;
+  background: #4f7d6d;
+  transform: rotate(-14deg);
+  transform-origin: bottom left;
+  animation: book-settle 1.2s var(--ease-out) both;
+}
+@keyframes book-settle {
+  from {
+    transform: rotate(0deg);
+  }
+}
+
+/* ---------- Data: quieter bars and meters ---------- */
+.app-shell[data-stage="senior"] .chart-bar {
+  border-radius: 4px 4px 2px 2px;
+}
+.app-shell[data-stage="senior"] .pill,
+.app-shell[data-stage="senior"] .row-meta {
+  border-radius: 6px;
+}
+
+/* ---------- Ambient background: the faintest paper grain ---------- */
+.app-shell[data-stage="senior"]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.35;
+  background-image: radial-gradient(#8c7a5a14 1px, transparent 1px);
+  background-size: 4px 4px;
+}
+
+/* Small screens: the shelf would sit behind the text, so leave it out. */
+@media (max-width: 760px) {
+  .page-hero[data-stage="senior"] .hero-art {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-hero[data-stage="senior"] .hero-art i,
+  .app-shell[data-stage="senior"] .nav-link[aria-current="page"]::before {
+    animation: none !important;
+  }
+}
+
+/* ---------- Profile picker: the Class 10 card hints at the calmer theme -- */
+.role-card[data-stage="senior"] .role-icon {
+  color: #2e5a4c;
+  background: #e5eee8;
+}
+.role-card[data-stage="senior"] .role-title {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-weight: 600;
+}
+
+/* Course progress reads like a reading-progress ribbon. */
+.app-shell[data-stage="senior"] progress {
+  appearance: none;
+  height: 6px;
+  border: 0;
+  border-radius: 999px;
+  background: #ebe6d9;
+  overflow: hidden;
+}
+.app-shell[data-stage="senior"] progress::-webkit-progress-bar {
+  background: #ebe6d9;
+}
+.app-shell[data-stage="senior"] progress::-webkit-progress-value {
+  background: var(--t-meter);
+  border-radius: 999px;
+}
+.app-shell[data-stage="senior"] progress::-moz-progress-bar {
+  background: var(--t-meter);
+  border-radius: 999px;
+}

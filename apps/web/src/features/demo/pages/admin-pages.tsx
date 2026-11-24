@@ -66,6 +66,7 @@ export function AdminAssignments() {
   return (
     <>
       <StatCards
+        compact
         stats={[
           {
             label: "Assignments",

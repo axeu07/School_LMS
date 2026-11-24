@@ -398,6 +398,16 @@ function seedSchool(prefix: SchoolId): LearningSchool {
       ...open,
       published: true,
     },
+    {
+      // Class 10: a timed revision test ahead of the board exams.
+      id: prefix + "-test-senior",
+      allocation: prefix + "-class-senior-allocation-0",
+      title: "Board revision: algebra",
+      questions: pick(0, [4, 5]),
+      duration: 25,
+      ...open,
+      published: true,
+    },
   );
   const answer = (id: string, correct: boolean) => {
     const question = school.questions.find((item) => item.id === id)!;
@@ -455,6 +465,13 @@ function seedSchool(prefix: SchoolId): LearningSchool {
       subject: prefix + "-subject-1",
       marks: 36,
     },
+    // The Class 10 student sat Unit Test 1 in every subject.
+    ...[44, 39, 42].map((marks, index) => ({
+      exam: prefix + "-exam-0",
+      student: prefix + "-student-senior",
+      subject: prefix + "-subject-" + index,
+      marks,
+    })),
   );
   return school;
 }

@@ -21,13 +21,16 @@ export function PageHeader({
   preview?: boolean;
   actions?: ReactNode;
 }) {
-  const { role, profile, school, data } = useDemo();
+  const { role, profile, school, data, stage } = useDemo();
+  const senior = stage === "senior";
   const scope = role === "super-admin" ? "Platform" : school.name;
   // The dashboard (no group) gets a themed welcome banner.
   const hero = !group;
   const firstName = data.person.name.split(" ")[0];
   const greeting = {
-    student: "Hi " + firstName + "! Ready for an awesome day?",
+    student: senior
+      ? "Welcome back, " + firstName + ". One chapter at a time."
+      : "Hi " + firstName + "! Ready for an awesome day?",
     teacher: "Good to see you, " + data.person.name,
     "school-admin": "Welcome back, " + firstName,
     parent: "Welcome, " + firstName,
@@ -37,6 +40,7 @@ export function PageHeader({
     <div
       className={"page-header" + (hero ? " page-hero" : "")}
       data-role={role}
+      data-stage={stage}
     >
       {hero && (
         <span className="hero-art" aria-hidden="true">
@@ -50,7 +54,7 @@ export function PageHeader({
       <div className="page-header-copy">
         {hero && greeting && (
           <p className="hero-greeting">
-            {role === "student" && (
+            {role === "student" && !senior && (
               <span className="hero-wave" aria-hidden="true">
                 👋
               </span>

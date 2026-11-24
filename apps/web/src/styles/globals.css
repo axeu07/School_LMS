@@ -560,7 +560,7 @@ h3 {
 .role-grid {
   margin-top: 2.4rem;
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
 }
 .role-card {
@@ -1159,6 +1159,49 @@ dialog::backdrop {
   font-size: 0.8rem;
   display: block;
 }
+/* Compact KPI cards: icon beside a single label / value line. */
+.stat-grid-compact {
+  gap: 0.65rem;
+}
+.stat-grid-compact .stat-card {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.6rem 0.8rem;
+}
+.stat-grid-compact .stat-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+}
+.stat-grid-compact .stat-icon svg {
+  width: 15px;
+  height: 15px;
+}
+.stat-grid-compact .stat-card > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.5rem;
+  min-width: 0;
+}
+.stat-grid-compact .stat-label {
+  font-size: 0.78rem;
+  order: 2;
+}
+.stat-grid-compact .stat-card strong {
+  font-size: 1.25rem;
+  line-height: 1.2;
+  order: 1;
+}
+.stat-grid-compact .stat-note {
+  order: 3;
+  flex-basis: 100%;
+  font-size: 0.72rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1676,6 +1719,38 @@ progress {
 }
 .academic-detail dt {
   font-weight: 650;
+}
+.academic-table tbody tr.is-expanded {
+  background: #f3f2ff;
+}
+.academic-table tbody tr.is-expanded > td {
+  border-bottom-color: transparent;
+}
+.academic-table tbody tr.academic-detail-row,
+.academic-table tbody tr.academic-detail-row:hover {
+  background: #f3f2ff;
+}
+.academic-table tbody tr.academic-detail-row > td {
+  padding: 0 0.75rem 0.9rem;
+}
+.academic-detail-row .academic-detail {
+  background: #fff;
+  animation: academic-detail-in 160ms ease-out;
+}
+.academic-detail-row .academic-detail ul {
+  margin: 0.6rem 0 0;
+  padding-left: 1.1rem;
+}
+@keyframes academic-detail-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .academic-detail-row .academic-detail {
+    animation: none;
+  }
 }
 .academic-dialog {
   max-height: 88dvh;

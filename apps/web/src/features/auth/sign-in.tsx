@@ -536,7 +536,10 @@ export function SignIn({ scope }: { scope: AccountScope }) {
               {accounts.map((account) => (
                 <li key={account.key}>
                   <span>
-                    <strong>{roleProfiles[account.role].label}</strong>
+                    <strong>
+                      {roleProfiles[account.role].label}
+                      {account.role === "student" && " · " + account.name}
+                    </strong>
                     <small>
                       {account.email || account.studentNumber}
                       {account.phone && " · " + account.phone}

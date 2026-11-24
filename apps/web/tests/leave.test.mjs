@@ -853,7 +853,7 @@ test("analytics are calculated from demo records", () => {
   assert.ok(stats.approvedThisMonth >= 3);
   assert.equal(stats.trend.labels.length, 6);
   assert.equal(stats.trend.labels.at(-1), "Nov");
-  assert.equal(stats.classes.length, 2);
+  assert.equal(stats.classes.length, 3);
   const cover = stats.teachers.find(
     (item) => item.teacher.id === "westfield-teacher-2",
   );

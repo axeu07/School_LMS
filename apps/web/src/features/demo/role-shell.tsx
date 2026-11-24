@@ -38,7 +38,7 @@ export function RoleShell({
 }
 
 function Shell({ role, children }: { role: DemoRole; children: ReactNode }) {
-  const { schoolId, scopeKey, records, data } = useDemo();
+  const { schoolId, scopeKey, records, data, stage } = useDemo();
   const branding = useSchoolBranding(schoolId);
   const personName = data.person.name;
   // Every saved change is attributed to whoever is using this workspace.
@@ -63,6 +63,7 @@ function Shell({ role, children }: { role: DemoRole; children: ReactNode }) {
     <div
       className="app-shell"
       data-role={role}
+      data-stage={stage}
       data-school={schoolId}
       data-collapsed={collapsed ? "true" : undefined}
       style={role === "super-admin" ? undefined : brandStyle(branding)}

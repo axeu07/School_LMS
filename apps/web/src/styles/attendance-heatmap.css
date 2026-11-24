@@ -1,0 +1,109 @@
+/* GitHub-style attendance calendar */
+.attendance-heatmap {
+  --heat-cell: 13px;
+  --heat-gap: 3px;
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+}
+.heatmap-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.1rem;
+  align-items: center;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+.heatmap-summary strong {
+  color: var(--foreground, #111827);
+  font-size: 1.05rem;
+}
+.heatmap-scroll {
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+.heatmap-grid {
+  display: grid;
+  grid-auto-rows: var(--heat-cell);
+  gap: var(--heat-gap);
+  width: max-content;
+}
+.heatmap-month,
+.heatmap-weekday {
+  font-size: 0.7rem;
+  line-height: var(--heat-cell);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.heatmap-month {
+  overflow: visible;
+}
+.heatmap-weekday {
+  padding-inline-end: 0.4rem;
+}
+.heat-cell,
+.heat-dot {
+  border-radius: 3px;
+  box-sizing: border-box;
+}
+.heat-cell {
+  width: var(--heat-cell);
+  height: var(--heat-cell);
+}
+.heat-dot {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  vertical-align: -1px;
+}
+.heat-present {
+  background: #16a34a;
+}
+.heat-half {
+  background: #86efac;
+}
+.heat-absent {
+  background: #dc2626;
+}
+.heat-none {
+  background: #e5e7eb;
+}
+.heat-upcoming {
+  background: #f3f4f6;
+}
+/* Holidays stay blank: no fill, only a faint outline to keep the grid. */
+.heat-holiday {
+  background: transparent;
+  outline: 1px solid rgba(148, 163, 184, 0.25);
+  outline-offset: -1px;
+}
+.heat-cell:hover {
+  outline: 2px solid rgba(17, 24, 39, 0.55);
+  outline-offset: -1px;
+}
+.heatmap-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  align-items: center;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.heatmap-legend span {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+.heatmap-legend em {
+  margin-inline-start: auto;
+  font-style: normal;
+}
+.attendance-calendars {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.attendance-calendars h3 {
+  font-size: 1rem;
+  font-weight: 700;
+}

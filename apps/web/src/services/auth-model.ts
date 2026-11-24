@@ -180,6 +180,19 @@ export function accountsFor(
       studentNumber: student.code,
       phone: "",
     });
+  // The Class 10 demo student signs in with their own student number.
+  const senior = school.students.find((item) => item.id === source.senior.id);
+  if (senior)
+    accounts.push({
+      key: scope + ":student-senior",
+      school: scope,
+      role: "student",
+      person: senior.id,
+      name: senior.name,
+      email: "",
+      studentNumber: senior.code,
+      phone: "",
+    });
   return accounts;
 }
 

@@ -138,7 +138,10 @@ test("timetable rejects overlapping sessions for the same teacher and permits ad
     start: "09:45",
     end: "10:30",
   });
-  assert.equal(next.schools.westfield.sessions.length, 3);
+  assert.equal(
+    next.schools.westfield.sessions.length,
+    school.sessions.length + 1,
+  );
 });
 
 test("published announcements reach allowed roles and the targeted section", () => {
@@ -361,9 +364,10 @@ test("attendance edits update the school, student and linked parent without dupl
     state.schools.westfield.attendance.length,
     school.attendance.length,
   );
+  // 11 of 13 school-wide marks present (two absences in the junior classes).
   assert.equal(
     attendancePercentage(attendanceFor(state.schools.westfield, admin)),
-    80,
+    85,
   );
   for (const actor of [student, parent]) {
     assert.equal(

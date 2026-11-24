@@ -1,18 +1,21 @@
 "use client";
 
 import { createContext, useContext, type ReactNode } from "react";
-import { roleProfiles } from "@/mocks/academics";
+import { academicRecords, roleProfiles } from "@/mocks/academics";
 import { getAcademicDashboard } from "@/services/academic-dashboard";
 import type { AcademicSchool } from "@/services/academic-model";
 import { useAcademicState } from "@/services/academic-store";
 import type { AssignmentActor } from "@/services/assignment-model";
 import { listDemoSchools } from "@/services/demo-service";
+import { studentStage, type StudentStage } from "@/services/student-stage";
 import type { DemoRole, School, SchoolId } from "@/types/demo";
 import {
   childPreferenceKey,
   schoolPreferenceKey,
+  studentPreferenceKey,
   usePreference,
 } from "./preferences";
+import { useWorkspaceSession } from "./session-guard";
 
 const schools = listDemoSchools();
 const defaultSchool = schools[0].id;
@@ -28,6 +31,8 @@ export type DemoContextValue = {
   records: AcademicSchool;
   data: DashboardData;
   actor: AssignmentActor;
+  /** Student workspaces only: playful up to Class 8, calm from Class 9. */
+  stage?: StudentStage;
   /** Changes whenever the school or the parent's active child changes. */
   scopeKey: string;
   setSchool: (id: SchoolId) => void;
@@ -59,7 +64,20 @@ export function DemoProvider({
     schools.find(({ id }) => id === schoolPreference)?.id ?? defaultSchool;
   const [childId, setChild] = usePreference(childPreferenceKey(schoolId), "");
   const records = useAcademicState().schools[schoolId];
-  const data = getAcademicDashboard(role, schoolId, records, childId);
+  // A signed-in student sees their own records; in demo mode the profile
+  // picker chooses between the Class 8 and Class 10 demo students.
+  const session = useWorkspaceSession(role, schoolId);
+  const [studentChoice] = usePreference(studentPreferenceKey, "");
+  const senior = academicRecords.find((item) => item.schoolId === schoolId)
+    ?.senior.id;
+  const studentId =
+    session?.person ?? (studentChoice === "senior" ? (senior ?? "") : "");
+  const data = getAcademicDashboard(
+    role,
+    schoolId,
+    records,
+    role === "student" ? studentId : childId,
+  );
   if (!data) return fallback;
   const value: DemoContextValue = {
     role,
@@ -76,7 +94,15 @@ export function DemoProvider({
       child: data.child?.id,
     },
     scopeKey:
-      schoolId + "-" + (role === "parent" ? (data.child?.id ?? "none") : role),
+      schoolId +
+      "-" +
+      (role === "parent"
+        ? (data.child?.id ?? "none")
+        : role === "student"
+          ? data.person.id
+          : role),
+    stage:
+      role === "student" ? studentStage(records, data.person.id) : undefined,
     setSchool,
     setChild,
   };

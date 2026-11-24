@@ -23,6 +23,10 @@ import {
   studentAttendanceWithLeave,
 } from "@/services/leave-model";
 import { recordAttendance, useLeaveState } from "@/services/leave-store";
+import {
+  StudentAttendanceCalendar,
+  TeacherAttendanceCalendar,
+} from "./attendance-heatmap";
 
 const statuses: AttendanceStatus[] = ["Present", "Absent", "Late"];
 
@@ -47,6 +51,8 @@ export function AttendanceWorkspace({
   const [date, setDate] = useState(localCalendarDate);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
+  const [pickedStudent, setPickedStudent] = useState("");
+  const [pickedTeacher, setPickedTeacher] = useState("");
   const visible = attendanceFor(school, actor)
     .filter((item) => !section || item.section === section)
     .sort((a, b) => b.date.localeCompare(a.date));
@@ -64,6 +70,31 @@ export function AttendanceWorkspace({
   const withLeave = learner
     ? studentAttendanceWithLeave(school, leave, learner)
     : undefined;
+  const enrolled = section
+    ? roster
+    : school.students.filter((item) =>
+        school.enrollments.some(
+          (entry) => entry.student === item.id && entry.status === "Enrolled",
+        ),
+      );
+  const calendarStudent = enrolled.some((item) => item.id === pickedStudent)
+    ? pickedStudent
+    : (enrolled[0]?.id ?? "");
+  const calendarSection =
+    section ||
+    school.enrollments.find(
+      (entry) =>
+        entry.student === calendarStudent && entry.status === "Enrolled",
+    )?.section;
+  const learnerSection = learner
+    ? school.enrollments.find(
+        (entry) => entry.student === learner && entry.status === "Enrolled",
+      )?.section
+    : undefined;
+  const staff = school.teachers.filter((item) => item.status === "Active");
+  const calendarTeacher = staff.some((item) => item.id === pickedTeacher)
+    ? pickedTeacher
+    : (staff[0]?.id ?? "");
   /** Absent marks on a record that are covered by approved student leave. */
   const excused = (record: (typeof visible)[number]) =>
     Object.entries(record.marks).filter(
@@ -185,7 +216,81 @@ export function AttendanceWorkspace({
           </button>
         </form>
       )}
-      {visible.length > 0 && (
+      <div className="attendance-calendars">
+        {learner && (
+          <>
+            <h3>Attendance calendar</h3>
+            <StudentAttendanceCalendar
+              school={school}
+              schoolId={actor.school}
+              student={learner}
+              section={learnerSection}
+            />
+          </>
+        )}
+        {manager && calendarStudent && (
+          <>
+            <div className="academic-toolbar">
+              <h3>Student attendance calendar</h3>
+              <label>
+                Student
+                <select
+                  value={calendarStudent}
+                  onChange={(event) => setPickedStudent(event.target.value)}
+                >
+                  {enrolled.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <StudentAttendanceCalendar
+              school={school}
+              schoolId={actor.school}
+              student={calendarStudent}
+              section={calendarSection}
+            />
+          </>
+        )}
+        {teacher && (
+          <>
+            <h3>My attendance</h3>
+            <TeacherAttendanceCalendar
+              school={school}
+              schoolId={actor.school}
+              teacher={actor.person}
+            />
+          </>
+        )}
+        {actor.role === "school-admin" && calendarTeacher && (
+          <>
+            <div className="academic-toolbar">
+              <h3>Teacher attendance calendar</h3>
+              <label>
+                Teacher
+                <select
+                  value={calendarTeacher}
+                  onChange={(event) => setPickedTeacher(event.target.value)}
+                >
+                  {staff.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <TeacherAttendanceCalendar
+              school={school}
+              schoolId={actor.school}
+              teacher={calendarTeacher}
+            />
+          </>
+        )}
+      </div>
+      {!learner && visible.length > 0 && (
         <div className="academic-table">
           <table>
             <caption className="sr-only">

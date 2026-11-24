@@ -21,6 +21,33 @@ npm.cmd run db:check
 
 The check builds the API and runs a read-only `SELECT 1` through the same Prisma service used by the HTTP endpoint. It exits with code 1 if connectivity cannot be verified. These commands do not run migrations.
 
+## Sign-in (API)
+
+`apps/api/.env.local` needs `AUTH_SECRET` (at least 32 random characters). Then seed the demo schools and accounts, the same ones the web demo uses (password `Demo@1234`):
+
+```powershell
+npm.cmd run db:seed -w @school-lms/api          # safe to re-run; keeps changed passwords
+npm.cmd run db:seed:reset -w @school-lms/api    # restore Demo@1234 and clear lockouts
+npm.cmd test -w @school-lms/api                 # unit + API tests against the local database
+```
+
+Endpoints, all under `/api`:
+
+| Endpoint | Purpose |
+| --- | --- |
+| `GET schools/by-code/:code` | Public branding for a school's sign-in page |
+| `POST auth/login` | `{ schoolCode?, identifier, password }`; omit `schoolCode` for the Super Admin |
+| `POST auth/otp/request`, `auth/otp/verify` | Parent sign-in with a code sent to their phone |
+| `POST auth/password/forgot`, `auth/password/reset` | Emailed reset code |
+| `POST auth/password/change` | Signed in; keeps this device, signs out others |
+| `POST auth/refresh`, `auth/logout` | Use the httpOnly refresh cookie |
+| `GET auth/me` | Current user, school, role and permissions |
+| `GET audit-events` | Needs `audit.read`; limited to the user's school |
+
+Send the access token as `Authorization: Bearer <token>`. It lasts 15 minutes, and a session ends after 15 idle minutes or 12 hours. Five wrong passwords lock an account for 5 minutes.
+
+Until `SMTP_HOST` is set, emails print to the API console in development. SMS always prints there, because no provider has been chosen yet. In production, nothing is printed: messages that can't be sent are logged as errors.
+
 ## Run the apps
 
 ```powershell

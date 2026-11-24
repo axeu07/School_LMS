@@ -13,21 +13,33 @@
     "prebuild": "npm run db:generate",
     "pretypecheck": "npm run db:generate",
     "db:generate": "prisma generate",
-    "db:check": "npm run build && node dist/database/check-connection.js"
+    "db:check": "npm run build && node dist/database/check-connection.js",
+    "db:seed": "npm run build && node dist/database/seed.js",
+    "db:seed:reset": "npm run build && node dist/database/seed.js --reset-passwords",
+    "test": "npm run build && node --test \"test/*.test.mjs\""
   },
   "dependencies": {
     "@nestjs/common": "^11",
     "@nestjs/config": "^4",
     "@nestjs/core": "^11",
+    "@nestjs/jwt": "^11.0.2",
     "@nestjs/platform-express": "^11",
+    "@nestjs/throttler": "^6.8.0",
     "@prisma/adapter-pg": "7.10.1",
     "@prisma/client": "^7.2",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1",
+    "cookie-parser": "^1.4.7",
     "dotenv": "^17",
+    "nodemailer": "^10.6.1",
     "reflect-metadata": "^0.2",
     "rxjs": "^7"
   },
   "devDependencies": {
     "@nestjs/cli": "^11",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/express": "^5.0.6",
+    "@types/nodemailer": "^8.0.2",
     "prisma": "^7.2"
   }
 }

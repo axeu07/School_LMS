@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { Fragment, useRef, useState, type FormEvent } from "react";
 import { Card } from "@/components/ui/card";
 import { attendancePercentage } from "@/services/attendance-model";
 import {
@@ -186,7 +186,10 @@ export function AcademicWorkspace({
   const [table, setTable] = useState<AcademicTable>(tables[0]);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("");
-  const [section, setSection] = useState("");
+  const [year, setYear] = useState("");
+  const [grade, setGrade] = useState("");
+  const [sectionName, setSectionName] = useState("");
+  const [fieldFilters, setFieldFilters] = useState<Record<string, string>>({});
   const [formVersion, setFormVersion] = useState(0);
   const [editing, setEditing] = useState<Record<string, string>>();
   const [detail, setDetail] = useState<string>();
@@ -199,15 +202,114 @@ export function AcademicWorkspace({
   const choices = definition.fields.find(([key]) => key === "status")?.[2];
   const display = (row: Record<string, string>, [key, , source]: Field) =>
     typeof source === "string" ? label(school, source, row[key]) : row[key];
+  /* Class / section scoping: every table except years can be narrowed to
+     the class sections a record belongs to. */
+  const scoped = table !== "years";
+  const enrolledSections = (student: string) =>
+    school.enrollments
+      .filter((item) => item.student === student && item.status === "Enrolled")
+      .map((item) => item.section);
+  /** Section ids a row relates to; undefined means "applies to every section". */
+  const sectionIdsOf = (row: Record<string, string>): string[] | undefined => {
+    switch (table) {
+      case "sections":
+        return [row.id];
+      case "allocations":
+      case "enrollments":
+        return [row.section];
+      case "announcements":
+        return row.section ? [row.section] : undefined;
+      case "sessions":
+        return school.allocations
+          .filter((item) => item.id === row.allocation)
+          .map((item) => item.section);
+      case "students":
+        return enrolledSections(row.id);
+      case "links":
+        return enrolledSections(row.student);
+      case "guardians":
+        return school.links
+          .filter((item) => item.guardian === row.id)
+          .flatMap((item) => enrolledSections(item.student));
+      case "teachers":
+        return [
+          ...school.allocations
+            .filter((item) => item.teacher === row.id)
+            .map((item) => item.section),
+          ...school.sections
+            .filter((item) => item.coordinator === row.id)
+            .map((item) => item.id),
+        ];
+      case "subjects":
+        return school.allocations
+          .filter((item) => item.subject === row.id)
+          .map((item) => item.section);
+      default:
+        return undefined;
+    }
+  };
+  const sectionMatches = (item: AcademicSchool["sections"][number]) =>
+    (!year || item.year === year) &&
+    (!grade || item.grade === grade) &&
+    (!sectionName || item.name === sectionName);
+  const inScope = (row: Record<string, string>) => {
+    if (!scoped || (!year && !grade && !sectionName)) return true;
+    const ids = sectionIdsOf(row);
+    return (
+      ids === undefined ||
+      school.sections.some(
+        (item) => ids.includes(item.id) && sectionMatches(item),
+      )
+    );
+  };
+  const unique = (values: string[]) =>
+    [...new Set(values)].sort((a, b) =>
+      a.localeCompare(b, undefined, { numeric: true }),
+    );
+  const gradeOptions = unique(
+    school.sections
+      .filter((item) => !year || item.year === year)
+      .map((item) => item.grade),
+  );
+  const sectionOptions = unique(
+    school.sections
+      .filter(
+        (item) =>
+          (!year || item.year === year) && (!grade || item.grade === grade),
+      )
+      .map((item) => item.name),
+  );
+  /* Dropdown filters for the table's own list / reference columns. */
+  const filterFields = definition.fields.filter(
+    ([key, , source]) =>
+      key !== "status" &&
+      (Array.isArray(source) ||
+        source === "teachers" ||
+        source === "subjects" ||
+        source === "students" ||
+        source === "guardians"),
+  );
+  const filtersActive =
+    !!query ||
+    !!status ||
+    (scoped && (!!year || !!grade || !!sectionName)) ||
+    Object.values(fieldFilters).some(Boolean);
+  function clearFilters() {
+    setQuery("");
+    setStatus("");
+    setYear("");
+    setGrade("");
+    setSectionName("");
+    setFieldFilters({});
+  }
   const records = (school[table] as Record<string, string>[])
     .filter(
       (row) =>
         (!status || row.status === status) &&
-        (table !== "sessions" ||
-          !section ||
-          school.allocations.some(
-            (item) => item.id === row.allocation && item.section === section,
-          )) &&
+        inScope(row) &&
+        filterFields.every(
+          ([key]) => !fieldFilters[key] || row[key] === fieldFilters[key],
+        ) &&
         definition.fields.some((field) =>
           display(row, field)
             ?.toLowerCase()
@@ -274,6 +376,161 @@ export function AcademicWorkspace({
     confirmDialog.current?.showModal();
   }
 
+  const detailPanel = selected && (
+    <section className="academic-detail" aria-label="Record details">
+      <div className="academic-toolbar">
+        <h3>Record details</h3>
+        <button
+          className="text-button"
+          type="button"
+          onClick={() => setDetail(undefined)}
+        >
+          Close details
+        </button>
+      </div>
+      <dl>
+        {definition.fields.map((field) => (
+          <div key={field[0]}>
+            <dt>{field[1]}</dt>
+            <dd>{display(selected, field) || "—"}</dd>
+          </div>
+        ))}
+      </dl>
+      {(table === "teachers" ||
+        table === "sections" ||
+        table === "subjects") && (
+        <ul>
+          {school.allocations
+            .filter(
+              (item) =>
+                item[
+                  table === "teachers"
+                    ? "teacher"
+                    : table === "subjects"
+                      ? "subject"
+                      : "section"
+                ] === selected.id,
+            )
+            .map((item) => (
+              <li key={item.id}>
+                {label(school, "allocations", item.id)}
+                {school.sessions
+                  .filter((session) => session.allocation === item.id)
+                  .map((session) => (
+                    <div key={session.id}>
+                      {session.day} {session.start}–{session.end} ·{" "}
+                      {session.room}
+                    </div>
+                  ))}
+              </li>
+            ))}
+        </ul>
+      )}
+      {(table === "guardians" || table === "students") && (
+        <ul>
+          {school.links
+            .filter(
+              (item) =>
+                item[table === "guardians" ? "guardian" : "student"] ===
+                selected.id,
+            )
+            .map((item) => (
+              <li key={item.id}>
+                {table === "guardians"
+                  ? label(school, "students", item.student)
+                  : label(school, "guardians", item.guardian)}{" "}
+                · {item.relationship}
+                {item.primary === "Yes" && " · Primary contact"}
+              </li>
+            ))}
+          {table === "students" &&
+            school.enrollments
+              .filter((item) => item.student === selected.id)
+              .map((item) => (
+                <li key={item.id}>
+                  {label(school, "sections", item.section)} · {item.status}
+                </li>
+              ))}
+        </ul>
+      )}
+      {table === "students" &&
+        (() => {
+          const attendance = attendancePercentage(
+            school.attendance.flatMap((session) =>
+              session.marks[selected.id]
+                ? [
+                    {
+                      ...session,
+                      marks: { [selected.id]: session.marks[selected.id] },
+                    },
+                  ]
+                : [],
+            ),
+          );
+          const grades = school.submissions.filter(
+            (item) => item.student === selected.id && item.status === "Graded",
+          );
+          return (
+            <section aria-label="Academic overview">
+              <h4>Academic overview</h4>
+              <p>
+                {attendance === undefined
+                  ? "No attendance recorded"
+                  : attendance + "% recorded attendance"}
+              </p>
+              {grades.length ? (
+                <ul>
+                  {grades.map((grade) => {
+                    const assignment = school.assignments.find(
+                      (item) => item.id === grade.assignment,
+                    );
+                    return (
+                      <li key={grade.assignment}>
+                        {assignment?.title} · {grade.marks}/
+                        {assignment?.maximum} · {grade.feedback}
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : (
+                <p>No graded assignments yet.</p>
+              )}
+            </section>
+          );
+        })()}
+      {table === "announcements" && (
+        <ul>
+          {(["teacher", "student", "parent"] as const).map((role) => {
+            const people =
+              role === "teacher"
+                ? school.teachers
+                : role === "student"
+                  ? school.students
+                  : school.links;
+            const visible = people.some((person) =>
+              "guardian" in person
+                ? visibleAnnouncements(
+                    school,
+                    role,
+                    person.guardian,
+                    person.student,
+                  ).some((item) => item.id === selected.id)
+                : visibleAnnouncements(school, role, person.id).some(
+                    (item) => item.id === selected.id,
+                  ),
+            );
+            return (
+              <li key={role}>
+                {role[0].toUpperCase() + role.slice(1)} preview ·{" "}
+                {visible ? selected.message : "Hidden for this audience"}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </section>
+  );
+
   return (
     <Card className="dash-card academic-workspace">
       {tables.length > 1 && (
@@ -285,9 +542,9 @@ export function AcademicWorkspace({
               aria-pressed={key === table}
               onClick={() => {
                 setTable(key);
+                setFieldFilters({});
                 setQuery("");
                 setStatus("");
-                setSection("");
                 setDetail(undefined);
                 setNotice("");
               }}
@@ -328,21 +585,88 @@ export function AcademicWorkspace({
             </select>
           </label>
         )}
-        {table === "sessions" && (
-          <label>
-            Section{" "}
+        {scoped && (
+          <>
+            <label>
+              Academic year{" "}
+              <select
+                value={year}
+                onChange={(event) => {
+                  setYear(event.target.value);
+                  setGrade("");
+                  setSectionName("");
+                }}
+              >
+                <option value="">All years</option>
+                {school.years.map((item) => (
+                  <option value={item.id} key={item.id}>
+                    {item.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Class{" "}
+              <select
+                value={grade}
+                onChange={(event) => {
+                  setGrade(event.target.value);
+                  setSectionName("");
+                }}
+              >
+                <option value="">All classes</option>
+                {gradeOptions.map((item) => (
+                  <option key={item}>{item}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Section{" "}
+              <select
+                value={sectionName}
+                onChange={(event) => setSectionName(event.target.value)}
+              >
+                <option value="">All sections</option>
+                {sectionOptions.map((item) => (
+                  <option key={item}>{item}</option>
+                ))}
+              </select>
+            </label>
+          </>
+        )}
+        {filterFields.map(([key, title, source]) => (
+          <label key={key}>
+            {title}{" "}
             <select
-              value={section}
-              onChange={(event) => setSection(event.target.value)}
+              value={fieldFilters[key] ?? ""}
+              onChange={(event) =>
+                setFieldFilters((current) => ({
+                  ...current,
+                  [key]: event.target.value,
+                }))
+              }
             >
-              <option value="">All sections</option>
-              {school.sections.map((item) => (
-                <option value={item.id} key={item.id}>
-                  {label(school, "sections", item.id)}
-                </option>
-              ))}
+              <option value="">All</option>
+              {Array.isArray(source)
+                ? source.map((item) => <option key={item}>{item}</option>)
+                : (school[source as AcademicTable] as { id: string }[])
+                    .map((item) => ({
+                      id: item.id,
+                      name: label(school, source as AcademicTable, item.id),
+                    }))
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .map((item) => (
+                      <option value={item.id} key={item.id}>
+                        {item.name}
+                      </option>
+                    ))}
             </select>
           </label>
+        ))}
+        {filtersActive && (
+          <button type="button" className="text-button" onClick={clearFilters}>
+            Clear filters
+          </button>
         )}
         <button
           type="button"
@@ -395,206 +719,72 @@ export function AcademicWorkspace({
           </thead>
           <tbody>
             {records.map((row) => (
-              <tr key={row.id}>
-                {definition.fields.map((field) => (
-                  <td key={field[0]}>{display(row, field) || "—"}</td>
-                ))}
-                {table === "sections" && (
+              <Fragment key={row.id}>
+                <tr className={detail === row.id ? "is-expanded" : undefined}>
+                  {definition.fields.map((field) => (
+                    <td key={field[0]}>{display(row, field) || "—"}</td>
+                  ))}
+                  {table === "sections" && (
+                    <td>
+                      {
+                        school.enrollments.filter(
+                          (item) =>
+                            item.section === row.id &&
+                            item.status === "Enrolled",
+                        ).length
+                      }
+                    </td>
+                  )}
                   <td>
-                    {
-                      school.enrollments.filter(
-                        (item) =>
-                          item.section === row.id && item.status === "Enrolled",
-                      ).length
-                    }
-                  </td>
-                )}
-                <td>
-                  <button
-                    type="button"
-                    className="text-button"
-                    onClick={() => setDetail(row.id)}
-                  >
-                    View
-                  </button>{" "}
-                  <button
-                    type="button"
-                    className="text-button"
-                    onClick={() => openForm(row)}
-                  >
-                    Edit
-                  </button>{" "}
-                  {definition.removable && (
                     <button
                       type="button"
                       className="text-button"
-                      onClick={() => ask(row.id)}
+                      aria-expanded={detail === row.id}
+                      onClick={() =>
+                        setDetail(detail === row.id ? undefined : row.id)
+                      }
                     >
-                      Remove
-                    </button>
-                  )}
-                </td>
-              </tr>
+                      {detail === row.id ? "Hide" : "View"}
+                    </button>{" "}
+                    <button
+                      type="button"
+                      className="text-button"
+                      onClick={() => openForm(row)}
+                    >
+                      Edit
+                    </button>{" "}
+                    {definition.removable && (
+                      <button
+                        type="button"
+                        className="text-button"
+                        onClick={() => ask(row.id)}
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </td>
+                </tr>
+                {detail === row.id && detailPanel && (
+                  <tr className="academic-detail-row">
+                    <td
+                      colSpan={
+                        definition.fields.length +
+                        (table === "sections" ? 2 : 1)
+                      }
+                    >
+                      {detailPanel}
+                    </td>
+                  </tr>
+                )}
+              </Fragment>
             ))}
           </tbody>
         </table>
       </div>
       {!records.length && <p>No matching records.</p>}
-      {selected && (
-        <section className="academic-detail" aria-label="Record details">
-          <div className="academic-toolbar">
-            <h3>Record details</h3>
-            <button
-              className="text-button"
-              type="button"
-              onClick={() => setDetail(undefined)}
-            >
-              Close details
-            </button>
-          </div>
-          <dl>
-            {definition.fields.map((field) => (
-              <div key={field[0]}>
-                <dt>{field[1]}</dt>
-                <dd>{display(selected, field) || "—"}</dd>
-              </div>
-            ))}
-          </dl>
-          {(table === "teachers" ||
-            table === "sections" ||
-            table === "subjects") && (
-            <ul>
-              {school.allocations
-                .filter(
-                  (item) =>
-                    item[
-                      table === "teachers"
-                        ? "teacher"
-                        : table === "subjects"
-                          ? "subject"
-                          : "section"
-                    ] === selected.id,
-                )
-                .map((item) => (
-                  <li key={item.id}>
-                    {label(school, "allocations", item.id)}
-                    {school.sessions
-                      .filter((session) => session.allocation === item.id)
-                      .map((session) => (
-                        <div key={session.id}>
-                          {session.day} {session.start}–{session.end} ·{" "}
-                          {session.room}
-                        </div>
-                      ))}
-                  </li>
-                ))}
-            </ul>
-          )}
-          {(table === "guardians" || table === "students") && (
-            <ul>
-              {school.links
-                .filter(
-                  (item) =>
-                    item[table === "guardians" ? "guardian" : "student"] ===
-                    selected.id,
-                )
-                .map((item) => (
-                  <li key={item.id}>
-                    {table === "guardians"
-                      ? label(school, "students", item.student)
-                      : label(school, "guardians", item.guardian)}{" "}
-                    · {item.relationship}
-                    {item.primary === "Yes" && " · Primary contact"}
-                  </li>
-                ))}
-              {table === "students" &&
-                school.enrollments
-                  .filter((item) => item.student === selected.id)
-                  .map((item) => (
-                    <li key={item.id}>
-                      {label(school, "sections", item.section)} · {item.status}
-                    </li>
-                  ))}
-            </ul>
-          )}
-          {table === "students" &&
-            (() => {
-              const attendance = attendancePercentage(
-                school.attendance.flatMap((session) =>
-                  session.marks[selected.id]
-                    ? [
-                        {
-                          ...session,
-                          marks: { [selected.id]: session.marks[selected.id] },
-                        },
-                      ]
-                    : [],
-                ),
-              );
-              const grades = school.submissions.filter(
-                (item) =>
-                  item.student === selected.id && item.status === "Graded",
-              );
-              return (
-                <section aria-label="Academic overview">
-                  <h4>Academic overview</h4>
-                  <p>
-                    {attendance === undefined
-                      ? "No attendance recorded"
-                      : attendance + "% recorded attendance"}
-                  </p>
-                  {grades.length ? (
-                    <ul>
-                      {grades.map((grade) => {
-                        const assignment = school.assignments.find(
-                          (item) => item.id === grade.assignment,
-                        );
-                        return (
-                          <li key={grade.assignment}>
-                            {assignment?.title} · {grade.marks}/
-                            {assignment?.maximum} · {grade.feedback}
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  ) : (
-                    <p>No graded assignments yet.</p>
-                  )}
-                </section>
-              );
-            })()}
-          {table === "announcements" && (
-            <ul>
-              {(["teacher", "student", "parent"] as const).map((role) => {
-                const people =
-                  role === "teacher"
-                    ? school.teachers
-                    : role === "student"
-                      ? school.students
-                      : school.links;
-                const visible = people.some((person) =>
-                  "guardian" in person
-                    ? visibleAnnouncements(
-                        school,
-                        role,
-                        person.guardian,
-                        person.student,
-                      ).some((item) => item.id === selected.id)
-                    : visibleAnnouncements(school, role, person.id).some(
-                        (item) => item.id === selected.id,
-                      ),
-                );
-                return (
-                  <li key={role}>
-                    {role[0].toUpperCase() + role.slice(1)} preview ·{" "}
-                    {visible ? selected.message : "Hidden for this audience"}
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </section>
-      )}
+      {selected &&
+        !records.some((row) => row.id === selected.id) &&
+        detailPanel}
       <dialog
         ref={formDialog}
         className="search-dialog academic-dialog"

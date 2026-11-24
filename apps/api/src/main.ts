@@ -1,17 +1,12 @@
 import "reflect-metadata";
 import { NestFactory } from "@nestjs/core";
-import { ConfigService } from "@nestjs/config";
+import type { NestExpressApplication } from "@nestjs/platform-express";
 import { AppModule } from "./app.module";
-import type { ApiConfiguration } from "./config/api.config";
+import { configureApp } from "./app.setup";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  const config = app.get(ConfigService);
-  const { host, port, origins } = config.getOrThrow<ApiConfiguration>("api");
-
-  app.setGlobalPrefix("api");
-  app.enableCors({ origin: origins });
-  app.enableShutdownHooks();
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const { host, port } = configureApp(app);
   await app.listen(port, host);
 }
 

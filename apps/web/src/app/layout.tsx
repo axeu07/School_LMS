@@ -4,9 +4,11 @@ import { Fraunces, Inter, Nunito } from "next/font/google";
 import "@/styles/globals.css";
 import "@/styles/growth-and-assistant.css";
 import "@/styles/leave.css";
+import "@/styles/attendance-heatmap.css";
 import "@/styles/calendar-and-messages.css";
 import "@/styles/motion.css";
 import "@/styles/role-themes.css";
+import "@/styles/senior-student.css";
 import { MotionLayer } from "@/components/common/motion-layer";
 
 // Self-hosted variable font: crisp hinting at every weight (incl. 650/750)
@@ -39,9 +41,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={[inter.variable, nunito.variable, fraunces.variable].join(" ")}
     >
-      <body>
+      <body suppressHydrationWarning>
         {children}
         <MotionLayer />
       </body>

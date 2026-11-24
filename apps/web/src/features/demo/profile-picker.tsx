@@ -2,14 +2,28 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { BookOpenText } from "lucide-react";
 import { Brand } from "@/components/common/brand";
 import { roleProfiles } from "@/mocks/academics";
 import { demoRoles, type DemoRole } from "@/types/demo";
 import { DemoBanner, roleIcons } from "./demo-ui";
+import { setPreference, studentPreferenceKey } from "./preferences";
+
+/** The student role is offered twice: a Class 8 and a Class 10 learner. */
+const cards = demoRoles.flatMap<{ role: DemoRole; senior: boolean }>((role) =>
+  role === "student"
+    ? [
+        { role, senior: false },
+        { role, senior: true },
+      ]
+    : [{ role, senior: false }],
+);
 
 export function ProfilePicker() {
   const router = useRouter();
-  function enter(role: DemoRole) {
+  function enter(role: DemoRole, senior: boolean) {
+    if (role === "student")
+      setPreference(studentPreferenceKey, senior ? "senior" : "");
     router.push("/demo/" + role);
   }
 
@@ -34,21 +48,32 @@ export function ProfilePicker() {
           perspective.
         </p>
         <div className="role-grid">
-          {demoRoles.map((role, index) => {
+          {cards.map(({ role, senior }, index) => {
             const profile = roleProfiles[role];
-            const Icon = roleIcons[role];
+            const Icon = senior ? BookOpenText : roleIcons[role];
+            const student = role === "student";
             return (
               <button
                 type="button"
-                key={role}
+                key={role + (senior ? "-senior" : "")}
                 className="role-card"
-                onClick={() => enter(role)}
+                data-stage={senior ? "senior" : undefined}
+                onClick={() => enter(role, senior)}
               >
                 <span className={"role-icon tint-" + (index % 4)}>
                   <Icon size={23} aria-hidden="true" />
                 </span>
-                <span className="role-title">{profile.label}</span>
-                <span className="role-description">{profile.description}</span>
+                <span className="role-title">
+                  {profile.label}
+                  {student && (senior ? " · Class 10" : " · Class 8")}
+                </span>
+                <span className="role-description">
+                  {senior
+                    ? "A calm, book-like study space for board-exam years (Class 9 and above)."
+                    : student
+                      ? "A bright, playful space for younger learners (up to Class 8)."
+                      : profile.description}
+                </span>
                 <span className="role-action">Enter Dashboard</span>
               </button>
             );

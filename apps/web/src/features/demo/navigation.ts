@@ -68,6 +68,19 @@ const dashboard = (description: string) => ({
   items: [item("", "Dashboard", LayoutDashboard, description)],
 });
 
+/** The doubt board is its own sidebar entry, not part of a larger group. */
+const doubtBoard = (description: string) => ({
+  label: "Anonymous Doubt Board",
+  items: [
+    item(
+      "doubt-board",
+      "Anonymous Doubt Board",
+      MessageCircleQuestion,
+      description,
+    ),
+  ],
+});
+
 export const navigation: Record<DemoRole, NavGroup[]> = {
   "super-admin": [
     dashboard("Platform health, schools and subscriptions at a glance."),
@@ -302,6 +315,7 @@ export const navigation: Record<DemoRole, NavGroup[]> = {
   ],
   teacher: [
     dashboard("Your teaching day and what needs your attention."),
+    doubtBoard("Student doubts from your classes, ranked by upvotes."),
     {
       label: "Teaching",
       items: [
@@ -364,12 +378,6 @@ export const navigation: Record<DemoRole, NavGroup[]> = {
       label: "Engagement",
       items: [
         item(
-          "doubt-board",
-          "Anonymous Doubt Board",
-          MessageCircleQuestion,
-          "Student doubts from your classes, ranked by upvotes.",
-        ),
-        item(
           "ai-tools",
           "AI Teaching Tools",
           Sparkles,
@@ -399,6 +407,7 @@ export const navigation: Record<DemoRole, NavGroup[]> = {
   ],
   student: [
     dashboard("Your classes, deadlines and progress."),
+    doubtBoard("Ask doubts anonymously and upvote your classmates' questions."),
     {
       label: "Learning",
       items: [
@@ -449,12 +458,6 @@ export const navigation: Record<DemoRole, NavGroup[]> = {
     {
       label: "Study support",
       items: [
-        item(
-          "doubt-board",
-          "Anonymous Doubt Board",
-          MessageCircleQuestion,
-          "Ask doubts anonymously and upvote your classmates' questions.",
-        ),
         item(
           "ai-homework-helper",
           "AI Homework Helper",

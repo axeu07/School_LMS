@@ -133,6 +133,7 @@ test("password sign-in, lockout and inactive accounts", () => {
     "parent",
     "school-admin",
     "student",
+    "student", // the Class 10 demo student
     "teacher",
   ]);
   const now = at("2026-11-23T10:00:00Z");
@@ -497,9 +498,10 @@ test("consent requests, responses, withdrawal and data requests", () => {
     /already has a pending or granted/,
   );
   const overview = privacy.consentOverview(seed.schools.westfield, school);
+  // The Class 10 demo student has no consent request yet.
   assert.deepEqual(
     overview.map((row) => row.status),
-    ["Granted", "Pending"],
+    ["Granted", "Pending", "Not requested"],
   );
   assert.throws(
     () =>

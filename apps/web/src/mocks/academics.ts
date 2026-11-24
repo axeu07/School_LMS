@@ -21,6 +21,12 @@ type SchoolRecords = {
   childIds: string[];
   learners: Learner[];
   classes: Classroom[];
+  /**
+   * A Class 10 learner in their own section, separate from the parent's
+   * family, so the senior (Grade 9+) student experience can be demoed.
+   */
+  senior: Learner;
+  seniorClass: Classroom;
   announcements: DemoRow[];
   events: DemoRow[];
   doubts: DemoRow[];
@@ -36,6 +42,7 @@ function makeSchoolRecords(
   event: string,
   doubt: string,
   offset: number,
+  [seniorName, seniorLabel]: [string, string],
 ): SchoolRecords {
   const [admin, teacher, parent, firstChild, secondChild] = names;
   const makePerson = (id: string, name: string) => ({
@@ -59,6 +66,20 @@ function makeSchoolRecords(
     ),
     courses: [84, 62, 73].map((progress) => progress - offset - index * 12),
   }));
+  const seniorClass = {
+    id: schoolId + "-class-senior",
+    schoolId,
+    label: seniorLabel,
+    subjects,
+  };
+  const senior = {
+    ...makePerson("student-senior", seniorName),
+    classId: seniorClass.id,
+    attendance: 95 - offset,
+    homework: 91 - offset,
+    scores: [78, 81, 76, 84, 86, 88].map((score) => score - offset),
+    courses: [71, 58, 66].map((progress) => progress - offset),
+  };
   return {
     schoolId,
     admin: makePerson("admin", admin),
@@ -68,6 +89,8 @@ function makeSchoolRecords(
     teacherClassIds: classes.map(({ id }) => id),
     learners,
     childIds: learners.map(({ id }) => id),
+    senior,
+    seniorClass,
     announcements: [
       {
         title: "A note from " + teacher,
@@ -105,6 +128,7 @@ export const academicRecords = [
     "Westfield Science Fair",
     "Why does a negative times a negative give a positive?",
     0,
+    ["Aarav Sharma", "Grade 10 · A"],
   ),
   makeSchoolRecords(
     "harborview",
@@ -114,6 +138,7 @@ export const academicRecords = [
     "Harborview Coastal Showcase",
     "How do I tell a sample from a population?",
     5,
+    ["Meera Iyer", "Year 10 · Blue"],
   ),
   makeSchoolRecords(
     "cedar",
@@ -123,6 +148,7 @@ export const academicRecords = [
     "Cedar Grove Arts Week",
     "When should I factor a quadratic equation?",
     9,
+    ["Rohan Verma", "Grade 10 · A"],
   ),
 ] satisfies SchoolRecords[];
 

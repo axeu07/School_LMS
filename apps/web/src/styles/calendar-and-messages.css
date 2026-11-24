@@ -63,38 +63,82 @@
   align-items: center;
   gap: 0.5rem;
 }
+.cal-page {
+  grid-template-columns: minmax(0, 1fr);
+}
 .cal-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
-  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 0.85rem;
   align-items: start;
+}
+.cal-main,
+.cal-side {
+  min-width: 0;
 }
 .cal-main {
   display: grid;
-  gap: 0.85rem;
+  gap: 0.65rem;
 }
 .cal-side {
   display: grid;
-  gap: 1rem;
+  gap: 0.75rem;
+}
+/* Compact side cards */
+.cal-side > .section-card {
+  padding: 0.85rem;
+  gap: 0.6rem;
+}
+.cal-side .widget-header h2 {
+  font-size: 1rem;
+}
+.cal-side .widget-header p {
+  font-size: 0.78rem;
+}
+.cal-side .cal-entry {
+  padding: 0.45rem 0.5rem;
+}
+.cal-side .cal-entry-body strong {
+  font-size: 0.82rem;
+}
+.cal-side .cal-entry-body > span:not(.cal-entry-tags) {
+  font-size: 0.72rem;
 }
 .cal-toolbar {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 .cal-nav,
 .cal-toolbar-end {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 .cal-nav h2 {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 750;
   margin-left: 0.25rem;
+}
+/* Compact toolbar controls */
+.cal-toolbar .button {
+  min-height: 34px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.82rem;
+}
+.cal-toolbar .icon-button {
+  width: 34px;
+  height: 34px;
+}
+.cal-toolbar .segmented-tabs {
+  padding: 0.2rem;
+}
+.cal-toolbar .segmented-tabs button {
+  padding: 0.3rem 0.65rem;
+  font-size: 0.8rem;
 }
 .cal-quick {
   display: flex;
@@ -109,16 +153,20 @@
 .cal-filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: 0.3rem;
+}
+.cal-filters .tab-count {
+  min-width: 1.1rem;
+  font-size: 0.66rem;
 }
 .cal-filter {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.3rem 0.6rem;
+  gap: 0.35rem;
+  padding: 0.2rem 0.5rem;
   border: 1px solid #dfe1ee;
   border-radius: 999px;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 650;
   color: #3b4060;
   background: #fff;
@@ -128,9 +176,24 @@
   border-color: color-mix(in srgb, var(--cat) 35%, transparent);
   color: #1e2240;
 }
+.cal-filter {
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    box-shadow 0.15s,
+    opacity 0.15s;
+}
+.cal-filter:hover {
+  background: var(--cat-bg);
+}
+.cal-filter[aria-pressed="true"] {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--cat) 45%, transparent);
+}
 .cal-filter[aria-pressed="false"] {
-  opacity: 0.6;
-  text-decoration: line-through;
+  background: #fff;
+}
+.cal-filter[data-dimmed] {
+  opacity: 0.55;
 }
 .cal-dot {
   width: 0.6rem;
@@ -164,8 +227,10 @@
   grid-template-columns: repeat(7, minmax(0, 1fr));
 }
 .cal-weekdays span {
-  padding: 0.45rem;
-  font-size: 0.75rem;
+  padding: 0.4rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   font-weight: 700;
   color: var(--muted);
   text-align: center;
@@ -173,14 +238,17 @@
   border-bottom: 1px solid #e6e7f1;
 }
 .cal-day {
-  min-height: 7rem;
+  --cell-pad: 0.3rem;
+  position: relative;
+  min-height: 4.4rem;
   min-width: 0;
-  padding: 0.3rem;
-  border-right: 1px solid #eeeef6;
-  border-bottom: 1px solid #eeeef6;
+  padding: var(--cell-pad);
+  border-right: 1px solid #f0f0f6;
+  border-bottom: 1px solid #f0f0f6;
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.1rem;
+  background: #fff;
 }
 .cal-row .cal-day:nth-child(7n) {
   border-right: 0;
@@ -198,13 +266,21 @@
   background: #f5f2ff;
   box-shadow: inset 0 0 0 2px #a99af3;
 }
+.cal-day[data-match] {
+  background: var(--cat-bg, #f5f2ff);
+  box-shadow: inset 0 0 0 2px
+    color-mix(in srgb, var(--cat, #a99af3) 55%, transparent);
+}
+.cal-day[data-dim] .cal-day-number {
+  color: #b4b7c9;
+}
 .cal-day-number {
-  width: 1.9rem;
-  height: 1.9rem;
+  width: 1.4rem;
+  height: 1.4rem;
   display: grid;
   place-items: center;
   border-radius: 50%;
-  font-size: 0.82rem;
+  font-size: 0.72rem;
   font-weight: 700;
   color: #2a2d4a;
 }
@@ -226,23 +302,54 @@
 }
 .cal-chips {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.15rem;
   min-width: 0;
 }
+.cal-chips li {
+  min-width: 0;
+}
+/* Empty lane keeps multi-day bars aligned across the week. */
+.cal-chip-gap {
+  height: 1.15rem;
+}
 .cal-chip {
-  width: 100%;
+  /* Multi-day entries stretch across the cell edge to form one bar. */
+  --ext-l: 0px;
+  --ext-r: 0px;
+  --span: 1;
+  position: relative;
+  z-index: 1;
   display: block;
-  padding: 0.12rem 0.35rem;
+  /* Lead chip covers every day of the entry in this week (cell content width
+     plus the padding and 1px border between neighbouring cells). */
+  width: calc(
+    var(--span) * 100% + (var(--span) - 1) * (2 * var(--cell-pad) + 1px) +
+      var(--ext-l) + var(--ext-r)
+  );
+  margin-left: calc(-1 * var(--ext-l));
+  height: 1.15rem;
+  padding: 0 0.4rem;
   border-left: 3px solid var(--cat);
   border-radius: 4px;
   background: var(--cat-bg);
   color: #1f2340;
-  font-size: 0.72rem;
-  font-weight: 650;
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1.15rem;
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.cal-chip[data-continues] {
+  --ext-r: calc(var(--cell-pad) + 1px);
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+/* Continuation cells only reserve the lane; the lead chip draws the bar. */
+.cal-chip[data-continued] {
+  visibility: hidden;
 }
 .cal-chip:hover {
   filter: brightness(0.96);
@@ -268,7 +375,7 @@
   );
 }
 .cal-more {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 700;
   color: var(--primary);
   text-align: left;
@@ -923,7 +1030,7 @@
 }
 
 /* ---------- Responsive ---------- */
-@media (max-width: 1100px) {
+@media (max-width: 1280px) {
   .cal-layout {
     grid-template-columns: minmax(0, 1fr);
   }

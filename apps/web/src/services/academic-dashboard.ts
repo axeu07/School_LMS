@@ -20,7 +20,12 @@ export function getAcademicDashboard(
   if (!source) return;
   const children = linkedStudents(school, source.parent.id);
   const child = children.find((item) => item.id === childId) ?? children[0];
-  const base = getDemoDashboard(role, schoolId, child?.id);
+  // A student workspace passes its own learner id in place of a child id.
+  const base = getDemoDashboard(
+    role,
+    schoolId,
+    role === "student" ? childId : child?.id,
+  );
   if (!base) return;
   const person =
     role === "parent"

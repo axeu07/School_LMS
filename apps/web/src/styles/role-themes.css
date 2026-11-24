@@ -44,7 +44,7 @@
 }
 
 /* ---------- Student: playful & bright ---------- */
-.app-shell[data-role="student"] {
+.app-shell[data-role="student"]:not([data-stage="senior"]) {
   --t-1: #7c3aed;
   --t-1-strong: #5b21b6;
   --t-1-light: #a855f7;
@@ -264,6 +264,15 @@
 }
 .app-shell .cal-day[aria-selected="true"] {
   background: var(--t-soft-2);
+  box-shadow: none;
+}
+/* Drawn above event bars so a bar crossing the selected day doesn't hide it. */
+.app-shell .cal-day[aria-selected="true"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
   box-shadow: inset 0 0 0 2px var(--t-line);
 }
 .app-shell .cal-week-day[data-selected] {
@@ -479,14 +488,14 @@
 /* ==========================================================================
    Student personality — candy colours, chunky toy buttons, bouncy motion
    ========================================================================== */
-.app-shell[data-role="student"] h1,
-.app-shell[data-role="student"] h2,
-.app-shell[data-role="student"] h3 {
+.app-shell[data-role="student"]:not([data-stage="senior"]) h1,
+.app-shell[data-role="student"]:not([data-stage="senior"]) h2,
+.app-shell[data-role="student"]:not([data-stage="senior"]) h3 {
   letter-spacing: -0.01em;
   font-weight: 850;
 }
 /* Confetti dots sprinkled over the ambient background */
-.app-shell[data-role="student"]::after {
+.app-shell[data-role="student"]:not([data-stage="senior"])::after {
   content: "";
   position: fixed;
   inset: 0;
@@ -521,41 +530,65 @@
 }
 
 /* Sidebar: every icon gets its own colour; active item is a candy pill. */
-.app-shell[data-role="student"] .nav-group li:nth-child(5n + 1) .nav-link svg {
+.app-shell[data-role="student"]:not([data-stage="senior"])
+  .nav-group
+  li:nth-child(5n + 1)
+  .nav-link
+  svg {
   color: #8b5cf6;
 }
-.app-shell[data-role="student"] .nav-group li:nth-child(5n + 2) .nav-link svg {
+.app-shell[data-role="student"]:not([data-stage="senior"])
+  .nav-group
+  li:nth-child(5n + 2)
+  .nav-link
+  svg {
   color: #0ea5e9;
 }
-.app-shell[data-role="student"] .nav-group li:nth-child(5n + 3) .nav-link svg {
+.app-shell[data-role="student"]:not([data-stage="senior"])
+  .nav-group
+  li:nth-child(5n + 3)
+  .nav-link
+  svg {
   color: #10b981;
 }
-.app-shell[data-role="student"] .nav-group li:nth-child(5n + 4) .nav-link svg {
+.app-shell[data-role="student"]:not([data-stage="senior"])
+  .nav-group
+  li:nth-child(5n + 4)
+  .nav-link
+  svg {
   color: #f97316;
 }
-.app-shell[data-role="student"] .nav-group li:nth-child(5n + 5) .nav-link svg {
+.app-shell[data-role="student"]:not([data-stage="senior"])
+  .nav-group
+  li:nth-child(5n + 5)
+  .nav-link
+  svg {
   color: #ec4899;
 }
-.app-shell[data-role="student"] .nav-link {
+.app-shell[data-role="student"]:not([data-stage="senior"]) .nav-link {
   border-radius: 14px;
   font-weight: 700;
 }
-.app-shell[data-role="student"] .nav-link:hover svg {
+.app-shell[data-role="student"]:not([data-stage="senior"]) .nav-link:hover svg {
   animation: wiggle 0.5s ease-in-out;
 }
-.app-shell[data-role="student"] .nav-link[aria-current="page"] {
+.app-shell[data-role="student"]:not([data-stage="senior"])
+  .nav-link[aria-current="page"] {
   color: #fff;
   box-shadow:
     0 6px 14px -6px rgb(var(--t-glow) / 0.7),
     inset 0 1px 0 #ffffff55;
 }
-.app-shell[data-role="student"] .nav-link[aria-current="page"] svg {
+.app-shell[data-role="student"]:not([data-stage="senior"])
+  .nav-link[aria-current="page"]
+  svg {
   color: #fff;
 }
-.app-shell[data-role="student"] .nav-link[aria-current="page"]::before {
+.app-shell[data-role="student"]:not([data-stage="senior"])
+  .nav-link[aria-current="page"]::before {
   display: none;
 }
-.app-shell[data-role="student"] .nav-group-toggle {
+.app-shell[data-role="student"]:not([data-stage="senior"]) .nav-group-toggle {
   border-radius: 12px;
   font-size: 0.72rem;
 }
@@ -573,94 +606,110 @@
 }
 
 /* Chunky, pressable toy buttons */
-.app-shell[data-role="student"] .button {
+.app-shell[data-role="student"]:not([data-stage="senior"]) .button {
   border-radius: 14px;
 }
-.app-shell[data-role="student"] .button-primary {
+.app-shell[data-role="student"]:not([data-stage="senior"]) .button-primary {
   box-shadow:
     0 4px 0 #5b21b6,
     0 10px 20px -8px rgb(var(--t-glow) / 0.6),
     inset 0 1px 0 #ffffff55;
 }
-.app-shell[data-role="student"] .button-primary:hover {
+.app-shell[data-role="student"]:not([data-stage="senior"])
+  .button-primary:hover {
   transform: translateY(-2px);
   box-shadow:
     0 6px 0 #5b21b6,
     0 14px 24px -8px rgb(var(--t-glow) / 0.65),
     inset 0 1px 0 #ffffff55;
 }
-.app-shell[data-role="student"] .button-primary:active {
+.app-shell[data-role="student"]:not([data-stage="senior"])
+  .button-primary:active {
   transform: translateY(3px);
   box-shadow:
     0 1px 0 #5b21b6,
     0 4px 8px -4px rgb(var(--t-glow) / 0.5);
 }
-.app-shell[data-role="student"] .button-outline {
+.app-shell[data-role="student"]:not([data-stage="senior"]) .button-outline {
   border-width: 2px;
   box-shadow: 0 3px 0 var(--t-line);
 }
-.app-shell[data-role="student"] .button-outline:active {
+.app-shell[data-role="student"]:not([data-stage="senior"])
+  .button-outline:active {
   transform: translateY(2px);
   box-shadow: 0 1px 0 var(--t-line);
 }
 
 /* Each stat card is its own pastel colour */
-.app-shell[data-role="student"] .stat-card {
+.app-shell[data-role="student"]:not([data-stage="senior"]) .stat-card {
   border-width: 2px;
 }
-.app-shell[data-role="student"] .stat-grid > :nth-child(4n + 1) {
+.app-shell[data-role="student"]:not([data-stage="senior"])
+  .stat-grid
+  > :nth-child(4n + 1) {
   background: linear-gradient(160deg, #ffffff 30%, #f3e8ff);
   border-color: #e9d5ff;
 }
-.app-shell[data-role="student"] .stat-grid > :nth-child(4n + 2) {
+.app-shell[data-role="student"]:not([data-stage="senior"])
+  .stat-grid
+  > :nth-child(4n + 2) {
   background: linear-gradient(160deg, #ffffff 30%, #e0f2fe);
   border-color: #bae6fd;
 }
-.app-shell[data-role="student"] .stat-grid > :nth-child(4n + 3) {
+.app-shell[data-role="student"]:not([data-stage="senior"])
+  .stat-grid
+  > :nth-child(4n + 3) {
   background: linear-gradient(160deg, #ffffff 30%, #dcfce7);
   border-color: #bbf7d0;
 }
-.app-shell[data-role="student"] .stat-grid > :nth-child(4n + 4) {
+.app-shell[data-role="student"]:not([data-stage="senior"])
+  .stat-grid
+  > :nth-child(4n + 4) {
   background: linear-gradient(160deg, #ffffff 30%, #ffedd5);
   border-color: #fed7aa;
 }
-.app-shell[data-role="student"] .stat-icon {
+.app-shell[data-role="student"]:not([data-stage="senior"]) .stat-icon {
   border-radius: 16px;
 }
-.app-shell[data-role="student"] .stat-card:hover .stat-icon {
+.app-shell[data-role="student"]:not([data-stage="senior"])
+  .stat-card:hover
+  .stat-icon {
   transform: translateZ(30px) scale(1.15) rotate(-10deg);
 }
-.app-shell[data-role="student"] [data-slot="card"]:hover,
-.app-shell[data-role="student"] .action-card:hover {
+.app-shell[data-role="student"]:not([data-stage="senior"])
+  [data-slot="card"]:hover,
+.app-shell[data-role="student"]:not([data-stage="senior"]) .action-card:hover {
   border-color: #d8b4fe;
 }
-.app-shell[data-role="student"] .stat-card:hover,
-.app-shell[data-role="student"] .action-card:hover,
-.app-shell[data-role="student"] .course-grid > .dash-card:hover {
+.app-shell[data-role="student"]:not([data-stage="senior"]) .stat-card:hover,
+.app-shell[data-role="student"]:not([data-stage="senior"]) .action-card:hover,
+.app-shell[data-role="student"]:not([data-stage="senior"])
+  .course-grid
+  > .dash-card:hover {
   transform: perspective(900px) rotateX(var(--rx, 0deg))
     rotateY(var(--ry, 0deg)) translateY(-6px) scale(1.015);
   transition-timing-function: var(--ease-spring);
 }
-.app-shell[data-role="student"] .pill,
-.app-shell[data-role="student"] .row-meta {
+.app-shell[data-role="student"]:not([data-stage="senior"]) .pill,
+.app-shell[data-role="student"]:not([data-stage="senior"]) .row-meta {
   border-radius: 999px;
 }
-.app-shell[data-role="student"] .meter {
+.app-shell[data-role="student"]:not([data-stage="senior"]) .meter {
   height: 9px;
 }
-.app-shell[data-role="student"] .chart-bar {
+.app-shell[data-role="student"]:not([data-stage="senior"]) .chart-bar {
   border-radius: 10px 10px 4px 4px;
 }
 
 /* Student welcome banner: floating sticker shapes */
-.page-hero[data-role="student"] h1 {
+.page-hero[data-role="student"]:not([data-stage="senior"]) h1 {
   background: linear-gradient(90deg, #7c3aed, #db2777 50%, #ea580c);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   padding-bottom: 0.08em;
 }
-.page-hero[data-role="student"] .hero-greeting {
+.page-hero[data-role="student"]:not([data-stage="senior"]) .hero-greeting {
   font-size: 1.05rem;
   font-weight: 800;
   color: #6d28d9;
@@ -685,7 +734,7 @@
     transform: rotate(-10deg);
   }
 }
-.page-hero[data-role="student"] .hero-art i {
+.page-hero[data-role="student"]:not([data-stage="senior"]) .hero-art i {
   inset: auto;
   border: 0;
   translate: none;
@@ -695,7 +744,9 @@
   width: auto;
   aspect-ratio: auto;
 }
-.page-hero[data-role="student"] .hero-art i:nth-child(1) {
+.page-hero[data-role="student"]:not([data-stage="senior"])
+  .hero-art
+  i:nth-child(1) {
   /* yellow star */
   right: 16%;
   top: 14%;
@@ -717,7 +768,9 @@
   filter: drop-shadow(0 4px 6px #f59e0b66);
   animation: spin-float 9s ease-in-out infinite;
 }
-.page-hero[data-role="student"] .hero-art i:nth-child(2) {
+.page-hero[data-role="student"]:not([data-stage="senior"])
+  .hero-art
+  i:nth-child(2) {
   /* big pink bubble */
   right: -36px;
   bottom: -46px;
@@ -728,7 +781,9 @@
   opacity: 0.85;
   animation: bob 6s ease-in-out infinite;
 }
-.page-hero[data-role="student"] .hero-art i:nth-child(3) {
+.page-hero[data-role="student"]:not([data-stage="senior"])
+  .hero-art
+  i:nth-child(3) {
   /* sky ball */
   right: 31%;
   bottom: 12%;
@@ -738,7 +793,9 @@
   background: radial-gradient(circle at 35% 30%, #bae6fd, #38bdf8);
   animation: bounce 2.8s var(--ease-spring) infinite;
 }
-.page-hero[data-role="student"] .hero-art i:nth-child(4) {
+.page-hero[data-role="student"]:not([data-stage="senior"])
+  .hero-art
+  i:nth-child(4) {
   /* mint block */
   right: 9%;
   top: 56%;
@@ -748,7 +805,9 @@
   background: linear-gradient(135deg, #6ee7b7, #10b981);
   animation: spin-float 7s ease-in-out infinite reverse;
 }
-.page-hero[data-role="student"] .hero-art i:nth-child(5) {
+.page-hero[data-role="student"]:not([data-stage="senior"])
+  .hero-art
+  i:nth-child(5) {
   /* tiny purple star */
   right: 40%;
   top: 16%;
@@ -896,14 +955,18 @@
   .hero-art {
     opacity: 0.45;
   }
-  .page-hero[data-role="student"] .hero-art i:nth-child(3),
-  .page-hero[data-role="student"] .hero-art i:nth-child(5) {
+  .page-hero[data-role="student"]:not([data-stage="senior"])
+    .hero-art
+    i:nth-child(3),
+  .page-hero[data-role="student"]:not([data-stage="senior"])
+    .hero-art
+    i:nth-child(5) {
     display: none;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .app-shell[data-role="student"]::after,
+  .app-shell[data-role="student"]:not([data-stage="senior"])::after,
   .hero-art i,
   .hero-wave {
     animation: none !important;

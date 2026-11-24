@@ -13,7 +13,8 @@ export class PrismaService implements OnApplicationShutdown {
     return Boolean(this.config.get<string>("DATABASE_URL")?.trim());
   }
 
-  async checkConnection(): Promise<void> {
+  /** The Prisma client, created on first use. */
+  get db(): PrismaClient {
     if (!this.client) {
       const connectionString = this.config.get<string>("DATABASE_URL")?.trim();
       if (!connectionString) {
@@ -28,8 +29,11 @@ export class PrismaService implements OnApplicationShutdown {
         }),
       });
     }
+    return this.client;
+  }
 
-    await this.client.$queryRaw`SELECT 1`;
+  async checkConnection(): Promise<void> {
+    await this.db.$queryRaw`SELECT 1`;
   }
 
   async onApplicationShutdown(): Promise<void> {

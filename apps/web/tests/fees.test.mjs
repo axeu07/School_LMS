@@ -159,10 +159,11 @@ test("invoices generate once per eligible student with sequential numbers", () =
   const created = fees(state).invoices.filter(
     (item) => item.fee === "westfield-fee-exam",
   );
-  assert.equal(created.length, 2);
+  // Grade 8 · A, Grade 7 · B and the Class 10 demo student.
+  assert.equal(created.length, 3);
   assert.deepEqual(
     created.map((item) => item.number),
-    ["INV-WA-0007", "INV-WA-0008"],
+    ["INV-WA-0007", "INV-WA-0008", "INV-WA-0009"],
   );
   assert.throws(
     () => generateInvoices(state, school, admin, "westfield-fee-exam", today),
@@ -183,7 +184,7 @@ test("invoices generate once per eligible student with sequential numbers", () =
     /has payments/,
   );
   state = generateInvoices(state, school, admin, "westfield-fee-exam", today);
-  assert.equal(fees(state).counters.invoice, 9);
+  assert.equal(fees(state).counters.invoice, 10);
 });
 
 test("front-office payments validate amounts, methods and references", () => {

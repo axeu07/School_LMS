@@ -50,11 +50,16 @@ export function getDemoDashboard(
   const children = records.learners.filter(({ id }) =>
     records.childIds.includes(id),
   );
+  // For a student, `childId` names which learner is using the workspace.
   const student =
     role === "parent"
       ? (children.find(({ id }) => id === childId) ?? children[0])
-      : records.learners[0];
-  const classroom = records.classes.find(({ id }) => id === student.classId)!;
+      : role === "student" && childId === records.senior.id
+        ? records.senior
+        : records.learners[0];
+  const classroom = [...records.classes, records.seniorClass].find(
+    ({ id }) => id === student.classId,
+  )!;
   const subjects = classroom.subjects;
   const assignments = [
     {

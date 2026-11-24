@@ -437,7 +437,8 @@ test("exams, marks entry, grades and report cards", () => {
     school,
     "westfield-exam-0",
   );
-  assert.deepEqual([progress.done, progress.total], [2, 2]);
+  // Two Grade 7/8 sheets plus one per subject for the Class 10 section.
+  assert.deepEqual([progress.done, progress.total], [5, 5]);
   assert.equal(
     examsFor(data(learningSeed), school, parent, "westfield-student-0").length,
     2,

@@ -56,6 +56,10 @@ import { formatDate, formatDateTime } from "../format";
 import { roleHref } from "../navigation";
 import { SectionCard } from "../page-header";
 import {
+  StudentAttendanceCalendar,
+  TeacherAttendanceCalendar,
+} from "../attendance-heatmap";
+import {
   Drawer,
   LeaveCalendar,
   LeaveDetails,
@@ -522,6 +526,12 @@ function AttendanceLeaveSummary({ student }: { student: string }) {
           ],
         ]}
       />
+      <StudentAttendanceCalendar
+        school={records}
+        schoolId={actor.school}
+        student={student}
+        section={summary.rows[0]?.section}
+      />
       {summary.rows.length ? (
         <div className="table-wrap">
           <table className="pro-table">
@@ -860,6 +870,17 @@ function TeacherOwnLeave({
           ],
         ]}
       />
+      <SectionCard
+        title="My attendance"
+        description="Green is present, light green a half day of leave, red a full day of leave. Holidays and Sundays stay blank."
+        className="page-section"
+      >
+        <TeacherAttendanceCalendar
+          school={records}
+          schoolId={actor.school}
+          teacher={actor.person}
+        />
+      </SectionCard>
       <SectionCard
         title="Upcoming leave and cover"
         description="Sessions on your timetable that fall within approved or pending leave, with the cover planned by the School Admin."
