@@ -7,6 +7,7 @@ import type { AcademicSchool } from "@/services/academic-model";
 import { useAcademicState } from "@/services/academic-store";
 import type { AssignmentActor } from "@/services/assignment-model";
 import { listDemoSchools } from "@/services/demo-service";
+import { preschool } from "@/features/preschool/config";
 import { studentStage, type StudentStage } from "@/services/student-stage";
 import type { DemoRole, School, SchoolId } from "@/types/demo";
 import {
@@ -17,7 +18,10 @@ import {
 } from "./preferences";
 import { useWorkspaceSession } from "./session-guard";
 
-const schools = listDemoSchools();
+// Preschool mode offers only the preschool in school workspaces.
+const schools = listDemoSchools().filter(
+  ({ id }) => !preschool.enabled || preschool.schools.includes(id),
+);
 const defaultSchool = schools[0].id;
 
 type DashboardData = NonNullable<ReturnType<typeof getAcademicDashboard>>;

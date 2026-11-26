@@ -1,5 +1,6 @@
 import { academicRecords } from "@/mocks/academics";
 import type { DemoRole, SchoolId } from "@/types/demo";
+import { preschool } from "@/features/preschool/config";
 import {
   currentEnrollment,
   linkedStudents,
@@ -1399,8 +1400,12 @@ export function calendarEntries(
         records.allocations.find((entry) => entry.id === allocation)?.subject,
     )?.name;
 
+  // Preschool mode hides assignments, exams and online tests, so the
+  // calendar leaves out their deadlines too.
+  const academics = !preschool.enabled;
   for (const item of records.assignments)
     if (
+      academics &&
       item.published &&
       allocationIds.has(item.allocation) &&
       validDate(item.due)
@@ -1426,7 +1431,7 @@ export function calendarEntries(
         sections: [sectionOf(item.allocation) ?? ""].filter(Boolean),
       });
 
-  const learningSchool = learning.schools[actor.school];
+  const learningSchool = academics ? learning.schools[actor.school] : undefined;
   if (learningSchool) {
     const student = viewerStudent(records, actor);
     const exams =

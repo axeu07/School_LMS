@@ -1,7 +1,8 @@
 ﻿"use client";
 
 import { useSyncExternalStore } from "react";
-import { academicSeed, decodeAcademicState } from "./academic-seed";
+import "@/services/demo-reset";
+import { academicDemoSeed, decodeAcademicState } from "./academic-seed";
 import type { AcademicState } from "./academic-model";
 import { diffAcademic } from "./audit-model";
 import { recordAudit } from "./audit-store";
@@ -9,7 +10,7 @@ import { recordAudit } from "./audit-store";
 const key = "school-lms-academics";
 const updateEvent = "school-lms-academics-updated";
 let cachedRaw: string | null | undefined;
-let cachedState = academicSeed;
+let cachedState = academicDemoSeed;
 let memoryOnly = false;
 
 function snapshot() {
@@ -18,7 +19,8 @@ function snapshot() {
     const raw = localStorage.getItem(key);
     if (raw !== cachedRaw) {
       cachedRaw = raw;
-      cachedState = decodeAcademicState(raw);
+      // Nothing saved yet: start from the demo seed with full class rosters.
+      cachedState = raw ? decodeAcademicState(raw) : academicDemoSeed;
     }
   } catch {
     memoryOnly = true;
@@ -39,7 +41,7 @@ function subscribe(callback: () => void) {
 }
 
 export function useAcademicState() {
-  return useSyncExternalStore(subscribe, snapshot, () => academicSeed);
+  return useSyncExternalStore(subscribe, snapshot, () => academicDemoSeed);
 }
 
 /** The latest academic records, for non-React code such as audit labels. */
@@ -70,5 +72,5 @@ function write(state: AcademicState) {
 }
 
 export function resetAcademicState() {
-  write(academicSeed);
+  write(academicDemoSeed);
 }

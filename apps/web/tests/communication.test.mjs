@@ -163,7 +163,8 @@ test("parents see only their selected linked child's calendar", () => {
   // Linked records keep stable keys and never duplicate.
   const list = keys(parent0);
   assert.equal(new Set(list).size, list.length);
-  assert.ok(list.includes("assignment:westfield-class-0-practice"));
+  // Preschool mode hides homework, so its deadlines leave the calendar too.
+  assert.ok(!list.includes("assignment:westfield-class-0-practice"));
   assert.ok(list.includes("ptm:westfield-booking-0"));
   assert.ok(!keys(parent1).includes("ptm:westfield-booking-0"));
 });

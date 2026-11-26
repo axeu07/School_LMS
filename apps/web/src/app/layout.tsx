@@ -11,6 +11,7 @@ import "@/styles/role-themes.css";
 import "@/styles/senior-student.css";
 import "@/styles/dashboard-glance.css";
 import "@/styles/dashboard.css";
+import "@/styles/preschool.css";
 import { MotionLayer } from "@/components/common/motion-layer";
 
 // Self-hosted variable font: crisp hinting at every weight (incl. 650/750)
@@ -34,7 +35,7 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: "ACADMAXIS | Teach and learn in one place",
+  title: "Oak and Ivy, Dehradun | Preschool app",
   description:
     "Explore an interactive learning management system demo for schools and colleges.",
 };

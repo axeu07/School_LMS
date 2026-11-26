@@ -2,6 +2,11 @@
 
 import type { ReactNode } from "react";
 import type { DemoRole } from "@/types/demo";
+import { DailyDiaryPage } from "@/features/preschool/daily-diary";
+import { EmergencyPage } from "@/features/preschool/emergency";
+import { HealthPage } from "@/features/preschool/health";
+import { PickupPage } from "@/features/preschool/pickup";
+import { TransportPage } from "@/features/preschool/transport";
 import { AssignmentWorkspace } from "./assignment-workspace";
 import { AttendanceWorkspace } from "./attendance-workspace";
 import { useDemo } from "./demo-context";
@@ -199,6 +204,28 @@ function renderSection(role: DemoRole, slug: string): ReactNode {
     case "parent/messages":
     case "teacher/messages":
       return <MessagesInbox />;
+
+    // Preschool care and safety pages
+    case "parent/daily-diary":
+    case "teacher/daily-diary":
+    case "school-admin/daily-diary":
+      return <DailyDiaryPage />;
+    case "parent/pickup":
+    case "teacher/pickup":
+    case "school-admin/pickup":
+      return <PickupPage />;
+    case "parent/health":
+    case "teacher/health":
+    case "school-admin/health":
+      return <HealthPage />;
+    case "parent/emergency":
+    case "teacher/emergency":
+    case "school-admin/emergency":
+      return <EmergencyPage />;
+    case "parent/transport":
+    case "teacher/transport":
+    case "school-admin/transport":
+      return <TransportPage />;
     case "school-admin/messages":
       return <AdminCommunication />;
   }

@@ -9,7 +9,7 @@ import {
 import { createLocalStore, useLocalStore } from "./local-store";
 
 const store = createLocalStore(
-  "school-lms-branding",
+  "school-lms-branding-v2",
   brandingSeed,
   decodeBrandingState,
 );

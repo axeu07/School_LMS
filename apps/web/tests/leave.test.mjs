@@ -54,8 +54,8 @@ const {
 
 const W = "westfield";
 const school = academicSeed.schools.westfield;
-const s0 = "westfield-student-0"; // Avery Chen · Grade 8 · A
-const s1 = "westfield-student-1"; // Robin Chen · Grade 7 · B
+const s0 = "westfield-student-0"; // Avery Chen · UKG · Sunflower
+const s1 = "westfield-student-1"; // Robin Chen · LKG · Daisy
 const student = { school: W, role: "student", person: s0 };
 const student1 = { school: W, role: "student", person: s1 };
 const parent = {
@@ -395,7 +395,7 @@ test("Scenario 4: an absence alerts only linked parents, once, and the parent ca
     assert.equal(alerts[0].state, "Active");
     assert.equal(
       alerts[0].message,
-      "Attendance Alert: Avery was marked absent in Grade 8-A on 20 November 2026. View attendance or submit a leave request.",
+      "Attendance Alert: Avery was marked absent in UKG-Sunflower on 20 November 2026. View attendance or submit a leave request.",
     );
   }
   assert.ok(

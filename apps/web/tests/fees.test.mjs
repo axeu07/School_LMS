@@ -101,7 +101,7 @@ test("fee structure validates and locks invoiced amounts", () => {
   const item = {
     id: "fee-new",
     year: "westfield-year",
-    grade: "Grade 8",
+    grade: "UKG",
     name: "Sports fee",
     amount: 2500,
     due: "2027-01-15",
@@ -159,7 +159,7 @@ test("invoices generate once per eligible student with sequential numbers", () =
   const created = fees(state).invoices.filter(
     (item) => item.fee === "westfield-fee-exam",
   );
-  // Grade 8 · A, Grade 7 · B and the Class 10 demo student.
+  // UKG · Sunflower, LKG · Daisy and the Nursery demo child.
   assert.equal(created.length, 3);
   assert.deepEqual(
     created.map((item) => item.number),

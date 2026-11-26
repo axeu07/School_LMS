@@ -194,6 +194,47 @@ function seedSchool(schoolId: SchoolId): CommunicationSchool {
       description: "Students read and discuss a short story in small groups.",
     }),
   ];
+  // Oak and Ivy is a preschool: same dates, preschool-friendly events.
+  if (source.schoolId === "westfield") {
+    const preschool: Record<string, Partial<SchoolEvent>> = {
+      midterms: {
+        title: "Winter carnival week",
+        category: "school-event",
+        location: "School garden",
+        description: "Puppet shows, a fun fair and games for every class.",
+      },
+      "unit-test": {
+        title: "Play-based skills check-in",
+        location: "Sunflower room",
+        description:
+          "A relaxed, play-based check of colours, shapes and counting. No preparation needed.",
+      },
+      showcase: {
+        description:
+          "Children show their art, songs and garden projects to families.",
+      },
+      "field-trip": {
+        title: "Visit to the FRI museum",
+        location: "Forest Research Institute",
+        description:
+          "A short morning trip. Send a packed snack and the signed consent form.",
+      },
+      "project-due": {
+        title: "Leaf collection for the nature wall",
+        description: "Send five different leaves in a paper bag.",
+      },
+      "sports-meet": { title: "Little sports day" },
+      "reading-circle": {
+        title: "Story circle",
+        location: "Reading corner",
+        description: "Children listen to and act out a picture book.",
+      },
+    };
+    events.forEach((item, index) => {
+      const key = Object.keys(preschool).find((id) => item.id.endsWith(id));
+      if (key) events[index] = { ...item, ...preschool[key] };
+    });
+  }
   const ptm = events.find((item) => item.category === "ptm")!;
   const ptmSlots = generateSlots(ptm);
   const booked = ptmSlots[2];

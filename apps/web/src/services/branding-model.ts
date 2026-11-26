@@ -1,5 +1,6 @@
 import type { DemoRole, SchoolId } from "@/types/demo";
 import { requireRule } from "./academic-model";
+import { oakIvyLogo } from "./oak-ivy-logo";
 
 /** White-label settings for one school's space. */
 export type SchoolBranding = {
@@ -25,13 +26,14 @@ export const brandingSeed: BrandingState = {
   version: 1,
   schools: {
     westfield: {
-      displayName: "Westfield Academy",
-      tagline: "Curious minds, kind hearts",
-      primary: "#4937b8",
-      logo: "",
-      code: "WFA26",
-      subdomain: "westfield",
-      welcome: "Welcome to Westfield Academy's learning space.",
+      displayName: "Oak and Ivy",
+      tagline: "Dehradun · Where little roots grow strong",
+      primary: "#1f4a35",
+      logo: oakIvyLogo,
+      code: "OAK26",
+      subdomain: "oakandivy",
+      welcome:
+        "Welcome to Oak and Ivy, Dehradun. Sign in to follow your child's day.",
     },
     harborview: {
       displayName: "Harborview International",

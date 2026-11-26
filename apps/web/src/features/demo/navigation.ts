@@ -4,6 +4,7 @@ import {
   BookMarked,
   BookOpen,
   Building2,
+  BusFront,
   CalendarClock,
   CalendarDays,
   CalendarOff,
@@ -13,11 +14,14 @@ import {
   ClipboardCheck,
   ClipboardList,
   CreditCard,
+  DoorOpen,
   FileUp,
   GraduationCap,
   History,
   ShieldCheck,
+  Siren,
   HeartHandshake,
+  HeartPulse,
   IndianRupee,
   LayoutDashboard,
   Library,
@@ -28,6 +32,7 @@ import {
   MessagesSquare,
   Network,
   NotebookPen,
+  NotebookText,
   Palette,
   School,
   Settings,
@@ -40,6 +45,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { DemoRole } from "@/types/demo";
+import { preschool, sectionHidden } from "@/features/preschool/config";
 
 /**
  * "live" pages use the shared demo records and working actions.
@@ -81,7 +87,8 @@ const doubtBoard = (description: string) => ({
   ],
 });
 
-export const navigation: Record<DemoRole, NavGroup[]> = {
+/** The complete K-12 menu. Preschool mode hides parts of it (see below). */
+export const fullNavigation: Record<DemoRole, NavGroup[]> = {
   "super-admin": [
     dashboard("Platform health, schools and subscriptions at a glance."),
     {
@@ -578,6 +585,145 @@ export const navigation: Record<DemoRole, NavGroup[]> = {
     },
   ],
 };
+
+/* ---------- Preschool mode ---------- */
+
+/** Day-care and safety pages added for the preschool, per role. */
+const preschoolGroups: Partial<Record<DemoRole, NavGroup>> = {
+  parent: {
+    label: "Care & safety",
+    items: [
+      item(
+        "daily-diary",
+        "Daily Diary",
+        NotebookText,
+        "Meals, nap, mood, toilet and a note from the teacher, every day.",
+      ),
+      item(
+        "pickup",
+        "Pickup & Drop",
+        DoorOpen,
+        "People allowed to collect your child, pickup passes and the gate log.",
+      ),
+      item(
+        "health",
+        "Health & Medical",
+        HeartPulse,
+        "Allergies, medicines, vaccinations, doctor details and incident reports.",
+      ),
+      item(
+        "transport",
+        "Bus Tracking",
+        BusFront,
+        "Your child's bus on a live map, with pickup and drop alerts.",
+      ),
+      item(
+        "emergency",
+        "Emergency Contacts",
+        Siren,
+        "Who to call in an emergency, and urgent alerts from the school.",
+      ),
+    ],
+  },
+  teacher: {
+    label: "Daily care",
+    items: [
+      item(
+        "daily-diary",
+        "Daily Diary",
+        NotebookText,
+        "Write and send each child's daily report to their parents.",
+      ),
+      item(
+        "pickup",
+        "Check-in & Pickup",
+        DoorOpen,
+        "Check children in and out, and verify pickups by OTP or QR pass.",
+      ),
+      item(
+        "health",
+        "Health & Incidents",
+        HeartPulse,
+        "Allergy alerts, medicines and incident reports for your classes.",
+      ),
+      item(
+        "transport",
+        "Vehicle Tracking",
+        BusFront,
+        "Track any school vehicle live by its vehicle number.",
+      ),
+      item(
+        "emergency",
+        "Emergency & Alerts",
+        Siren,
+        "Emergency contacts for your children and urgent broadcasts.",
+      ),
+    ],
+  },
+  "school-admin": {
+    label: "Care & safety",
+    items: [
+      item(
+        "daily-diary",
+        "Daily Diaries",
+        NotebookText,
+        "Which classes have sent today's daily reports to parents.",
+      ),
+      item(
+        "pickup",
+        "Pickup & Gate Log",
+        DoorOpen,
+        "Check-in and check-out times, pickup passes and verifications.",
+      ),
+      item(
+        "health",
+        "Health Records",
+        HeartPulse,
+        "Allergies, vaccinations and incident reports across the school.",
+      ),
+      item(
+        "transport",
+        "Transport & Fleet",
+        BusFront,
+        "Routes, drivers and live tracking for every vehicle.",
+      ),
+      item(
+        "emergency",
+        "Emergency Broadcasts",
+        Siren,
+        "Send urgent alerts such as early closure or a rainy day.",
+      ),
+    ],
+  },
+};
+
+function preschoolNavigation(role: DemoRole): NavGroup[] {
+  const groups = fullNavigation[role]
+    .map((group) => ({
+      ...group,
+      items: group.items
+        .filter((entry) => !sectionHidden(role, entry.slug))
+        .map((entry) => ({
+          ...entry,
+          ...preschool.renamed[role + "/" + entry.slug],
+        })),
+    }))
+    .filter((group) => group.items.length);
+  const extra = preschoolGroups[role];
+  if (!extra || !groups.length) return groups;
+  // Care pages sit right below the dashboard: they are what families use most.
+  return [groups[0], extra, ...groups.slice(1)];
+}
+
+/** The menu each role actually sees. */
+export const navigation: Record<DemoRole, NavGroup[]> = preschool.enabled
+  ? (Object.fromEntries(
+      (Object.keys(fullNavigation) as DemoRole[]).map((role) => [
+        role,
+        preschoolNavigation(role),
+      ]),
+    ) as Record<DemoRole, NavGroup[]>)
+  : fullNavigation;
 
 export function roleHref(role: DemoRole, slug = "") {
   return "/demo/" + role + (slug ? "/" + slug : "");

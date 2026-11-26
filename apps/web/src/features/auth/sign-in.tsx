@@ -14,6 +14,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { Brand, productLogo } from "@/components/common/brand";
+import { roleHidden } from "@/features/preschool/config";
 import { roleProfiles } from "@/mocks/academics";
 import { useAcademicState } from "@/services/academic-store";
 import { logAudit } from "@/services/audit-store";
@@ -67,7 +68,10 @@ export function SignIn({ scope }: { scope: AccountScope }) {
   const auth = useAuthState();
   const router = useRouter();
   const params = useSearchParams();
-  const accounts = accountsFor(academic, scope);
+  // Hidden roles (children, in the preschool) have no sign-in.
+  const accounts = accountsFor(academic, scope).filter(
+    (account) => !roleHidden(account.role),
+  );
   const [view, setView] = useState<View>("password");
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
@@ -335,7 +339,9 @@ export function SignIn({ scope }: { scope: AccountScope }) {
               {view === "password" && (
                 <form className="auth-form" onSubmit={submitPassword}>
                   <label>
-                    {platform ? "Email" : "Email or student number"}
+                    {platform || roleHidden("student")
+                      ? "Email"
+                      : "Email or student number"}
                     <input
                       value={identifier}
                       onChange={(event) => setIdentifier(event.target.value)}

@@ -379,21 +379,29 @@ test("bulk import validates each row and applies only valid ones", () => {
     [
       "Meera Iyer",
       "ST-101",
-      "Grade 8",
-      "a",
+      "UKG",
+      "sunflower",
       "Lakshmi Iyer",
       "lakshmi@example.test",
       "parent",
     ],
-    ["Duplicate Code", "ST-1", "Grade 8", "A", "", "", ""],
+    ["Duplicate Code", "ST-1", "UKG", "Sunflower", "", "", ""],
     ["No Section", "ST-102", "Grade 12", "Z", "", "", ""],
-    ["Bad Guardian", "ST-103", "Grade 8", "A", "Pat Doe", "not-an-email", ""],
+    [
+      "Bad Guardian",
+      "ST-103",
+      "UKG",
+      "Sunflower",
+      "Pat Doe",
+      "not-an-email",
+      "",
+    ],
     ["", "", "", "", "", "", ""],
     [
       "Existing Family",
       "ST-104",
-      "Grade 7",
-      "B",
+      "LKG",
+      "Daisy",
       "",
       "westfield.family@example.test",
       "Guardian",
@@ -727,7 +735,7 @@ test("audit diffs describe attendance, marks, fees and records changes", () => {
   assert.equal(marks[0].action, "Changed exam marks");
   assert.match(
     marks[0].detail,
-    /Unit Test 1 · Mathematics · Avery Chen: 41 → 44/,
+    /Unit Test 1 · Early Numeracy · Avery Chen: 41 → 44/,
   );
   let n = 0;
   const log = appendEntries(

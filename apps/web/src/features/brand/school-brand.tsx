@@ -4,6 +4,8 @@ import { useState, type CSSProperties, type FormEvent } from "react";
 import Link from "next/link";
 import { ImageUp, RotateCcw, Save } from "lucide-react";
 import type { DemoRole, SchoolId } from "@/types/demo";
+import { preschool } from "@/features/preschool/config";
+import { schools } from "@/mocks/schools";
 import {
   brandPalette,
   contrastRatio,
@@ -64,7 +66,12 @@ export function SchoolBrand({
       <SchoolLogo branding={branding} />
       <span className="school-brand-text">
         <strong>{branding.displayName}</strong>
-        <small>Powered by ACADMAXIS</small>
+        <small>
+          {preschool.enabled
+            ? (schools.find((item) => item.id === school)?.location ??
+              "Powered by ACADMAXIS")
+            : "Powered by ACADMAXIS"}
+        </small>
       </span>
     </Link>
   );

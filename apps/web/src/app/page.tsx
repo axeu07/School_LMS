@@ -13,6 +13,8 @@ import { StatCards, TrendChart } from "@/features/demo/dashboard-widgets";
 import { roleIcons } from "@/features/demo/demo-ui";
 import { roleProfiles } from "@/mocks/academics";
 import { getDemoDashboard } from "@/services/demo-service";
+import { preschool, roleHidden } from "@/features/preschool/config";
+import { schools } from "@/mocks/schools";
 import { demoRoles } from "@/types/demo";
 
 const demo = "/demo/select-profile";
@@ -97,7 +99,7 @@ export default function Home() {
                 <Activity size={16} />
               </div>
               <div className="preview-main">
-                <p>Westfield Academy</p>
+                <p>{schools[0].name}</p>
                 <h2>School overview</h2>
                 <StatCards stats={overview.stats} />
                 <TrendChart chart={overview.chart} />
@@ -130,22 +132,24 @@ export default function Home() {
               <h2>The right view for each person.</h2>
             </div>
             <div className="marketing-roles">
-              {demoRoles.map((role, index) => {
-                const Icon = roleIcons[role];
-                return (
-                  <Link
-                    key={role}
-                    href={"/demo/" + role}
-                    className="marketing-role"
-                  >
-                    <span className={"role-icon tint-" + (index % 4)}>
-                      <Icon size={21} aria-hidden="true" />
-                    </span>
-                    <h3>{roleProfiles[role].label}</h3>
-                    <p>{roleProfiles[role].description}</p>
-                  </Link>
-                );
-              })}
+              {demoRoles
+                .filter((role) => !roleHidden(role))
+                .map((role, index) => {
+                  const Icon = roleIcons[role];
+                  return (
+                    <Link
+                      key={role}
+                      href={"/demo/" + role}
+                      className="marketing-role"
+                    >
+                      <span className={"role-icon tint-" + (index % 4)}>
+                        <Icon size={21} aria-hidden="true" />
+                      </span>
+                      <h3>{roleProfiles[role].label}</h3>
+                      <p>{roleProfiles[role].description}</p>
+                    </Link>
+                  );
+                })}
             </div>
           </div>
         </section>
@@ -153,21 +157,23 @@ export default function Home() {
           id="analytics"
           className="shell marketing-section spotlight-grid"
         >
-          <article className="spotlight spotlight-ai">
-            <Sparkles size={26} aria-hidden="true" />
-            <span>Simulated AI</span>
-            <h2>Help students take the next step.</h2>
-            <p>
-              Students can try a sample homework hint, and teachers can preview
-              lesson outlines and practice prompts.
-            </p>
-            <Link
-              className="button button-outline"
-              href="/demo/student/ai-homework-helper"
-            >
-              Try the learning tools
-            </Link>
-          </article>
+          {!preschool.enabled && (
+            <article className="spotlight spotlight-ai">
+              <Sparkles size={26} aria-hidden="true" />
+              <span>Simulated AI</span>
+              <h2>Help students take the next step.</h2>
+              <p>
+                Students can try a sample homework hint, and teachers can
+                preview lesson outlines and practice prompts.
+              </p>
+              <Link
+                className="button button-outline"
+                href="/demo/student/ai-homework-helper"
+              >
+                Try the learning tools
+              </Link>
+            </article>
+          )}
           <article className="spotlight">
             <Activity size={26} aria-hidden="true" />
             <span>Academic analytics</span>

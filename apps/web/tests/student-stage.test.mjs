@@ -39,31 +39,32 @@ test("students up to Class 8 are junior; Class 9 and above are senior", () => {
   assert.equal(stageForGrade("Class 12"), "senior");
 });
 
+// Oak and Ivy (westfield) is a preschool, so the senior learner lives at Cedar.
 test("the Class 10 demo student has a senior workspace with real records", () => {
-  const school = academicSeed.schools.westfield;
-  assert.equal(studentStage(school, "westfield-student-0"), "junior");
-  assert.equal(studentStage(school, "westfield-student-senior"), "senior");
+  const school = academicSeed.schools.cedar;
+  assert.equal(studentStage(school, "cedar-student-0"), "junior");
+  assert.equal(studentStage(school, "cedar-student-senior"), "senior");
 
-  const junior = getAcademicDashboard("student", "westfield", school, "");
-  assert.equal(junior.person.name, "Avery Chen");
+  const junior = getAcademicDashboard("student", "cedar", school, "");
+  assert.equal(junior.person.name, "Neel Mehta");
   const senior = getAcademicDashboard(
     "student",
-    "westfield",
+    "cedar",
     school,
-    "westfield-student-senior",
+    "cedar-student-senior",
   );
-  assert.equal(senior.person.name, "Aarav Sharma");
+  assert.equal(senior.person.name, "Rohan Verma");
   // Timetable, homework and attendance come from the Class 10 section.
   assert.ok(senior.stats.some((stat) => Number(stat.value) >= 3));
   const sessions = school.sessions.filter((item) =>
-    item.allocation.startsWith("westfield-class-senior"),
+    item.allocation.startsWith("cedar-class-senior"),
   );
   assert.equal(sessions.length, 3);
   // The Grade 8 teacher's own timetable is unchanged.
   assert.ok(
     school.allocations
-      .filter((item) => item.section === "westfield-class-senior")
-      .every((item) => item.teacher === "westfield-teacher-senior"),
+      .filter((item) => item.section === "cedar-class-senior")
+      .every((item) => item.teacher === "cedar-teacher-senior"),
   );
 });
 
@@ -110,7 +111,10 @@ test("records saved before the Class 10 section existed gain it once", () => {
   const upgraded = decodeAcademicState(JSON.stringify(old));
   const westfield = upgraded.schools.westfield;
   assert.equal(westfield.subjects[0].name, "Maths (edited)");
-  assert.equal(studentStage(westfield, "westfield-student-senior"), "senior");
+  assert.equal(
+    studentStage(upgraded.schools.cedar, "cedar-student-senior"),
+    "senior",
+  );
   for (const key of [
     "sections",
     "teachers",

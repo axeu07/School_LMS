@@ -1,12 +1,15 @@
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import { RoleShell } from "@/features/demo/role-shell";
+import { roleHidden } from "@/features/preschool/config";
 import { demoRoles, type DemoRole } from "@/types/demo";
 
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return demoRoles.map((role) => ({ role }));
+  return demoRoles
+    .filter((role) => !roleHidden(role))
+    .map((role) => ({ role }));
 }
 
 export default async function RoleLayout({
@@ -17,7 +20,8 @@ export default async function RoleLayout({
   params: Promise<{ role: string }>;
 }) {
   const { role } = await params;
-  if (!demoRoles.includes(role as DemoRole)) notFound();
+  if (!demoRoles.includes(role as DemoRole) || roleHidden(role as DemoRole))
+    notFound();
   return (
     <RoleShell key={role} role={role as DemoRole}>
       {children}

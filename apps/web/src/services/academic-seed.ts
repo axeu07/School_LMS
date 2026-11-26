@@ -1,4 +1,4 @@
-import { academicRecords } from "@/mocks/academics";
+import { academicRecords, preschoolClassmates } from "@/mocks/academics";
 import {
   academicTables,
   type AcademicSchool,
@@ -83,6 +83,67 @@ function seniorRows(source: Source, subjects: { id: string; name: string }[]) {
         marks: { [student]: "Present" },
       }),
     ),
+  };
+}
+
+/** Gives each preschool class a full roster (Oak and Ivy only). */
+function withClassmates(school: AcademicSchool, source: Source) {
+  if (source.schoolId !== "westfield") return school;
+  const prefix = source.schoolId;
+  const sections = [...source.classes, source.seniorClass].map(({ id }) => id);
+  const kids = preschoolClassmates.map((kid, index) => ({
+    ...kid,
+    id: prefix + "-kid-" + index,
+    guardianId: prefix + "-family-" + index,
+    section: sections[kid.group],
+  }));
+  const attendance = school.attendance.map((row) => {
+    const marks = { ...row.marks };
+    kids.forEach((kid, index) => {
+      if (kid.section === row.section)
+        marks[kid.id] =
+          (index + row.date.length) % 9 === 4 ? "Late" : "Present";
+    });
+    return { ...row, marks };
+  });
+  return {
+    ...school,
+    students: [
+      ...school.students,
+      ...kids.map(({ id, name }, index) => ({
+        id,
+        name,
+        code: "ST-" + (school.students.length + index + 1),
+      })),
+    ],
+    enrollments: [
+      ...school.enrollments,
+      ...kids.map(({ id, section }) => ({
+        id: id + "-enrollment",
+        student: id,
+        section,
+        status: "Enrolled",
+      })),
+    ],
+    guardians: [
+      ...school.guardians,
+      ...kids.map(({ guardianId, guardian }) => ({
+        id: guardianId,
+        name: guardian,
+        email: guardianId + "@example.test",
+      })),
+    ],
+    links: [
+      ...school.links,
+      ...kids.map(({ id, guardianId }) => ({
+        id: id + "-link",
+        guardian: guardianId,
+        student: id,
+        relationship: "Parent",
+        primary: "Yes",
+      })),
+    ],
+    attendance,
   };
 }
 
@@ -257,6 +318,21 @@ export const academicSeed: AcademicState = {
       };
       return [prefix, school];
     }),
+  ) as AcademicState["schools"],
+};
+
+/**
+ * What the browser demo starts from: the base seed plus full preschool class
+ * rosters. The base `academicSeed` stays small for the module tests and for
+ * the seeds of other modules (fees, leave, messages).
+ */
+export const academicDemoSeed: AcademicState = {
+  ...academicSeed,
+  schools: Object.fromEntries(
+    academicRecords.map((source) => [
+      source.schoolId,
+      withClassmates(academicSeed.schools[source.schoolId], source),
+    ]),
   ) as AcademicState["schools"],
 };
 

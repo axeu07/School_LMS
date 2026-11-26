@@ -5,19 +5,22 @@ import { useRouter } from "next/navigation";
 import { BookOpenText } from "lucide-react";
 import { Brand } from "@/components/common/brand";
 import { roleProfiles } from "@/mocks/academics";
+import { roleHidden } from "@/features/preschool/config";
 import { demoRoles, type DemoRole } from "@/types/demo";
 import { DemoBanner, roleIcons } from "./demo-ui";
 import { setPreference, studentPreferenceKey } from "./preferences";
 
 /** The student role is offered twice: a Class 8 and a Class 10 learner. */
-const cards = demoRoles.flatMap<{ role: DemoRole; senior: boolean }>((role) =>
-  role === "student"
-    ? [
-        { role, senior: false },
-        { role, senior: true },
-      ]
-    : [{ role, senior: false }],
-);
+const cards = demoRoles
+  .filter((role) => !roleHidden(role))
+  .flatMap<{ role: DemoRole; senior: boolean }>((role) =>
+    role === "student"
+      ? [
+          { role, senior: false },
+          { role, senior: true },
+        ]
+      : [{ role, senior: false }],
+  );
 
 export function ProfilePicker() {
   const router = useRouter();

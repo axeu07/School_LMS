@@ -53,7 +53,7 @@ export function SchoolFinder() {
                   setValue(event.target.value);
                   setError("");
                 }}
-                placeholder="e.g. WFA26"
+                placeholder="e.g. OAK26"
                 autoComplete="organization"
                 autoCapitalize="characters"
                 aria-invalid={!!error}

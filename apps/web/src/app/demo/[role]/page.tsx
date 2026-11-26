@@ -1,11 +1,14 @@
 import { RoleOverview } from "@/features/demo/overview";
 import { roleProfiles } from "@/mocks/academics";
+import { roleHidden } from "@/features/preschool/config";
 import { demoRoles, type DemoRole } from "@/types/demo";
 
 type Props = { params: Promise<{ role: string }> };
 
 export function generateStaticParams() {
-  return demoRoles.map((role) => ({ role }));
+  return demoRoles
+    .filter((role) => !roleHidden(role))
+    .map((role) => ({ role }));
 }
 
 export async function generateMetadata({ params }: Props) {

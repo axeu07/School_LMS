@@ -12,6 +12,7 @@ import { resetBrandingState } from "@/services/branding-store";
 import { resetPrivacyState } from "@/services/privacy-store";
 import { logAudit, resetAuditState } from "@/services/audit-store";
 import { resetLeaveState } from "@/services/leave-store";
+import { resetPreschoolState } from "@/services/preschool-store";
 import { SectionTopics } from "./results-pages";
 import {
   formatPercent,
@@ -477,6 +478,7 @@ export function SchoolSettings() {
               resetLearningState();
               resetFeeState();
               resetLeaveState();
+              resetPreschoolState();
               resetBrandingState();
               resetPrivacyState();
               resetAuditState();

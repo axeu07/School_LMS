@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import "@/services/demo-reset";
 
 const preferencesChanged = "school-lms-demo-preferences";
 const sessionPreferences = new Map<string, string>();

@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import "@/services/demo-reset";
 
 /**
  * A small localStorage-backed external store shared by every tab and route.

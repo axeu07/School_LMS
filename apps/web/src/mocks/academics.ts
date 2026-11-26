@@ -123,12 +123,12 @@ export const academicRecords = [
   makeSchoolRecords(
     "westfield",
     ["Amelia Brooks", "Maya Patel", "Jordan Chen", "Avery Chen", "Robin Chen"],
-    ["Grade 8 · A", "Grade 7 · B"],
-    ["Mathematics", "General Science", "English"],
-    "Westfield Science Fair",
-    "Why does a negative times a negative give a positive?",
+    ["UKG · Sunflower", "LKG · Daisy"],
+    ["Early Numeracy", "Discovery & Play", "Language & Phonics"],
+    "Little Explorers Day",
+    "Why do leaves change colour?",
     0,
-    ["Aarav Sharma", "Grade 10 · A"],
+    ["Aarav Sharma", "Nursery · Tulip"],
   ),
   makeSchoolRecords(
     "harborview",
@@ -151,6 +151,28 @@ export const academicRecords = [
     ["Rohan Verma", "Grade 10 · A"],
   ),
 ] satisfies SchoolRecords[];
+
+/**
+ * Classmates for the preschool (Oak and Ivy), so each class has a real
+ * roster. Each child has one parent account that is not a demo login.
+ * `group` 0 is UKG · Sunflower, 1 is LKG · Daisy and 2 is Nursery · Tulip.
+ */
+export const preschoolClassmates: {
+  name: string;
+  guardian: string;
+  group: 0 | 1 | 2;
+}[] = [
+  { name: "Ishaan Rawat", guardian: "Neha Rawat", group: 0 },
+  { name: "Myra Negi", guardian: "Vikram Negi", group: 0 },
+  { name: "Kabir Bisht", guardian: "Pooja Bisht", group: 0 },
+  { name: "Anaya Thapa", guardian: "Rohit Thapa", group: 0 },
+  { name: "Vihaan Joshi", guardian: "Shalini Joshi", group: 1 },
+  { name: "Siya Gusain", guardian: "Manoj Gusain", group: 1 },
+  { name: "Reyansh Dobhal", guardian: "Ritu Dobhal", group: 1 },
+  { name: "Aadhya Panwar", guardian: "Sanjay Panwar", group: 1 },
+  { name: "Arjun Semwal", guardian: "Anjali Semwal", group: 2 },
+  { name: "Kiara Bhandari", guardian: "Deepak Bhandari", group: 2 },
+];
 
 export const platformUser: Person = {
   id: "platform-admin",

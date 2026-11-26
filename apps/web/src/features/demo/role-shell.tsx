@@ -14,6 +14,8 @@ import { setAuditActor } from "@/services/audit-store";
 import { useSchoolBranding } from "@/services/branding-store";
 import { brandStyle } from "../brand/school-brand";
 import { SessionGuard } from "./session-guard";
+import { preschool } from "@/features/preschool/config";
+import { UrgentBanner } from "@/features/preschool/emergency";
 
 /** Persistent layout: stays mounted while nested role routes change. */
 export function RoleShell({
@@ -65,6 +67,9 @@ function Shell({ role, children }: { role: DemoRole; children: ReactNode }) {
       data-role={role}
       data-stage={stage}
       data-school={schoolId}
+      data-theme={
+        preschool.enabled && role !== "super-admin" ? "oak-ivy" : undefined
+      }
       data-collapsed={collapsed ? "true" : undefined}
       style={role === "super-admin" ? undefined : brandStyle(branding)}
     >
@@ -81,6 +86,7 @@ function Shell({ role, children }: { role: DemoRole; children: ReactNode }) {
       </aside>
       <div className="dashboard-stage">
         <DashboardHeader onOpenMenu={() => menu.current?.showModal()} />
+        {preschool.enabled && <UrgentBanner />}
         <main
           id="main-content"
           className="dashboard-main"
@@ -108,7 +114,9 @@ function Shell({ role, children }: { role: DemoRole; children: ReactNode }) {
         </button>
         <Sidebar role={role} onNavigate={() => menu.current?.close()} />
       </dialog>
-      <ChatAssistant key={scopeKey} />
+      {(!preschool.enabled || preschool.showAssistant) && (
+        <ChatAssistant key={scopeKey} />
+      )}
     </div>
   );
 }

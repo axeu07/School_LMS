@@ -25,7 +25,7 @@ registerHooks({
 const source = (path) =>
   readFile(new URL("../src/" + path, import.meta.url), "utf8");
 
-const { navigation, navItems, findNavItem, roleHref } =
+const { fullNavigation, navigation, navItems, findNavItem, roleHref } =
   await import("../src/features/demo/navigation.ts");
 const { academicSeed } = await import("../src/services/academic-seed.ts");
 const {
@@ -42,7 +42,8 @@ const { reviewAssignment, submitAssignment } =
   await import("../src/services/assignment-model.ts");
 
 const roles = ["super-admin", "school-admin", "teacher", "student", "parent"];
-const expected = {
+/** The complete K-12 menus, kept in code while preschool mode hides parts. */
+const fullExpected = {
   "super-admin": [
     "Dashboard",
     "Schools",
@@ -127,9 +128,110 @@ const expected = {
   ],
 };
 
+/** What each role sees in preschool mode (Oak and Ivy). */
+const expected = {
+  "super-admin": fullExpected["super-admin"],
+  "school-admin": [
+    "Dashboard",
+    "Daily Diaries",
+    "Pickup & Gate Log",
+    "Health Records",
+    "Transport & Fleet",
+    "Emergency Broadcasts",
+    "Academic Years",
+    "Classes & Groups",
+    "Learning Areas",
+    "Teacher Allocations",
+    "Timetable",
+    "Teachers",
+    "Children",
+    "Parents & Guardians",
+    "Bulk Import",
+    "Announcements",
+    "Attendance",
+    "Leave Management",
+    "School Calendar",
+    "Communication",
+    "Fees & Payments",
+    "School Settings",
+    "School Branding",
+    "Data & Privacy",
+    "Audit Log",
+  ],
+  teacher: [
+    "Dashboard",
+    "Daily Diary",
+    "Check-in & Pickup",
+    "Health & Incidents",
+    "Vehicle Tracking",
+    "Emergency & Alerts",
+    "Weekly Timetable",
+    "My Classes",
+    "School Calendar",
+    "Attendance",
+    "Leave Requests",
+    "Announcements",
+    "Parent Messages",
+  ],
+  student: [],
+  parent: [
+    "Dashboard",
+    "Daily Diary",
+    "Pickup & Drop",
+    "Health & Medical",
+    "Bus Tracking",
+    "Emergency Contacts",
+    "My Children",
+    "Attendance",
+    "Child Leave Requests",
+    "Fees",
+    "School Calendar",
+    "Consent & Privacy",
+    "Announcements",
+    "Messages",
+  ],
+};
+
+test("the full K-12 menus are kept, and every page still has a route", async () => {
+  const pages = await source("features/demo/section-page.tsx");
+  for (const role of roles) {
+    const titles = fullNavigation[role].flatMap((group) =>
+      group.items.map((item) => item.title),
+    );
+    assert.deepEqual([...titles].sort(), [...fullExpected[role]].sort(), role);
+    for (const group of fullNavigation[role])
+      for (const item of group.items)
+        if (item.slug)
+          assert.ok(
+            pages.includes('"' + role + "/" + item.slug + '"'),
+            role + "/" + item.slug + " still has a page",
+          );
+  }
+});
+
+test("preschool mode hides the student workspace and K-12 pages", () => {
+  assert.equal(navItems("student").length, 0);
+  const teacher = navItems("teacher").map((item) => item.slug);
+  for (const slug of ["doubt-board", "assessments", "ai-tools", "courses"])
+    assert.ok(!teacher.includes(slug), slug);
+  const parent = navItems("parent").map((item) => item.slug);
+  for (const slug of ["homework", "performance", "assessments"])
+    assert.ok(!parent.includes(slug), slug);
+  for (const role of ["school-admin", "teacher", "parent"])
+    for (const slug of [
+      "daily-diary",
+      "pickup",
+      "health",
+      "transport",
+      "emergency",
+    ])
+      assert.ok(findNavItem(role, slug), role + "/" + slug);
+});
+
 test("each role has its required menu, with Dashboard first", () => {
   for (const role of roles) {
     const items = navItems(role);
+    if (!items.length) continue; // hidden role
     assert.equal(items[0].slug, "", role + " starts with Dashboard");
     assert.deepEqual(
       [...items.map((item) => item.title)].sort(),
